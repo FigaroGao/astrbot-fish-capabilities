@@ -1,21 +1,15 @@
 {
   "enabled": false,
-  "owners": [
-    "YOUR_QQ_ID"
-  ],
-  "allowed_group_sessions": [
-    "YOUR_PLATFORM:GroupMessage:YOUR_GROUP_ID"
-  ],
+  "owners": [],
+  "allowed_group_sessions": [],
   "history_enabled": false,
-  "history_group_sessions": [
-    "YOUR_PLATFORM:GroupMessage:YOUR_GROUP_ID"
-  ],
+  "history_group_sessions": [],
   "history_remote_fallback": false,
   "weather_enabled": false,
   "bili_enabled": false,
   "bili_daily_reads": 10,
   "meme_enabled": false,
-  "media_cooldown_seconds": 180,
+  "media_cooldown_seconds": 0,
   "media_hourly_limit": 6,
   "tts_enabled": false,
   "tts_key_env": "DASHSCOPE_API_KEY",
@@ -24,9 +18,7 @@
   "weather_default_city": "香港",
   "weather_default_country": "HK",
   "owner_only_commands_enabled": false,
-  "command_platform_ids": [
-    "YOUR_PLATFORM"
-  ],
+  "command_platform_ids": [],
   "intent_enabled": false,
   "intent_provider_id": "deepseek/deepseek-flash",
   "intent_quiet_seconds": 20,
@@ -34,6 +26,24 @@
   "intent_hourly_limit": 6,
   "intent_daily_limit": 20,
   "intent_timeout_seconds": 12,
-  "meme_min_reply_gap": 3,
-  "quota_enabled": false
+  "meme_min_reply_gap": 0,
+  "quota_enabled": false,
+  "bili_comment_enabled": false,
+  "bili_account_id": "",
+  "bili_schedule_enabled": false,
+  "bili_schedule_times": [
+    "12:30",
+    "20:30"
+  ],
+  "bili_topics": [],
+  "bili_provider_id": "deepseek/deepseek-flash",
+  "bili_private_session": "",
+  "bili_visual_enabled": false,
+  "bili_vision_provider_id": "",
+  "bili_group_enabled": false,
+  "private_initiative_enabled": false,
+  "context_budget_enabled": false,
+  "ordinary_segment_enabled": false,
+  "knowledge_enabled": false,
+  "knowledge_names": []
 }
