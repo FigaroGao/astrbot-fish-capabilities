@@ -1,0 +1,6 @@
+{
+  "date": "2026-10-23",
+  "gcp_before_sha256": "cd7176bfdfee7318343e5ef95eef8af3c95ab64db5efdb59c315c1227116b20e",
+  "gcp_after_sha256": "20cba021d0cce3c53c40bf7b57bec7e604a7f98707a760f69c8385658f833850",
+  "note": "Patch baseline is a previously customized installation, not an arbitrary upstream release. Do not blindly apply."
+}

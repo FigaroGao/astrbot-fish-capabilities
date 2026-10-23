@@ -1,0 +1,41 @@
+--- a/main.py
++++ b/main.py
+@@ -4067,6 +4067,9 @@
+         Args:
+             event: 消息事件对象
+         """
++        # Local intent bridge: observe all group messages before recipient filtering.
++        from data.plugins.astrbot_plugin_fish_capabilities.services.intent_runtime import observe_group, route_group
++        observe_group(self, event)
+         # 🔧 用于 finally 安全清理，防止 processing_sessions 泄漏导致后续消息卡住
+         _cleanup_message_id = None
+         try:
+@@ -4294,7 +4297,7 @@
+                 return
+ 
+             # 处理群消息
+-            async for result in self._process_message(event):
++            async for result in route_group(self, event):
+                 yield result
+         except Exception as e:
+             logger.error(f"处理群消息时发生错误: {e}", exc_info=True)
+@@ -5450,6 +5453,9 @@
+         Returns:
+             True=继续处理, False=丢弃消息
+         """
++        # Intent-approved batches use one judgment; no second random/AI gate.
++        if event.get_extra('fish_intent_approved'):
++            return True
+         # 🆕 v1.2.0: 拟人增强模式 - 动态消息阈值检查
+         if self.humanize_mode_enabled:
+             try:
+@@ -6223,6 +6229,9 @@
+         Returns:
+             True=应该回复, False=不回复
+         """
++        # Intent-approved batches use one judgment; no second random/AI gate.
++        if event.get_extra('fish_intent_approved'):
++            return True
+         # v1.1.2: 检查关键词智能模式（使用已提取的实例变量）
+         keyword_smart_mode = self.keyword_smart_mode
+ 
