@@ -1,0 +1,39 @@
+{
+  "enabled": false,
+  "owners": [
+    "YOUR_QQ_ID"
+  ],
+  "allowed_group_sessions": [
+    "YOUR_PLATFORM:GroupMessage:YOUR_GROUP_ID"
+  ],
+  "history_enabled": false,
+  "history_group_sessions": [
+    "YOUR_PLATFORM:GroupMessage:YOUR_GROUP_ID"
+  ],
+  "history_remote_fallback": false,
+  "weather_enabled": false,
+  "bili_enabled": false,
+  "bili_daily_reads": 10,
+  "meme_enabled": false,
+  "media_cooldown_seconds": 180,
+  "media_hourly_limit": 6,
+  "tts_enabled": false,
+  "tts_key_env": "DASHSCOPE_API_KEY",
+  "tts_model": "sambert-zhiyue-v1",
+  "tts_monthly_chars": 3000,
+  "weather_default_city": "香港",
+  "weather_default_country": "HK",
+  "owner_only_commands_enabled": false,
+  "command_platform_ids": [
+    "YOUR_PLATFORM"
+  ],
+  "intent_enabled": false,
+  "intent_provider_id": "deepseek/deepseek-flash",
+  "intent_quiet_seconds": 20,
+  "intent_cooldown_seconds": 180,
+  "intent_hourly_limit": 6,
+  "intent_daily_limit": 20,
+  "intent_timeout_seconds": 12,
+  "meme_min_reply_gap": 3,
+  "quota_enabled": false
+}
