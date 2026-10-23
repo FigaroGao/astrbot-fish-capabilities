@@ -1,0 +1,4 @@
+name: astrbot_plugin_fish_host_guard
+desc: 平板本地恢复器服务看守，不控制QQ进程
+version: 1.0.0
+author: Codex
