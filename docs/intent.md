@@ -1,5 +1,7 @@
 # 意图接话与 GCP 桥接
 
+[English — 完整翻译](intent.en.md)
+
 需要已有 Group Chat Plus（GCP）。`patches/group-chat-plus-intent.patch` 是原设备“接入意图控制前/后”的最小差异；原设备此前已有其他定制，所以不能视为任意官方版本可直接应用的补丁。基线 SHA256 见 `patches/baseline.json`。
 
 先备份已安装 GCP 的 main.py，检查当前源码，手工对照补丁或先执行 `git apply --check`。出现不匹配就停止，不应强行覆盖整份 GCP。补丁不包含原设备的完整 GCP，保留上游 AGPL-3.0 版权义务。

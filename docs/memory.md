@@ -1,5 +1,7 @@
 # 长期记忆的边界
 
+[English — 完整翻译](memory.en.md)
+
 原设备使用 [LivingMemory](https://github.com/lxfight-s-Astrbot-Plugins/astrbot_plugin_livingmemory) 的定制适配，分别处理群公共记忆与当前群成员记忆。它不是能力插件自带的独立向量库。
 
 原设备参考源码基线：`b8aaaec2c1232ec2c86fce22cec066a0069018e0`。该上游为 AGPL-3.0。修改分布于存储、检索、反思、命令和工具入口；只复制一个 group_layers.py 不能获得完整双层记忆。本分享版暂不包含这些未整理成可迁移补丁的改动，不宣称安装即获得原设备的双层记忆。
