@@ -36,7 +36,7 @@
   },
   "bili_enabled": {
     "type": "bool",
-    "description": "主人私聊 B站候选、字幕阅读与札记；无账号写入动作",
+    "description": "B站候选、字幕、评论弹幕抽样与独立札记；公开评论另行授权",
     "default": false
   },
   "bili_daily_reads": {
@@ -52,7 +52,7 @@
   "media_cooldown_seconds": {
     "type": "int",
     "description": "同一会话表情/语音共用冷却秒数",
-    "default": 180
+    "default": 0
   },
   "media_hourly_limit": {
     "type": "int",
@@ -145,11 +145,89 @@
   "meme_min_reply_gap": {
     "type": "int",
     "description": "同会话表情之间至少完成几轮回复；分段不重复计数",
-    "default": 3
+    "default": 0
   },
   "quota_enabled": {
     "type": "bool",
     "description": "授权群及主人私聊查询 DeepSeek 余额和已记录今日用量；每5分钟静默采样账户余额净变化，不查询阿里云额度",
     "default": false
+  },
+  "bili_comment_enabled": {
+    "type": "bool",
+    "description": "B站公开评论；独立于浏览开关，绑定小号并授权后才能启用",
+    "default": false
+  },
+  "bili_account_id": {
+    "type": "string",
+    "description": "本地扫码后绑定的B站UID；模型不能更改",
+    "default": ""
+  },
+  "bili_schedule_enabled": {
+    "type": "bool",
+    "description": "香港时间定时自主浏览，使用独立公开资料上下文，不读取私人记忆",
+    "default": false
+  },
+  "bili_schedule_times": {
+    "type": "list",
+    "description": "香港时间HH:MM，每天最多两次",
+    "default": [
+      "12:30",
+      "20:30"
+    ]
+  },
+  "bili_topics": {
+    "type": "list",
+    "description": "浏览主题；为空时使用公开视频热门候选",
+    "default": []
+  },
+  "bili_provider_id": {
+    "type": "string",
+    "description": "定时选片及整理推荐的模型ID",
+    "default": "deepseek/deepseek-flash"
+  },
+  "bili_private_session": {
+    "type": "string",
+    "description": "主人接收推荐的完整私聊UMO；必须匹配已配置主人",
+    "default": ""
+  },
+  "bili_visual_enabled": {
+    "type": "bool",
+    "description": "读取不超过10分钟视频的1至27张抽样预览帧，最多3张九宫格；不是完整视频",
+    "default": false
+  },
+  "bili_vision_provider_id": {
+    "type": "string",
+    "description": "具备图片能力的提供商ID；留空复用B站模型",
+    "default": ""
+  },
+  "bili_group_enabled": {
+    "type": "bool",
+    "description": "授权群看视频：主人直接请求，其他成员请求须主人同意",
+    "default": false
+  },
+  "private_initiative_enabled": {
+    "type": "bool",
+    "description": "主人私聊主动发言：9-23点，每小时判断，最多2次/日，间隔3小时",
+    "default": false
+  },
+  "context_budget_enabled": {
+    "type": "bool",
+    "description": "按会话滚动摘要、精简旧工具资料并记录无原文用量观测；失败保留历史",
+    "default": false
+  },
+  "ordinary_segment_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "普通聊天长文本先切成短段，修正核心超过阈值跳过分段的问题；不截掉正文"
+  },
+  "knowledge_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "公共国服无畏契约知识库查询，按需召回；与QQ私人记忆隔离"
+  },
+  "knowledge_names": {
+    "type": "list",
+    "default": [],
+    "description": "仅供公共知识检索的AstrBot知识库名称，最多两个"
   }
 }
