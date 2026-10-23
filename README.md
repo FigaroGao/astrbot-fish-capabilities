@@ -57,4 +57,4 @@ QQ 非官方接入存在账号限制风险，建议先用测试账号与测试�
 
 ## 开发署名
 
-由 FigaroGao 发起、部署与维护，Codex（OpenAI）协助设计、代码实现、调试、测试和文档整理。第三方项目的贡献与许可证见 NOTICE.md；此署名不表示 OpenAI 官方认证。
+由 FigaroGao 发起、部署与维护，[Codex](https://github.com/codex)（OpenAI）协助设计、代码实现、调试、测试和文档整理。第三方项目的贡献与许可证见 NOTICE.md；此署名不表示 OpenAI 官方认证。
