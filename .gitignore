@@ -12,3 +12,11 @@ data/
 *.sqlite*
 *.log
 config.local.json
+
+*.jsonl
+*.credentials.json
+*login-pending*.json
+*.zip
+*.png
+*.jpg
+*.jpeg

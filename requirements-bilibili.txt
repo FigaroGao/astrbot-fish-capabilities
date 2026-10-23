@@ -1,0 +1,5 @@
+# Install inside the Python environment running AstrBot (reference: Ubuntu ARM64).
+bilibili-api-python==17.4.1
+aiohttp>=3.9,<4
+Pillow>=10,<12
+qrcode>=7.4,<9

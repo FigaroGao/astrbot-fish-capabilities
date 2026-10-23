@@ -1,0 +1,3 @@
+# Legacy dashscope.audio.tts API inspected in dashscope 2.0.1 wheel.
+# Reuse a compatible existing SDK if possible; do not upgrade the live bot blindly.
+dashscope>=1.24,<3
