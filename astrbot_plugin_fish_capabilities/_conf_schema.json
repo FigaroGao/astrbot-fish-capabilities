@@ -1,0 +1,155 @@
+{
+  "enabled": {
+    "type": "bool",
+    "description": "草稿功能总开关（验证前保持关闭）",
+    "default": false
+  },
+  "owners": {
+    "type": "list",
+    "description": "主人 QQ 号；还必须是 AstrBot 管理员",
+    "default": []
+  },
+  "allowed_group_sessions": {
+    "type": "list",
+    "description": "允许天气、表情和语音的完整群 UMO，例如 napcat:GroupMessage:123456",
+    "default": []
+  },
+  "history_enabled": {
+    "type": "bool",
+    "description": "主人私聊查询授权群记录",
+    "default": false
+  },
+  "history_group_sessions": {
+    "type": "list",
+    "description": "允许主人私聊读取的完整群 UMO；与普通能力群名单独立",
+    "default": []
+  },
+  "history_remote_fallback": {
+    "type": "bool",
+    "description": "本地无记录时向 NapCat 请求有限历史（需主人在群内）",
+    "default": false
+  },
+  "weather_enabled": {
+    "type": "bool",
+    "description": "模型按需查询城市天气",
+    "default": false
+  },
+  "bili_enabled": {
+    "type": "bool",
+    "description": "主人私聊 B站候选、字幕阅读与札记；无账号写入动作",
+    "default": false
+  },
+  "bili_daily_reads": {
+    "type": "int",
+    "description": "24 小时最多字幕读取尝试（失败也计数）",
+    "default": 10
+  },
+  "meme_enabled": {
+    "type": "bool",
+    "description": "分类表情工具（只发送人工导入并批准的图片）",
+    "default": false
+  },
+  "media_cooldown_seconds": {
+    "type": "int",
+    "description": "同一会话表情/语音共用冷却秒数",
+    "default": 180
+  },
+  "media_hourly_limit": {
+    "type": "int",
+    "description": "同一会话每小时表情/语音合计上限",
+    "default": 6
+  },
+  "tts_enabled": {
+    "type": "bool",
+    "description": "按需短语音；不接管所有文本回复",
+    "default": false
+  },
+  "tts_key_env": {
+    "type": "string",
+    "description": "存放 DashScope Key 的环境变量名（此处不要填写 Key）",
+    "default": "DASHSCOPE_API_KEY"
+  },
+  "tts_model": {
+    "type": "string",
+    "description": "Sambert 音色；Qwen 3.1 还未接入此适配器",
+    "default": "sambert-zhiyue-v1",
+    "options": [
+      "sambert-zhiyue-v1",
+      "sambert-zhide-v1",
+      "sambert-zhida-v1",
+      "sambert-zhishu-v1",
+      "sambert-eva-v1",
+      "sambert-beth-v1"
+    ]
+  },
+  "tts_monthly_chars": {
+    "type": "int",
+    "description": "本地每模型每自然月字符预算，不能代替阿里云账户余额",
+    "default": 3000
+  },
+  "weather_default_city": {
+    "type": "string",
+    "description": "未指定地点时的默认城市",
+    "default": "香港"
+  },
+  "weather_default_country": {
+    "type": "string",
+    "description": "默认城市的国家/地区代码",
+    "default": "HK"
+  },
+  "owner_only_commands_enabled": {
+    "type": "bool",
+    "description": "在解析指令之前拦截非主人指令；正常聊天保留",
+    "default": false
+  },
+  "command_platform_ids": {
+    "type": "list",
+    "description": "只允许主人使用指令的平台 ID，不影响 WebUI",
+    "default": []
+  },
+  "intent_enabled": {
+    "type": "bool",
+    "description": "接管授权群的 GCP 普通接话判断，保留其生成/记忆/分段；须安装配套桥接补丁",
+    "default": false
+  },
+  "intent_provider_id": {
+    "type": "string",
+    "description": "只判断是否接话的模型，不带私聊记忆或工具",
+    "default": "deepseek/deepseek-flash"
+  },
+  "intent_quiet_seconds": {
+    "type": "int",
+    "description": "普通群消息静默多少秒后统一判断；持续热聊最多等60秒后静默放弃",
+    "default": 20
+  },
+  "intent_cooldown_seconds": {
+    "type": "int",
+    "description": "回复后主动接话冷却秒数；明确点名不受此限制",
+    "default": 180
+  },
+  "intent_hourly_limit": {
+    "type": "int",
+    "description": "每群主动接话每小时最多轮数，不是必须发满",
+    "default": 6
+  },
+  "intent_daily_limit": {
+    "type": "int",
+    "description": "每群主动接话每日最多轮数，按香港时间，不含明确点名",
+    "default": 20
+  },
+  "intent_timeout_seconds": {
+    "type": "int",
+    "description": "意图判断超时秒数；失败静默，不用随机补发",
+    "default": 12
+  },
+  "meme_min_reply_gap": {
+    "type": "int",
+    "description": "同会话表情之间至少完成几轮回复；分段不重复计数",
+    "default": 3
+  },
+  "quota_enabled": {
+    "type": "bool",
+    "description": "授权群及主人私聊查询 DeepSeek 余额和已记录今日用量；每5分钟静默采样账户余额净变化，不查询阿里云额度",
+    "default": false
+  }
+}

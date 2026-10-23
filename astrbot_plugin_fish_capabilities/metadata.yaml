@@ -1,0 +1,8 @@
+name: astrbot_plugin_fish_capabilities
+display_name: 大肥鱼能力扩展
+author: FigaroGao
+version: 0.3.0
+astrbot_version: ">=4.23.3,<5"
+support_platforms:
+  - aiocqhttp
+desc: 试用版：按需天气、主人查群、DeepSeek额度、意图接话桥接与分类表情。
