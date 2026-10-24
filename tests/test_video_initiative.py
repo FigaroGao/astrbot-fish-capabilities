@@ -128,7 +128,7 @@ async def test_activity_memory_is_supplied_to_next_decision(tmp_path):
 async def test_selected_frame_budget_cache_and_validation(tmp_path):
     r=BiliReader(tmp_path/'frames.db',BiliFake());seen=[]
     async def visual(packet,info):
-        seen.append(packet['preview_requested']);return {'visual_status':'sampled_preview','preview_frames':packet['preview_requested']}
+        seen.append(packet['preview_requested']);return {'visual_status':'sampled_preview','preview_layout_version':2,'preview_frames':packet['preview_requested']}
     r.visual_reader=visual
     assert (await r.read(BV,frame_count=18))['preview_frames']==18
     assert (await r.read(BV,frame_count=9))['cached']
@@ -154,3 +154,27 @@ def test_twenty_seven_preview_panels_make_three_sheets(tmp_path,monkeypatch):
     result=Preview(tmp_path/'previews').build(BV,info,[(i,float(i)) for i in range(27)])
     assert result['frames']==27 and len(result['paths'])==3
     assert all(p.exists() for p in result['paths'])
+
+
+@pytest.mark.parametrize('size',[(480,270),(270,480)])
+def test_preview_preserves_native_pixels_and_adapts_four_frame_layout(tmp_path,monkeypatch,size):
+    import io,urllib.request
+    from PIL import Image
+    from astrbot_plugin_fish_capabilities.services.bili_preview import Preview
+    w,h=size
+    image=Image.new('RGB',(w*4,h),'white')
+    for x in range(0,w*4,2):
+        for y in range(h):image.putpixel((x,y),(0,0,0))
+    buf=io.BytesIO();image.save(buf,format='PNG');raw=buf.getvalue()
+    class Response:
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+        def read(self,n):return raw
+    class Opener:
+        def open(self,*args,**kwargs):return Response()
+    monkeypatch.setattr(urllib.request,'build_opener',lambda *a:Opener())
+    result=Preview(tmp_path).build(BV,{'img_x_len':4,'img_y_len':1,'img_x_size':w,'img_y_size':h,'image':['https://i0.hdslb.com/test.png']},[(i,float(i)) for i in range(4)])
+    output=Image.open(result['path'])
+    assert output.size==(w*2,(h+26)*2)
+    assert output.crop((0,0,w,h)).tobytes()==image.crop((0,0,w,h)).tobytes()
+    assert result['source_frame_size']==result['sent_frame_size']==[w,h]

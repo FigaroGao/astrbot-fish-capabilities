@@ -15,6 +15,7 @@ class Posting:
         if self.fail:raise TimeoutError('secret credential must never appear')
         return {'reply_id':'123','aid':456}
     async def verify(self,*args):return True
+    async def verify_public(self,*args):return True
 
 async def prepared(tmp_path,backend=None):
     reader=BiliReader(tmp_path/'b.db',BiliFake())
@@ -101,3 +102,40 @@ async def test_browsing_batch_reads_three_but_shares_only_one(tmp_path):
     assert result['read_count']==3 and len(sent)==1 and ids[1] in sent[0]
     assert len(sent[0])<260 and '【小鲸的B站发现】' not in sent[0]
     assert reader.memory.search()['total_videos']==3
+
+
+async def test_zero_interval_allows_recent_other_video_but_preserves_daily_limit(tmp_path):
+    reader,p,w=await prepared(tmp_path);w.settings['bili_comment_interval_seconds']=0
+    now=w.clock()
+    with reader.connect() as db:db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)',('recent','42','other',now-1,'visible','old-id','hash'))
+    assert w.status()['comment_interval_seconds']==0
+    result=await w.post(p['reading_id'],'有意思。',[p['evidence'][0]['evidence_id']])
+    assert result['submitted'] and w.backend.calls==1
+    # Two attempts already exist; another video remains blocked by the daily cap.
+    second=await reader.read('BV1234567890')
+    with pytest.raises(CapabilityError,match='滚动24小时最多2条'):
+        await w.post(second['reading_id'],'另一个想法。',[second['evidence'][0]['evidence_id']])
+    assert w.backend.calls==1
+
+
+async def test_positive_comment_interval_still_enforced(tmp_path):
+    reader,p,w=await prepared(tmp_path);w.settings['bili_comment_interval_seconds']=1800
+    with reader.connect() as db:db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)',('recent','42','other',w.clock()-1,'visible','old-id','hash'))
+    with pytest.raises(CapabilityError,match='评论间隔'):
+        await w.post(p['reading_id'],'有意思。',[p['evidence'][0]['evidence_id']])
+    assert w.backend.calls==0
+
+
+async def test_twenty_comment_budget_allows_twentieth_blocks_twenty_first(tmp_path):
+    reader,p,w=await prepared(tmp_path)
+    w.settings.update(bili_comment_interval_seconds=0,bili_comment_daily_limit=20)
+    now=w.clock()
+    with reader.connect() as db:
+        db.executemany('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)',[(str(i),'42','old-'+str(i),now-1,'visible','receipt','hash') for i in range(19)])
+        db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)',('expired','42','expired-video',now-86401,'visible','receipt','hash'))
+    assert w.status()['daily_comment_limit']==20
+    assert (await w.post(p['reading_id'],'第20条。',[p['evidence'][0]['evidence_id']]))['submitted']
+    second=await reader.read('BV1234567890')
+    with pytest.raises(CapabilityError,match='滚动24小时最多20条'):
+        await w.post(second['reading_id'],'第21条不能发。',[second['evidence'][0]['evidence_id']])
+    assert w.backend.calls==1
