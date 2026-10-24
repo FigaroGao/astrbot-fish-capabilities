@@ -36,12 +36,12 @@
   },
   "bili_enabled": {
     "type": "bool",
-    "description": "B站候选、字幕、评论弹幕抽样与独立札记；公开评论另行授权",
+    "description": "主人私聊 B站候选、字幕阅读与札记；无账号写入动作",
     "default": false
   },
   "bili_daily_reads": {
     "type": "int",
-    "description": "24 小时最多字幕读取尝试（失败也计数）",
+    "description": "滚动24小时阅读尝试上限；0表示不限条数，失败也计数",
     "default": 10
   },
   "meme_enabled": {
@@ -52,7 +52,7 @@
   "media_cooldown_seconds": {
     "type": "int",
     "description": "同一会话表情/语音共用冷却秒数",
-    "default": 0
+    "default": 180
   },
   "media_hourly_limit": {
     "type": "int",
@@ -145,7 +145,7 @@
   "meme_min_reply_gap": {
     "type": "int",
     "description": "同会话表情之间至少完成几轮回复；分段不重复计数",
-    "default": 0
+    "default": 3
   },
   "quota_enabled": {
     "type": "bool",
@@ -171,7 +171,6 @@
     "type": "list",
     "description": "香港时间HH:MM，每天最多两次",
     "default": [
-      "12:30",
       "20:30"
     ]
   },
@@ -192,7 +191,7 @@
   },
   "bili_visual_enabled": {
     "type": "bool",
-    "description": "读取不超过10分钟视频的1至27张抽样预览帧，最多3张九宫格；不是完整视频",
+    "description": "读取不超过10分钟视频的最多9格进度条预览图，单次识图",
     "default": false
   },
   "bili_vision_provider_id": {
@@ -202,7 +201,7 @@
   },
   "bili_group_enabled": {
     "type": "bool",
-    "description": "授权群看视频：主人直接请求，其他成员请求须主人同意",
+    "description": "仅主人在授权群发起、确认后读取视频",
     "default": false
   },
   "private_initiative_enabled": {
@@ -229,5 +228,75 @@
     "type": "list",
     "default": [],
     "description": "仅供公共知识检索的AstrBot知识库名称，最多两个"
+  },
+  "homophone_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "结合语境理解常见谐音、空耳和缩写；不改原消息、不改变命令授权，不额外调用判断模型"
+  },
+  "slang_knowledge_names": {
+    "type": "list",
+    "default": [],
+    "description": "独立公共常用梗知识库名称，最多一个；不选择私人记忆库"
+  },
+  "conversation_depth_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "按本轮语境支持有依据的独立看法、话题延续与适度深聊；保留人格与分段，不增加后台推理任务"
+  },
+  "valorant_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "主人私聊读取微信授权的国服无畏契约近期战绩、样本统计和单局详情，按账号本地增量缓存；不操作购买或账号修改。"
+  },
+  "bili_daily_notes": {
+    "type": "int",
+    "description": "滚动24小时观后札记上限；0表示不限条数，仍需实际阅读凭据",
+    "default": 8
+  },
+  "group_skip_complex_tasks": {
+    "type": "bool",
+    "description": "授权群静默跳过明显算术、做题、证明或技术求解请求，含@机器人；不影响私聊或日常讨论。规则无法识别所有复杂问题。",
+    "default": false
+  },
+  "sister_mail_enabled": {
+    "type": "bool",
+    "description": "主人私聊中的小鲸与Codex本地留言信箱，无网络发送、无新定时任务。",
+    "default": false
+  },
+  "bili_owner_uid": {
+    "type": "string",
+    "description": "主人已核验的B站UID，模型不能修改；不是小鲸的登录账号",
+    "default": ""
+  },
+  "bili_owner_name": {
+    "type": "string",
+    "description": "绑定时核验的主人B站昵称；发@时按UID重新核验当前昵称",
+    "default": ""
+  },
+  "bili_owner_mention_enabled": {
+    "type": "bool",
+    "description": "主人私聊评论任务可选择@已绑定的主人一次；不会自动给定时评论添加@，不保证通知送达",
+    "default": false
+  },
+  "bili_comment_interval_seconds": {
+    "type": "int",
+    "description": "两条B站评论之间的最短秒数，0表示取消时间间隔；不改变每日2条、每视频不重复及不确定不补发规则",
+    "default": 1800
+  },
+  "bili_comment_daily_limit": {
+    "type": "int",
+    "description": "滚动24小时评论尝试上限，1至20；失败或不确定的尝试也计数，不改变每视频不重复规则",
+    "default": 2
+  },
+  "bili_recommendation_enabled": {
+    "type": "bool",
+    "description": "空关键词及定时逛站优先读取小鲸自己登录账号首页推荐；失败不以热门冒充，明确关键词仍搜索",
+    "default": false
+  },
+  "bili_public_shelf_enabled": {
+    "type": "bool",
+    "description": "主人私聊明确要求时，只读已绑定主人公开点赞收藏；不用于选片推荐或记忆",
+    "default": false
   }
 }
