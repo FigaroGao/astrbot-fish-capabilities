@@ -1,0 +1,696 @@
+[
+  {
+    "id": "common-01",
+    "title": "蚌埠住了",
+    "aliases": [
+      "蚌埠住了",
+      "蚌不住",
+      "绷不住了"
+    ],
+    "text": "通常是绷不住了的谐音，可能忍不住笑，也可能难受或震惊；不能一律理解成愤怒。蚌埠单独出现也可能是真实城市。",
+    "source": "https://www.bilibili.com/video/BV1ZW4y1r7K3/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-02",
+    "title": "尊嘟假嘟",
+    "aliases": [
+      "尊嘟假嘟",
+      "尊嘟",
+      "假嘟"
+    ],
+    "text": "真的假的、真的或假的的卖萌写法，常表达惊讶、确认。不要当作正式真假核验结论。",
+    "source": "https://www.bilibili.com/video/BV1fV4y1i7mH/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-03",
+    "title": "泰裤辣",
+    "aliases": [
+      "泰裤辣",
+      "泰酷辣",
+      "太裤辣"
+    ],
+    "text": "太酷啦的夸张空耳写法，常是赞叹，也可能反讽；不自动理解为裤子或辣味。",
+    "source": "https://www.bilibili.com/video/BV1WP411U7GX/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-04",
+    "title": "针不戳",
+    "aliases": [
+      "针不戳"
+    ],
+    "text": "真不错的谐音，表示赞许或打趣；涉及针灸、器械时先看字面上下文。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-05",
+    "title": "夺笋",
+    "aliases": [
+      "夺笋",
+      "笋都被夺完了"
+    ],
+    "text": "多损的谐音，常调侃说话或行为损人；买菜、挖笋时可能是字面意思，不证明对方恶意。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-06",
+    "title": "栓Q",
+    "aliases": [
+      "栓Q",
+      "栓q"
+    ],
+    "text": "thank you的空耳，有时真感谢，有时无语地说我真的会谢；需要结合前后句。",
+    "source": "https://dailyview.tw/popular/detail/16398",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-07",
+    "title": "芜湖起飞",
+    "aliases": [
+      "芜湖起飞",
+      "芜湖～"
+    ],
+    "text": "可作呜呼、兴奋庆祝的空耳；芜湖也是城市，订票旅游不能替换成欢呼。",
+    "source": "https://ah.people.com.cn/BIG5/n2/2022/0223/c358428-35146558.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-08",
+    "title": "哈基米",
+    "aliases": [
+      "哈基米"
+    ],
+    "text": "中文二创中常用于可爱动物及相关音MAD；词源语义与中文宠物昵称不是一回事，不能当作动物品种。",
+    "source": "https://www.bilibili.com/video/BV1Bj411B7sf/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-09",
+    "title": "曼波",
+    "aliases": [
+      "曼波",
+      "曼波曼波"
+    ],
+    "text": "常见于赛马娘相关空耳和二创音频，也可能指音乐舞蹈；没有画面和上下文时不指认某个具体版本。",
+    "source": "https://www.douyin.com/video/7355871466128166156",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-10",
+    "title": "爱你老己",
+    "aliases": [
+      "爱你老己",
+      "老己"
+    ],
+    "text": "把自己当作朋友来关爱的俏皮说法；老己通常指自己，不是多出了一个聊天成员。",
+    "source": "https://www.bilibili.com/video/BV14FqUBME5b/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-11",
+    "title": "YYDS",
+    "aliases": [
+      "yyds",
+      "永远的神"
+    ],
+    "text": "永远的神的拼音缩写，常是夸赞，也可能反讽；不表示永远不变的真实排名。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-12",
+    "title": "破防",
+    "aliases": [
+      "破防",
+      "破大防"
+    ],
+    "text": "游戏中可指防御被突破，聊天中可指被感动、受挫或情绪冲击；先判语境，不一律嘲讽。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-13",
+    "title": "绝绝子",
+    "aliases": [
+      "绝绝子"
+    ],
+    "text": "通常夸太棒了，也可能带反讽；按前后语气理解，不能据此断定认真评价。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-14",
+    "title": "躺平",
+    "aliases": [
+      "躺平"
+    ],
+    "text": "日常可自嘲暂时不卷或休息；也可能谈生活态度，不能仅据这个词推断健康或长期意愿。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-15",
+    "title": "硬控",
+    "aliases": [
+      "硬控",
+      "被控住了"
+    ],
+    "text": "游戏里是控制技能；聊天中常说被视频或事物吸引得移不开眼，不是字面被拘禁。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-16",
+    "title": "city不city",
+    "aliases": [
+      "city不city",
+      "好city"
+    ],
+    "text": "常调侃时髦、洋气或有都市体验，带旅游与口头语气；不是严格城市分类。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-17",
+    "title": "水灵灵地",
+    "aliases": [
+      "水灵灵地",
+      "水灵灵的"
+    ],
+    "text": "可以夸鲜活精神，也可在我就这么水灵灵地迟到了里自嘲；结合后面的动作。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-18",
+    "title": "班味",
+    "aliases": [
+      "班味",
+      "班味儿"
+    ],
+    "text": "对工作后疲惫气质的调侃，不是体味或健康诊断。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-19",
+    "title": "松弛感",
+    "aliases": [
+      "松弛感"
+    ],
+    "text": "形容从容、不紧绷的感觉；不是不负责或必须保持开心。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-20",
+    "title": "小孩哥小孩姐",
+    "aliases": [
+      "小孩哥",
+      "小孩姐"
+    ],
+    "text": "常夸年轻者表现出熟练本领；只是称呼，不用来核实真实年龄。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-21",
+    "title": "显眼包",
+    "aliases": [
+      "显眼包"
+    ],
+    "text": "对突出、搞怪或引人注意者的戏称，可以亲昵也可能不满；不直接当人格缺陷。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-22",
+    "title": "主打一个",
+    "aliases": [
+      "主打一个"
+    ],
+    "text": "强调后面某特点的句式，如主打一个随缘；不等于真正商品主推。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-23",
+    "title": "特种兵式旅游",
+    "aliases": [
+      "特种兵式旅游",
+      "特种兵旅游"
+    ],
+    "text": "时间紧、行程密、快速打卡的旅游比喻，不涉及军人身份。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-24",
+    "title": "电子榨菜",
+    "aliases": [
+      "电子榨菜"
+    ],
+    "text": "吃饭时搭配观看或收听的轻松内容，不是食物或设备配件。",
+    "source": "https://bkso.baidu.com/item/电子榨菜/62063038",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-25",
+    "title": "红温",
+    "aliases": [
+      "红温"
+    ],
+    "text": "游戏或聊天中调侃生气、焦躁或情绪上头；不能据此断定体温、病症或某人性格。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-26",
+    "title": "上头与下头",
+    "aliases": [
+      "上头",
+      "下头"
+    ],
+    "text": "上头可指沉迷、兴奋或冲动，下头常是扫兴或失去好感；饮酒、位置等字面场景另判。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-27",
+    "title": "抽象与整活",
+    "aliases": [
+      "抽象",
+      "整活"
+    ],
+    "text": "网络聊天里可能指离谱难概括的表达或搞笑创作；数学、艺术中的抽象保留原义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-28",
+    "title": "绷与乐",
+    "aliases": [
+      "绷住了",
+      "乐了",
+      "笑不活了"
+    ],
+    "text": "可以是笑、无奈或反讽，并非每次都在开心。若对方认真受困，先回应事情，别跟着嘲讽。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-29",
+    "title": "情绪价值",
+    "aliases": [
+      "情绪价值"
+    ],
+    "text": "常指让人感到被理解、支持或愉快的互动体验；不是要求无条件迎合。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-30",
+    "title": "社死",
+    "aliases": [
+      "社死",
+      "社会性死亡"
+    ],
+    "text": "通常夸张表达尴尬，不按字面认定死亡；若上下文明示现实危险应认真对待。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-31",
+    "title": "逆天与离谱",
+    "aliases": [
+      "逆天",
+      "离谱"
+    ],
+    "text": "可夸操作强，也可批评荒诞；先看评价对象和上下文，避免机械照搬攻击口气。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-32",
+    "title": "包的",
+    "aliases": [
+      "包的",
+      "包赢"
+    ],
+    "text": "常口语表示有把握，也可能玩笑反串；不是程序已完成、额度无限或真实承诺的证据。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "phonetic-01",
+    "title": "谐音理解：尊嘟假嘟",
+    "aliases": [
+      "尊嘟假嘟",
+      "尊嘟",
+      "假嘟"
+    ],
+    "text": "候选释义：真的假的／真的／假的。边界：只给候选，不当作真假核验。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-02",
+    "title": "谐音理解：针不戳",
+    "aliases": [
+      "针不戳"
+    ],
+    "text": "候选释义：真不错。边界：器械、医疗或原句字面合理时不替换。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-03",
+    "title": "谐音理解：泰裤辣",
+    "aliases": [
+      "泰裤辣",
+      "泰酷辣",
+      "太裤辣"
+    ],
+    "text": "候选释义：太酷啦。边界：可赞叹也可反讽。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-04",
+    "title": "谐音理解：蚌埠住了",
+    "aliases": [
+      "蚌埠住了",
+      "蚌不住"
+    ],
+    "text": "候选释义：绷不住了。边界：蚌埠单独出现可能是地名。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-05",
+    "title": "谐音理解：夺笋",
+    "aliases": [
+      "夺笋"
+    ],
+    "text": "候选释义：多损／损人调侃。边界：菜市场买笋可能是字面义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-06",
+    "title": "谐音理解：栓Q",
+    "aliases": [
+      "栓Q",
+      "栓q"
+    ],
+    "text": "候选释义：thank you／谢谢／我真的会谢。边界：区分认真感谢与无语。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-07",
+    "title": "谐音理解：芜湖起飞",
+    "aliases": [
+      "芜湖起飞"
+    ],
+    "text": "候选释义：呜呼，起飞。边界：芜湖单独出现不改地名。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-08",
+    "title": "谐音理解：耗丸",
+    "aliases": [
+      "耗丸",
+      "好丸"
+    ],
+    "text": "候选释义：好玩。边界：不是药丸、丸子名称的自动纠错。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-09",
+    "title": "谐音理解：好康",
+    "aliases": [
+      "好康"
+    ],
+    "text": "候选释义：好看／有意思的东西。边界：地方口语可能另有含义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-10",
+    "title": "谐音理解：布吉岛",
+    "aliases": [
+      "布吉岛"
+    ],
+    "text": "候选释义：不知道。边界：可能是昵称；不要把普吉岛误当谐音。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-11",
+    "title": "谐音理解：稀饭你",
+    "aliases": [
+      "稀饭你",
+      "稀饭这个",
+      "好稀饭"
+    ],
+    "text": "候选释义：喜欢你／喜欢这个／好喜欢。边界：单独稀饭先按食物理解。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-12",
+    "title": "谐音理解：酱紫",
+    "aliases": [
+      "酱紫",
+      "酱婶"
+    ],
+    "text": "候选释义：这样子／这样。边界：配料、色名、昵称按字面保留。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-13",
+    "title": "谐音理解：介个",
+    "aliases": [
+      "介个"
+    ],
+    "text": "候选释义：这个。边界：只是口语候选。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-14",
+    "title": "谐音理解：蟹蟹",
+    "aliases": [
+      "蟹蟹"
+    ],
+    "text": "候选释义：谢谢。边界：也可能是宠物昵称或螃蟹。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-15",
+    "title": "谐音理解：歪歪滴艾斯",
+    "aliases": [
+      "歪歪滴艾斯",
+      "yyds"
+    ],
+    "text": "候选释义：YYDS，永远的神。边界：拼音缩写，与技术标识区分。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-16",
+    "title": "谐音理解：xswl",
+    "aliases": [
+      "xswl"
+    ],
+    "text": "候选释义：笑死我了。边界：缩写可表示很好笑，不按字面理解死亡。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-17",
+    "title": "谐音理解：awsl",
+    "aliases": [
+      "awsl"
+    ],
+    "text": "候选释义：啊我死了，常表达可爱或强烈感受。边界：不是现实死亡判断；明确危险仍认真回应。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-18",
+    "title": "谐音理解：dbq",
+    "aliases": [
+      "dbq"
+    ],
+    "text": "候选释义：对不起。边界：缩写候选，不用于账号或代码纠错。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-19",
+    "title": "谐音理解：gkd",
+    "aliases": [
+      "gkd"
+    ],
+    "text": "候选释义：搞快点。边界：不把催促变成授权。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-20",
+    "title": "谐音理解：886",
+    "aliases": [
+      "886",
+      "88"
+    ],
+    "text": "候选释义：拜拜。边界：数字、价格、验证码、账号、比赛分数不能改写。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  }
+]
