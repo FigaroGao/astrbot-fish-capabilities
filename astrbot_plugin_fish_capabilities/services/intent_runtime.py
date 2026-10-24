@@ -13,6 +13,7 @@ from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
 
 from .intent import JUDGE_PROMPT
+from .group_tasks import skip_group_task, task_reason
 from .meme_request import explicit_meme_request
 
 
@@ -108,7 +109,7 @@ class IntentRuntime:
         response=await asyncio.wait_for(self.cap.context.llm_generate(
             chat_provider_id=str(self.cap.config.get('intent_provider_id','deepseek/deepseek-flash')),
             prompt=json.dumps({'bot_id':self.bot_id,'recent_group_messages':rows},ensure_ascii=False),
-            contexts=[],system_prompt=JUDGE_PROMPT,max_tokens=350,
+            contexts=[],system_prompt=JUDGE_PROMPT+('\n本群不接算术、做题、证明、调试或复杂专业求解任务，遇到此类请求should_reply=false；游戏、生活和认真交流不因话题有深度而自动拒绝。' if self.cap.config.get('group_skip_complex_tasks',False) else ''),max_tokens=350,
             thinking={'type':'disabled'}),
             timeout=float(self.cap.config.get('intent_timeout_seconds',12)))
         text=response.completion_text.strip()
@@ -121,6 +122,11 @@ class IntentRuntime:
 
     async def run(self,gcp,event):
         self.observe(event)
+        reason=skip_group_task(self.cap.config,event)
+        if reason:
+            event.call_llm=True
+            self.diagnostic(event.unified_msg_origin,'skip_task_'+reason)
+            return
         scope=event.unified_msg_origin; direct=self.direct(event)
         lock=self.locks[scope]; revision=event.get_extra('fish_intent_observed')
         # Suppress the default fallback too; capture/other plugin hooks may continue.
@@ -149,6 +155,8 @@ class IntentRuntime:
                     # Last input is a conversation between other people, or a
                     # sticker-only stream: don't spend a judgment request on it.
                     last=rows[-1]
+                    if self.cap.config.get('group_skip_complex_tasks',False) and task_reason(last.get('text','')):
+                        self.diagnostic(scope,'skip_task_latest');return
                     bot=str(event.get_self_id());self.bot_id=bot
                     ts=last.get('targets',[])
                     if any(t['id'] not in ('unknown','0','all',bot) for t in ts) and not any(t['id']==bot for t in ts):

@@ -55,6 +55,15 @@ class BiliBackend:
         from bilibili_api import hot
         return (await hot.get_hot_videos(pn=1,ps=limit)).get('list',[])
 
+    async def recommend(self,limit):
+        from bilibili_api import homepage
+        credential=self.credential()
+        if credential is None:raise CapabilityError('首页个性化推荐需要小鲸自己的B站登录，未用热门冒充。')
+        credential.raise_for_no_sessdata()
+        data=await homepage.get_videos(credential=credential)
+        if str(data.get('mid'))!=str(credential.dedeuserid):raise CapabilityError('推荐流没有匹配当前登录账号，未声称取得个性化推荐。')
+        return [row for row in data.get('item',[]) if row.get('goto')=='av' and row.get('bvid') and not row.get('business_info')][:limit]
+
     async def search(self, keyword: str, limit: int):
         from bilibili_api import search
         data=await search.search_by_type(keyword=keyword,search_type=search.SearchObjectType.VIDEO,
@@ -106,9 +115,9 @@ class BiliBackend:
 
 
 class BiliReader:
-    def __init__(self, db_path: Path, backend=None, *, daily_reads: int = 10):
+    def __init__(self, db_path: Path, backend=None, *, daily_reads: int = 10, daily_notes: int = 8, recommendation_enabled: bool = False):
         db_path.parent.mkdir(parents=True,exist_ok=True)
-        self.path=db_path; self.backend=backend or BiliBackend(); self.daily_reads=daily_reads
+        self.path=db_path; self.backend=backend or BiliBackend(); self.daily_reads=daily_reads; self.daily_notes=daily_notes;self.recommendation_enabled=recommendation_enabled
         self.lock=asyncio.Lock()
         self.visual_reader=None
         with self.connect() as db:
@@ -151,18 +160,32 @@ class BiliReader:
             except (ValueError,TypeError):seconds=0
             output.append({'bvid':video_id,'title':plain(item.get('title')),'author':plain(item.get('author') or (item.get('owner') or {}).get('name')),
                            'description':plain(item.get('description') or item.get('desc'))[:300],
-                           'duration':seconds,'url':'https://www.bilibili.com/video/'+video_id})
+                           'duration':seconds,'published_at':item.get('published_at') or item.get('created') or item.get('pubdate'),
+                           'views':item.get('play') if isinstance(item.get('play'),int) else (item.get('stat') or {}).get('view'),
+                           'view_count_display':plain(item.get('play'))[:30] if item.get('play') is not None else '',
+                           'url':'https://www.bilibili.com/video/'+video_id})
         return output
 
-    async def browse(self, keyword: str = '', limit: int = 5):
+    async def browse(self, keyword: str = '', limit: int = 5, source: str = 'auto'):
         bounded_int(limit,1,6,'候选视频数')
         if len(keyword)>80: raise CapabilityError('搜索关键词过长。')
+        if source not in ('auto','recommended','popular'):raise CapabilityError('候选来源只能是auto、recommended或popular。')
+        if keyword.strip() and source!='auto':raise CapabilityError('有关键词时走搜索，请用source=auto。')
+        mode='search' if keyword.strip() else ('account_homepage' if source=='recommended' or (source=='auto' and self.recommendation_enabled) else 'public_popular')
         try:
-            items=await asyncio.wait_for(self.backend.search(keyword,20) if keyword.strip() else self.backend.feed(20),20)
+            request=self.backend.search(keyword,20) if mode=='search' else (self.backend.recommend(20) if mode=='account_homepage' else self.backend.feed(20))
+            items=await asyncio.wait_for(request,25)
         except Exception as exc:
-            raise CapabilityError('B站浏览失败，可能需要登录、网络恢复或遇到接口限制；没有尝试绕过。') from exc
-        return {'videos':self.compact(items)[:limit],'mode':'search' if keyword else 'public_popular',
-                'instruction':'这是候选列表，不代表看过视频。先自行从5至6条候选中挑选一条再深读，可按关键词搜索，不要要求主人逐条替你选；没有评论、点赞、投币或播放上报。'}
+            raise CapabilityError('B站候选读取失败，可能需要登录、网络恢复或遇到接口限制；没有绕过验证，也没有用热门冒充账号推荐。') from exc
+        rows=[];seen=set()
+        for row in self.compact(items):
+            if row['bvid'] in seen:continue
+            seen.add(row['bvid'])
+            row['previously_read']=bool(self.memory.search(row['bvid'],1)['memories'])
+            rows.append(row)
+            if len(rows)>=limit:break
+        return {'videos':rows,'mode':mode,
+                'instruction':'这是候选列表，不代表看过。account_homepage是小鲸登录账号的首页，search是关键词搜索，public_popular是公开热门，不能混称。按自己的兴趣先选一条深读，优先未读，不要求主人代选。没有自动播放、曝光上报、点赞或投币；读取候选不保证平台据此更新兴趣。'}
 
     async def read(self, value: str, frame_count: int = 9):
         bounded_int(frame_count,1,27,'预览画面数')
@@ -172,12 +195,12 @@ class BiliReader:
             with self.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 recent=db.execute('SELECT packet FROM readings WHERE bvid=? AND stamp>? ORDER BY stamp DESC LIMIT 1',(video_id,time.time()-3600)).fetchone()
-                if recent and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or ('visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
+                if recent and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or (json.loads(recent[0]).get('preview_layout_version',0)>=2 and 'visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
                     packet=dict(json.loads(recent[0]),cached=True)
                     self.memory.remember(packet)
                     return packet
                 used=db.execute('SELECT COUNT(*) FROM attempts WHERE stamp>?',(time.time()-86400,)).fetchone()[0]
-                if used>=self.daily_reads: raise CapabilityError('今天的 B站阅读预算已用完。')
+                if self.daily_reads>0 and used>=self.daily_reads: raise CapabilityError('今天的 B站阅读预算已用完。')
                 db.execute('INSERT INTO attempts VALUES(?)',(time.time(),))
                 db.execute('DELETE FROM attempts WHERE stamp<?',(time.time()-86400*2,))
             try: raw=await asyncio.wait_for(self.backend.read(video_id),65)
@@ -228,7 +251,7 @@ class BiliReader:
             packet=json.loads(row[0]); allowed={e['evidence_id'] for e in packet['evidence']}
             if not set(evidence_ids)<=allowed: raise CapabilityError('札记引用了未读过的字幕来源。')
             count=db.execute('SELECT COUNT(*) FROM notes WHERE stamp>?',(time.time()-86400,)).fetchone()[0]
-            if count>=8: raise CapabilityError('今天的札记预算已用完。')
+            if self.daily_notes>0 and count>=self.daily_notes: raise CapabilityError('今天的札记预算已用完。')
             cursor=db.execute('INSERT INTO notes(reading,stamp,reflection,sources) VALUES(?,?,?,?)',(reading_id,time.time(),reflection.strip(),json.dumps(evidence_ids)))
         self.memory.remember(packet,reflection=reflection)
         return {'note_id':cursor.lastrowid,'saved':True,'changes_persona':False,'instruction':'这是可修正的阅读札记，不是模型训练，不自动改变人格或工具权限。'}

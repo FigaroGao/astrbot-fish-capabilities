@@ -34,7 +34,7 @@ class BiliDuty:
         try:
             topics = self.config.get('bili_topics') or ['AI 芯片 技术科普','做饭 家常菜','菜市场','海洋生物 鲸鱼','户外 露营','钓鱼']
             topics = [str(x).strip()[:80] for x in topics if str(x).strip()][:10]
-            topic = random.choice(topics) if topics and random.random()<0.8 else ''
+            topic = '' if self.config.get('bili_recommendation_enabled',False) else (random.choice(topics) if topics and random.random()<0.8 else '')
             if keyword is not None and keyword.strip():topic=keyword.strip()
             candidates = await self.reader.browse(topic,5)
             if not candidates['videos']:

@@ -5,7 +5,8 @@ import hashlib
 import json
 import re
 import time
-from .policy import CapabilityError
+from .policy import CapabilityError,bounded_int
+from .http import PublicJSON
 
 
 class CommentBackend:
@@ -22,15 +23,23 @@ class CommentBackend:
         info = await asyncio.to_thread(verify_account,{k:str(getattr(credential,k,'') or '') for k in ('sessdata','bili_jct','dedeuserid','buvid3')})
         return str(info['mid'])
 
-    async def send(self, video_id, text):
+    async def send(self, video_id, text, mention=None):
         from bilibili_api import comment
         credential = self.backend.credential()
         info = await self.backend.info(video_id)
         aid = int(info['aid'])
-        result = await comment.send_comment(text=text, oid=aid,
-            type_=comment.CommentResourceType.VIDEO, credential=credential)
+        if mention:
+            from bilibili_api.utils.network import Api
+            api=comment.API['comment']['send']
+            if api.get('url')!='https://api.bilibili.com/x/v2/reply/add' or api.get('method')!='POST':raise CapabilityError('评论接口发生变化，未发布。')
+            result=await Api(**api,credential=credential).update_data(oid=aid,type=1,message=text,plat=1,
+                gaia_source='main_web',statistics=json.dumps({'appId':100,'platform':5}),
+                at_name_to_mid=json.dumps({mention['name']:int(mention['uid'])},ensure_ascii=False)).result
+        else:
+            result = await comment.send_comment(text=text, oid=aid,
+                type_=comment.CommentResourceType.VIDEO, credential=credential)
         reply_id = str(result.get('rpid') or result.get('rpid_str') or (result.get('reply') or {}).get('rpid') or '')
-        return {'reply_id': reply_id, 'aid': aid}
+        return {'reply_id': reply_id, 'aid': aid,'mention_submitted':bool(mention),'notification_received_verified':False}
 
     async def verify(self, aid, reply_id, account, text):
         from bilibili_api import comment
@@ -38,6 +47,26 @@ class CommentBackend:
             order=comment.OrderType.TIME, page_index=1, credential=self.backend.credential())
         return any(str(row.get('rpid')) == reply_id and str((row.get('member') or {}).get('mid')) == account
             and (row.get('content') or {}).get('message') == text for row in result.get('replies') or [])
+
+    async def prepare_mention(self,owner_uid):
+        from bilibili_api import user
+        from .bili_social import uid
+        owner_uid=uid(owner_uid)
+        info=await user.User(int(owner_uid)).get_user_info()
+        name=str(info.get('name') or '').strip()
+        if str(info.get('mid'))!=owner_uid or not name or len(name)>60 or re.search(r'[@＠\r\n]',name):raise CapabilityError('主人B站身份暂未核实，未发布带@评论。')
+        return {'uid':owner_uid,'name':name}
+
+    async def verify_public(self,aid,reply_id,account,text):
+        # Explicitly anonymous: no SDK credential, Cookie, or automatic login.
+        for page in (1,2):
+            value=await PublicJSON().get('https://api.bilibili.com/x/v2/reply?type=1&oid='+str(int(aid))+'&sort=0&pn='+str(page),{'api.bilibili.com'})
+            if value.get('code')!=0:return None
+            data=value.get('data') or {};rows=list(data.get('replies') or [])+list(data.get('top_replies') or [])
+            for row in rows:
+                if str(row.get('rpid'))==str(reply_id) and str((row.get('member') or {}).get('mid'))==str(account) and (row.get('content') or {}).get('message')==text:return True
+            if not data.get('replies'):break
+        return False
 
 
 class BiliComments:
@@ -47,6 +76,16 @@ class BiliComments:
         with reader.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS bili_comment_pause(account TEXT PRIMARY KEY,reason TEXT)')
             db.execute('CREATE TABLE IF NOT EXISTS bili_comments(key TEXT PRIMARY KEY, account TEXT, bvid TEXT, stamp REAL, state TEXT, reply_id TEXT, text_hash TEXT)')
+            db.execute('CREATE TABLE IF NOT EXISTS bili_visibility_meta(version INTEGER PRIMARY KEY)')
+            if not db.execute('SELECT 1 FROM bili_visibility_meta WHERE version=2').fetchone():
+                db.execute("UPDATE bili_comments SET state='legacy_author_visible' WHERE state='visible'")
+                db.execute('INSERT INTO bili_visibility_meta VALUES(2)')
+
+    def interval(self):
+        return bounded_int(self.settings.get('bili_comment_interval_seconds',1800),0,86400,'评论间隔秒数')
+
+    def daily_limit(self):
+        return bounded_int(self.settings.get('bili_comment_daily_limit',2),1,20,'滚动24小时评论上限')
 
     def status(self):
         account = str(self.settings.get('bili_account_id', ''))
@@ -55,10 +94,12 @@ class BiliComments:
             rows = db.execute('SELECT state,COUNT(*) FROM bili_comments WHERE account=? GROUP BY state', (account,)).fetchall()
         return {'comments_enabled': bool(self.settings.get('bili_comment_enabled', False)),
             'account_configured': bool(account), 'paused': bool(paused),
+            'comment_interval_seconds':self.interval(),'daily_comment_limit':self.daily_limit(),
             'pause_reason': paused[0] if paused else None, 'receipts': dict(rows),
+            'owner_mention_enabled':bool(self.settings.get('bili_owner_mention_enabled',False)),'owner_bound':bool(self.settings.get('bili_owner_uid')),
             'instruction': '不自动解除暂停；由主人在本地核对账号、验证与回执后处理。'}
 
-    async def post(self, reading_id, text, evidence_ids):
+    async def post(self, reading_id, text, evidence_ids, mention_owner=False):
         if not self.settings.get('bili_comment_enabled', False):
             raise CapabilityError('B站评论尚未启用；搜索、阅读与推荐可独立使用。')
         account = str(self.settings.get('bili_account_id', ''))
@@ -67,6 +108,8 @@ class BiliComments:
         if not isinstance(text, str) or not 1 <= len(text.strip()) <= 220:
             raise CapabilityError('评论需要 1～220 字。')
         text = text.strip()
+        if type(mention_owner) is not bool:raise CapabilityError('mention_owner必须是布尔值。')
+        if '@' in text or '＠' in text:raise CapabilityError('不要手写@；只能通过mention_owner提及已绑定的主人一次。')
         if re.search(r'https?://|SESSDATA|bili_jct|sk-[A-Za-z0-9]{10,}|\b1[3-9]\d{9}\b', text, re.I):
             raise CapabilityError('公开评论不能包含凭据、手机号或外部链接。')
         if not isinstance(evidence_ids, list) or not 1 <= len(evidence_ids) <= 8 or not all(isinstance(x,str) for x in evidence_ids):
@@ -88,6 +131,15 @@ class BiliComments:
             raise CapabilityError('B站登录状态检查失败；未发布评论。') from None
         if identity != account:
             raise CapabilityError('登录账号与主人绑定的账号不一致；未发布。')
+        mention=None
+        if mention_owner:
+            owner=str(self.settings.get('bili_owner_uid',''))
+            if not self.settings.get('bili_owner_mention_enabled',False) or not owner.isdigit() or int(owner)<=0 or owner==account:raise CapabilityError('主人@开关或准确身份尚未配置，未发布。')
+            try:mention=await asyncio.wait_for(self.backend.prepare_mention(owner),15)
+            except Exception:raise CapabilityError('无法核验主人B站身份，本次没有发布。') from None
+            if str(mention.get('uid'))!=owner or not isinstance(mention.get('name'),str) or not mention['name'].strip() or re.search(r'[@＠\r\n]',mention['name']):raise CapabilityError('主人@映射不合法，未发布。')
+            text=text+' @'+mention['name']
+            if len(text)>220:raise CapabilityError('加上@主人后超过220字，请缩短正文。')
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('SELECT 1 FROM bili_comment_pause WHERE account=?', (account,)).fetchone():
@@ -96,13 +148,15 @@ class BiliComments:
                 raise CapabilityError('存在结果未确认的评论，不会继续发布。')
             if db.execute('SELECT 1 FROM bili_comments WHERE key=?', (key,)).fetchone():
                 raise CapabilityError('此账号已尝试评论该视频，不重复发布。')
-            if db.execute('SELECT COUNT(*) FROM bili_comments WHERE account=? AND stamp>?', (account, now-86400)).fetchone()[0] >= 2:
-                raise CapabilityError('评论预算已达上限：滚动24小时最多2条。')
-            if db.execute('SELECT 1 FROM bili_comments WHERE account=? AND stamp>?', (account, now-1800)).fetchone():
-                raise CapabilityError('评论至少间隔30分钟。')
+            limit=self.daily_limit()
+            if db.execute('SELECT COUNT(*) FROM bili_comments WHERE account=? AND stamp>?',(account,now-86400)).fetchone()[0]>=limit:
+                raise CapabilityError('评论预算已达上限：滚动24小时最多'+str(limit)+'条。')
+            interval=self.interval()
+            if interval>0 and db.execute('SELECT 1 FROM bili_comments WHERE account=? AND stamp>?',(account,now-interval)).fetchone():
+                raise CapabilityError('评论间隔尚未达到当前配置的'+str(interval)+'秒。')
             db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)', (key, account, video_id, now, 'pending', '', hashlib.sha256(text.encode()).hexdigest()))
         try:
-            result = await asyncio.wait_for(self.backend.send(video_id, text), 20)
+            result = await asyncio.wait_for(self.backend.send(video_id,text,mention=mention) if mention else self.backend.send(video_id,text),20)
             reply_id = str(result.get('reply_id') or '')
             if not reply_id.isdigit() or int(reply_id) <= 0:
                 raise ValueError('missing_receipt')
@@ -113,14 +167,17 @@ class BiliComments:
             raise CapabilityError('评论发布失败或结果不确定，已暂停后续发布；请勿自动重试。') from None
         with self.reader.connect() as db:
             db.execute('UPDATE bili_comments SET state=?,reply_id=? WHERE key=?', ('submitted', reply_id, key))
-        visible = False
-        try:
-            visible = await asyncio.wait_for(self.backend.verify(result['aid'], reply_id, account, text), 12)
-        except Exception:
-            pass
-        if visible:
-            with self.reader.connect() as db:
-                db.execute('UPDATE bili_comments SET state=? WHERE key=?', ('visible', key))
-        return {'submitted': True, 'publicly_visible_verified': visible, 'reply_id': reply_id,
-            'url': packet['url'] + '#reply' + reply_id,
-            'instruction': '仅拿到回执不等于公开可见；可见性未确认时不要声称发送成功，也不要补发。'}
+        author_visible=False;visible=None
+        try:author_visible=await asyncio.wait_for(self.backend.verify(result['aid'],reply_id,account,text),12)
+        except Exception:pass
+        public_check=getattr(self.backend,'verify_public',None)
+        if public_check:
+            try:visible=await asyncio.wait_for(public_check(result['aid'],reply_id,account,text),15)
+            except Exception:pass
+        state='visible' if visible is True else ('author_visible' if author_visible else 'submitted')
+        with self.reader.connect() as db:db.execute('UPDATE bili_comments SET state=? WHERE key=?',(state,key))
+        return {'submitted':True,'author_visible_verified':bool(author_visible),'publicly_visible_verified':visible is True,
+            'visibility_status':'anonymous_read_verified' if visible is True else ('author_read_only' if author_visible else 'unconfirmed'),
+            'mention_submitted':bool(mention),'notification_received_verified':False,'reply_id':reply_id,
+            'url':packet['url']+'#reply'+reply_id,
+            'instruction':'回执、发帖账号可见、匿名视角可见是不同状态。只有匿名回读匹配才能称本次公开可见，不保证所有地区或长期可见；无法证明主人收到通知。未确认时不要补发、换方式发或声称已经通知到主人。'}

@@ -1,5 +1,5 @@
 """Bounded 3x3 preview contact sheet; no full-video download."""
-import asyncio,io,urllib.parse,urllib.request,hashlib
+import asyncio,io,math,urllib.parse,urllib.request,hashlib
 from pathlib import Path
 from .http import PublicJSON,NoRedirect
 from .policy import CapabilityError
@@ -45,11 +45,18 @@ class Preview:
             if x+w>loaded[page].width or y+h>loaded[page].height:continue
             panels.append((loaded[page].crop((x,y,x+w,y+h)),stamp))
         if not panels:raise CapabilityError('没有可用预览画面。')
-        paths=[]
+        paths=[];sheet_sizes=[]
         for offset in range(0,len(panels),9):
-            canvas=Image.new('RGB',(960,3*(180+26)),'white');draw=ImageDraw.Draw(canvas)
-            for i,(im,stamp) in enumerate(panels[offset:offset+9]):
-                im.thumbnail((320,180));x=(i%3)*320;y=(i//3)*206;canvas.paste(im,(x,y))
-                draw.text((x+4,y+182),str(offset+i+1)+' | '+str(int(stamp)//60)+':'+str(int(stamp)%60).zfill(2),fill='black')
-            path=self.root/(hashlib.sha256((video_id+':'+str(len(panels))+':'+str(offset)).encode()).hexdigest()[:20]+'.jpg');canvas.save(path,quality=85);path.chmod(0o600);paths.append(path)
-        return {'path':paths[0],'paths':paths,'timestamps':[t for _,t in panels],'frames':len(panels),'method':'bilibili_preview_sprites','full_video_downloaded':False}
+            batch=panels[offset:offset+9]
+            columns=min(3,math.ceil(math.sqrt(len(batch))))
+            rows=math.ceil(len(batch)/columns)
+            canvas=Image.new('RGB',(columns*w,rows*(h+26)),'white');draw=ImageDraw.Draw(canvas)
+            for i,(im,stamp) in enumerate(batch):
+                x=(i%columns)*w;y=(i//columns)*(h+26)
+                canvas.paste(im,(x,y))
+                draw.text((x+4,y+h+2),str(offset+i+1)+' | '+str(int(stamp)//60)+':'+str(int(stamp)%60).zfill(2),fill='black')
+            path=self.root/(hashlib.sha256((video_id+':native-v2:'+str(w)+':'+str(h)+':'+str(len(panels))+':'+str(offset)).encode()).hexdigest()[:20]+'.png')
+            canvas.save(path);path.chmod(0o600);paths.append(path);sheet_sizes.append(list(canvas.size))
+        return {'path':paths[0],'paths':paths,'timestamps':[t for _,t in panels],'frames':len(panels),
+                'source_frame_size':[w,h],'sent_frame_size':[w,h],'sheet_sizes':sheet_sizes,
+                'preview_layout_version':2,'method':'bilibili_preview_sprites','full_video_downloaded':False}
