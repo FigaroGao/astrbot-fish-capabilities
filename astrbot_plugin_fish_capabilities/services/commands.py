@@ -44,7 +44,7 @@ def install_gate(stage_class, gate, registry, before_wake=None):
 
     @functools.wraps(original)
     async def process(stage, event):
-        if before_wake is not None and await before_wake(event):
+        if before_wake is not None and await before_wake(event, stage.ctx.astrbot_config):
             return
         names = set()
         for metadata in registry.star_handlers_map.values():
