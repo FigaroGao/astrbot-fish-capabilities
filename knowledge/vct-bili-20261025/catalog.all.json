@@ -1,0 +1,2237 @@
+[
+  {
+    "id": "agent-1",
+    "title": "铁臂 / Breach",
+    "text": "国服正式名称：铁臂；英文：Breach；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A1%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "铁臂",
+      "Breach"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-2",
+    "title": "捷风 / Jett",
+    "text": "国服正式名称：捷风；英文：Jett；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A2%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "捷风",
+      "Jett"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-3",
+    "title": "雷兹 / Raze",
+    "text": "国服正式名称：雷兹；英文：Raze；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A3%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "雷兹",
+      "Raze"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-4",
+    "title": "幽影 / Omen",
+    "text": "国服正式名称：幽影；英文：Omen；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A4%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "幽影",
+      "Omen"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-5",
+    "title": "炼狱 / Brimstone",
+    "text": "国服正式名称：炼狱；英文：Brimstone；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A5%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "炼狱",
+      "Brimstone"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-6",
+    "title": "不死鸟 / Phoenix",
+    "text": "国服正式名称：不死鸟；英文：Phoenix；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A6%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "不死鸟",
+      "Phoenix"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-7",
+    "title": "贤者 / Sage",
+    "text": "国服正式名称：贤者；英文：Sage；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A7%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "贤者",
+      "Sage"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-8",
+    "title": "猎枭 / Sova",
+    "text": "国服正式名称：猎枭；英文：Sova；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A8%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "猎枭",
+      "Sova"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-9",
+    "title": "蝰蛇 / Viper",
+    "text": "国服正式名称：蝰蛇；英文：Viper；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A9%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "蝰蛇",
+      "Viper"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-10",
+    "title": "零 / Cypher",
+    "text": "国服正式名称：零；英文：Cypher；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A10%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "零",
+      "Cypher"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-11",
+    "title": "芮娜 / Reyna",
+    "text": "国服正式名称：芮娜；英文：Reyna；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A11%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "芮娜",
+      "Reyna"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-12",
+    "title": "奇乐 / Killjoy",
+    "text": "国服正式名称：奇乐；英文：Killjoy；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A12%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "奇乐",
+      "Killjoy"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-13",
+    "title": "斯凯 / Skye",
+    "text": "国服正式名称：斯凯；英文：Skye；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A13%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "斯凯",
+      "Skye"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-14",
+    "title": "夜露 / Yoru",
+    "text": "国服正式名称：夜露；英文：Yoru；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A14%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "夜露",
+      "Yoru"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-15",
+    "title": "星礈 / Astra",
+    "text": "国服正式名称：星礈；英文：Astra；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A15%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "星礈",
+      "Astra"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-16",
+    "title": "K/O / KAY/O",
+    "text": "国服正式名称：K/O；英文：KAY/O；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A16%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "K/O",
+      "KAY/O"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-17",
+    "title": "尚勃勒 / Chamber",
+    "text": "国服正式名称：尚勃勒；英文：Chamber；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A17%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "尚勃勒",
+      "Chamber"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-18",
+    "title": "霓虹 / Neon",
+    "text": "国服正式名称：霓虹；英文：Neon；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A18%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "霓虹",
+      "Neon"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-19",
+    "title": "黑梦 / Fade",
+    "text": "国服正式名称：黑梦；英文：Fade；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A19%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "黑梦",
+      "Fade"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-20",
+    "title": "海神 / Harbor",
+    "text": "国服正式名称：海神；英文：Harbor；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A20%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "海神",
+      "Harbor"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-21",
+    "title": "盖可 / Gekko",
+    "text": "国服正式名称：盖可；英文：Gekko；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A21%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "盖可",
+      "Gekko"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-22",
+    "title": "钢锁 / Deadlock",
+    "text": "国服正式名称：钢锁；英文：Deadlock；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A22%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "钢锁",
+      "Deadlock"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-23",
+    "title": "壹决 / Iso",
+    "text": "国服正式名称：壹决；英文：Iso；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A23%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "壹决",
+      "Iso"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-24",
+    "title": "暮蝶 / Clove",
+    "text": "国服正式名称：暮蝶；英文：Clove；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A24%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "暮蝶",
+      "Clove"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-25",
+    "title": "维斯 / Vyse",
+    "text": "国服正式名称：维斯；英文：Vyse；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A25%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "维斯",
+      "Vyse"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-26",
+    "title": "钛狐 / Tejo",
+    "text": "国服正式名称：钛狐；英文：Tejo；定位：先锋。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A26%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "钛狐",
+      "Tejo"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-27",
+    "title": "幻棱 / Waylay",
+    "text": "国服正式名称：幻棱；英文：Waylay；定位：决斗。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A27%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "幻棱",
+      "Waylay"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-28",
+    "title": "禁灭 / Veto",
+    "text": "国服正式名称：禁灭；英文：Veto；定位：哨卫。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A28%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "禁灭",
+      "Veto"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-29",
+    "title": "迷核 / Miks",
+    "text": "国服正式名称：迷核；英文：Miks；定位：控场。回答国服名称时使用此中文名，不用港台译名替代。技能数值、版本强弱另查对应补丁。",
+    "source": "https://api.val.qq.com/go/agame/graphql/graphiQL?query=%7Bagent%28id%3A29%29%7Bname+e_name+position_name%7D%7D",
+    "kind": "stable_reference",
+    "aliases": [
+      "迷核",
+      "Miks"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-1",
+    "title": "源工重镇 / bind",
+    "text": "国服地图名：源工重镇；英文：bind。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=1",
+    "kind": "stable_reference",
+    "aliases": [
+      "源工重镇",
+      "bind"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-2",
+    "title": "隐世修所 / haven",
+    "text": "国服地图名：隐世修所；英文：haven。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=2",
+    "kind": "stable_reference",
+    "aliases": [
+      "隐世修所",
+      "haven"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-3",
+    "title": "霓虹町 / split",
+    "text": "国服地图名：霓虹町；英文：split。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=3",
+    "kind": "stable_reference",
+    "aliases": [
+      "霓虹町",
+      "split"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-4",
+    "title": "亚海悬城 / ascent",
+    "text": "国服地图名：亚海悬城；英文：ascent。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=4",
+    "kind": "stable_reference",
+    "aliases": [
+      "亚海悬城",
+      "ascent"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-5",
+    "title": "森寒冬港 / icebox",
+    "text": "国服地图名：森寒冬港；英文：icebox。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=5",
+    "kind": "stable_reference",
+    "aliases": [
+      "森寒冬港",
+      "icebox"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-6",
+    "title": "微风岛屿 / breeze",
+    "text": "国服地图名：微风岛屿；英文：breeze。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=6",
+    "kind": "stable_reference",
+    "aliases": [
+      "微风岛屿",
+      "breeze"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-7",
+    "title": "裂变峡谷 / fracture",
+    "text": "国服地图名：裂变峡谷；英文：fracture。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=7",
+    "kind": "stable_reference",
+    "aliases": [
+      "裂变峡谷",
+      "fracture"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-8",
+    "title": "深海明珠 / pearl",
+    "text": "国服地图名：深海明珠；英文：pearl。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=8",
+    "kind": "stable_reference",
+    "aliases": [
+      "深海明珠",
+      "pearl"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-9",
+    "title": "莲华古城 / lotus",
+    "text": "国服地图名：莲华古城；英文：lotus。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=9",
+    "kind": "stable_reference",
+    "aliases": [
+      "莲华古城",
+      "lotus"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-13",
+    "title": "日落之城 / sunset",
+    "text": "国服地图名：日落之城；英文：sunset。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=13",
+    "kind": "stable_reference",
+    "aliases": [
+      "日落之城",
+      "sunset"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-15",
+    "title": "幽邃地窟 / abyss",
+    "text": "国服地图名：幽邃地窟；英文：abyss。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=15",
+    "kind": "stable_reference",
+    "aliases": [
+      "幽邃地窟",
+      "abyss"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-17",
+    "title": "盐海矿镇 / corrode",
+    "text": "国服地图名：盐海矿镇；英文：corrode。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=17",
+    "kind": "stable_reference",
+    "aliases": [
+      "盐海矿镇",
+      "corrode"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "map-21",
+    "title": "天枢云阙 / summit",
+    "text": "国服地图名：天枢云阙；英文：summit。这是地图名称映射，不代表它正处于当前排位或职业比赛地图池；轮换须核对具体版本和赛事。",
+    "source": "https://val.qq.com/game-data.html?pageType=3&mapId=21",
+    "kind": "stable_reference",
+    "aliases": [
+      "天枢云阙",
+      "summit"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "role-决斗",
+    "title": "决斗",
+    "text": "Duelist，主要负责创造正面交战与进入空间机会，不等于只能单打。",
+    "source": "https://val.qq.com/game-data.html?pageType=1",
+    "kind": "stable_reference",
+    "aliases": [
+      "决斗"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "role-先锋",
+    "title": "先锋",
+    "text": "Initiator，主要用侦察、闪光或压制协助队伍打开局面。",
+    "source": "https://val.qq.com/game-data.html?pageType=1",
+    "kind": "stable_reference",
+    "aliases": [
+      "先锋"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "role-控场",
+    "title": "控场",
+    "text": "Controller，主要用烟幕等技能切割视线与控制空间。",
+    "source": "https://val.qq.com/game-data.html?pageType=1",
+    "kind": "stable_reference",
+    "aliases": [
+      "控场"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "role-哨卫",
+    "title": "哨卫",
+    "text": "Sentinel，主要帮助守点、监控侧翼与限制对手行动。",
+    "source": "https://val.qq.com/game-data.html?pageType=1",
+    "kind": "stable_reference",
+    "aliases": [
+      "哨卫"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-0",
+    "title": "无畏契约",
+    "text": "VALORANT，5对5战术射击游戏，特工能力与枪械配合。国服为腾讯运营版本。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "VALORANT",
+      "无畏契约",
+      "打瓦",
+      "玩瓦"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-1",
+    "title": "爆能器",
+    "text": "Spike是进攻方部署的目标装置，防守方需要阻止部署或完成拆除。不是普通击杀分数。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "Spike",
+      "下包",
+      "拆包",
+      "爆能器"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-2",
+    "title": "回合和胜局",
+    "text": "标准爆能模式以回合争胜，常规目标是先取得13回合；加时、短局和娱乐模式规则不同，具体模式另核对。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "回合",
+      "加时"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-3",
+    "title": "默认",
+    "text": "职业语境中的default通常指开局分散控图、获取信息与消耗道具，再决定集合方向；不是默认设置。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "default",
+      "做默认"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-4",
+    "title": "补枪",
+    "text": "队友交火后及时击杀对手以交换人数，英文trade。不是等队友死后才随意进场。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "trade",
+      "补枪"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-5",
+    "title": "回防",
+    "text": "retake：防守方在失去点位或爆能器部署后重新夺回点位并尝试拆除。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "retake",
+      "回防"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-6",
+    "title": "残局",
+    "text": "clutch通常指人数劣势或关键末段仍争取赢回合的局面；一次残局不代表长期实力结论。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "clutch",
+      "残局"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-7",
+    "title": "经济局",
+    "text": "eco通常指为了后续回合买枪而节约资源的回合；强起force buy是用有限经济尝试争胜。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "eco",
+      "经济局",
+      "强起"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-8",
+    "title": "保枪",
+    "text": "save：判断回合难以获胜后保存装备用于后续，不是所有保枪都等于消极比赛。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "save",
+      "保枪"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-9",
+    "title": "入口突破",
+    "text": "entry指最先进入危险区域创造空间的职责，可能由技能配合而不只是单人击杀。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "entry",
+      "突破手"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-10",
+    "title": "狙击枪称呼",
+    "text": "Operator国服常称冥驹、大狙；Marshal是飞将。武器名称与当前价格、伤害数值分开核对。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "Operator",
+      "Marshal",
+      "大狙",
+      "冥驹",
+      "飞将"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-11",
+    "title": "IGL",
+    "text": "in-game leader，局内指挥角色；不等于战队教练。具体队伍由谁指挥可能随阵容改变。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "IGL",
+      "指挥"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-12",
+    "title": "BO3和BO5",
+    "text": "BO3为三局两胜、BO5为五局三胜，VCT一局通常是一张地图。地图内13:11与系列赛2:1不是同一单位。",
+    "source": "https://playvalorant.com/en-us/",
+    "kind": "stable_reference",
+    "aliases": [
+      "BO3",
+      "BO5"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-13",
+    "title": "VCT四大赛区",
+    "text": "2026赛季VCT包括美洲、EMEA、太平洋和中国CN四个国际联赛赛区。",
+    "source": "https://valorantesports.com/en-US/season/115571062868511862/handbook",
+    "kind": "stable_reference",
+    "aliases": [
+      "VCT",
+      "赛区"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "term-14",
+    "title": "Masters与Champions",
+    "text": "大师赛Masters和全球冠军赛Champions是不同赛事；不能把国内联赛冠军、大师赛冠军和全球冠军混用。",
+    "source": "https://valorantesports.com/en-US/season/115571062868511862/handbook",
+    "kind": "stable_reference",
+    "aliases": [
+      "大师赛",
+      "Masters",
+      "Champions",
+      "全球冠军赛",
+      "世界赛"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-AG",
+    "title": "AG / AG",
+    "text": "2026赛季VCT CN参赛队伍：ALL GAMERS，简称AG，中文常用称呼AG。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "AG",
+      "ALL GAMERS",
+      "AG"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-BLG",
+    "title": "BLG / 哔哩哔哩电竞",
+    "text": "2026赛季VCT CN参赛队伍：Bilibili Gaming，简称BLG，中文常用称呼哔哩哔哩电竞。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "BLG",
+      "Bilibili Gaming",
+      "哔哩哔哩电竞"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-DRG",
+    "title": "DRG / DRG",
+    "text": "2026赛季VCT CN参赛队伍：DRAGON RANGER GAMING，简称DRG，中文常用称呼DRG。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "DRG",
+      "DRAGON RANGER GAMING",
+      "DRG"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-EDG",
+    "title": "EDG / EDG",
+    "text": "2026赛季VCT CN参赛队伍：EDWARD Gaming，简称EDG，中文常用称呼EDG。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "EDG",
+      "EDWARD Gaming",
+      "EDG"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-FPX",
+    "title": "FPX / FPX",
+    "text": "2026赛季VCT CN参赛队伍：FunPlus Phoenix，简称FPX，中文常用称呼FPX。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "FPX",
+      "FunPlus Phoenix",
+      "FPX"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-JDG",
+    "title": "JDG / 京东电竞",
+    "text": "2026赛季VCT CN参赛队伍：JD GAMING，简称JDG，中文常用称呼京东电竞。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "JDG",
+      "JD GAMING",
+      "京东电竞"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-NOVA",
+    "title": "NOVA / NOVA",
+    "text": "2026赛季VCT CN参赛队伍：NOVA ESPORTS，简称NOVA，中文常用称呼NOVA。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "NOVA",
+      "NOVA ESPORTS",
+      "NOVA"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-TEC",
+    "title": "TEC / TEC",
+    "text": "2026赛季VCT CN参赛队伍：TITAN ESPORTS CLUB，简称TEC，中文常用称呼TEC。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "TEC",
+      "TITAN ESPORTS CLUB",
+      "TEC"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-TE",
+    "title": "TE / 溯",
+    "text": "2026赛季VCT CN参赛队伍：Trace Esports，简称TE，中文常用称呼溯。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "TE",
+      "Trace Esports",
+      "溯"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-TYL",
+    "title": "TYL / 天禄",
+    "text": "2026赛季VCT CN参赛队伍：TYLOO GAMING，简称TYL，中文常用称呼天禄。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "TYL",
+      "TYLOO GAMING",
+      "天禄"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-WOL",
+    "title": "WOL / 狼队",
+    "text": "2026赛季VCT CN参赛队伍：WOLVES ESPORTS，简称WOL，中文常用称呼狼队。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "WOL",
+      "WOLVES ESPORTS",
+      "狼队"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "team-XLG",
+    "title": "XLG / 喜临门",
+    "text": "2026赛季VCT CN参赛队伍：Xi Lai Gaming，简称XLG，中文常用称呼喜临门。仅为2026赛季记录，不能由此推断未来赛季席位、选手阵容或当前实力。",
+    "source": "https://valorantesports.com/es-ES/tournament/115576851070213355/overview",
+    "kind": "season_snapshot",
+    "aliases": [
+      "XLG",
+      "Xi Lai Gaming",
+      "喜临门"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-PRX",
+    "title": "PRX / Paper Rex",
+    "text": "无畏契约职业战队简称PRX对应Paper Rex；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "PRX",
+      "Paper Rex"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-FNC",
+    "title": "FNC / FNATIC",
+    "text": "无畏契约职业战队简称FNC对应FNATIC；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "FNC",
+      "FNATIC"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-NRG",
+    "title": "NRG / NRG",
+    "text": "无畏契约职业战队简称NRG对应NRG；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "NRG",
+      "NRG"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-LOUD",
+    "title": "LOUD / LOUD",
+    "text": "无畏契约职业战队简称LOUD对应LOUD；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "LOUD",
+      "LOUD"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-VIT",
+    "title": "VIT / Team Vitality",
+    "text": "无畏契约职业战队简称VIT对应Team Vitality；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "VIT",
+      "Team Vitality"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-TH",
+    "title": "TH / Team Heretics",
+    "text": "无畏契约职业战队简称TH对应Team Heretics；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "TH",
+      "Team Heretics"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-LEV",
+    "title": "LEV / Leviatán Esports",
+    "text": "无畏契约职业战队简称LEV对应Leviatán Esports；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "LEV",
+      "Leviatán Esports"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-NS",
+    "title": "NS / NONGSHIM REDFORCE",
+    "text": "无畏契约职业战队简称NS对应NONGSHIM REDFORCE；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "NS",
+      "NONGSHIM REDFORCE"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-G2",
+    "title": "G2 / G2 Esports",
+    "text": "无畏契约职业战队简称G2对应G2 Esports；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "G2",
+      "G2 Esports"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-100T",
+    "title": "100T / 100 Thieves",
+    "text": "无畏契约职业战队简称100T对应100 Thieves；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "100T",
+      "100 Thieves"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "worldteam-T1",
+    "title": "T1 / T1",
+    "text": "无畏契约职业战队简称T1对应T1；参赛地区、阵容和成绩须区分赛季，不和同俱乐部其他项目混为一谈。",
+    "source": "https://valorantesports.com/en-US/gpr/2026/current",
+    "kind": "stable_reference",
+    "aliases": [
+      "T1",
+      "T1"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2021",
+    "title": "2021全球冠军赛冠军",
+    "text": "2021年VALORANT全球冠军赛（Champions）的冠军是Acend。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/en-US/news/2022-valorant-champions-tour-na-kicks-off-in-late-january/",
+    "kind": "dated_result",
+    "aliases": [
+      "2021",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2022",
+    "title": "2022全球冠军赛冠军",
+    "text": "2022年VALORANT全球冠军赛（Champions）的冠军是LOUD，决赛3:1击败OpTic Gaming。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/en-US/news/valorant-champions-lands-in-los-angeles",
+    "kind": "dated_result",
+    "aliases": [
+      "2022",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2023",
+    "title": "2023全球冠军赛冠军",
+    "text": "2023年VALORANT全球冠军赛（Champions）的冠军是Evil Geniuses（EG），决赛3:1击败Paper Rex。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/pt-BR/news/evil-geniuses-e-campea-do-champions-2023/",
+    "kind": "dated_result",
+    "aliases": [
+      "2023",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2024",
+    "title": "2024全球冠军赛冠军",
+    "text": "2024年VALORANT全球冠军赛（Champions）的冠军是EDG，决赛3:2击败Team Heretics；ZmjjKK获冠军赛MVP。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/en-AU/news/closing-out-vct-2024-celebrating-growth-and-our-community",
+    "kind": "dated_result",
+    "aliases": [
+      "2024",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2025",
+    "title": "2025全球冠军赛冠军",
+    "text": "2025年VALORANT全球冠军赛（Champions）的冠军是NRG，巴黎决赛3:2击败FNATIC。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/en-GB/tournament/113482263742879102/stage/113482431147251336",
+    "kind": "dated_result",
+    "aliases": [
+      "2025",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "champions-2026",
+    "title": "2026全球冠军赛冠军",
+    "text": "2026年VALORANT全球冠军赛（Champions）的冠军是LOUD，上海决赛3:1击败Team Vitality。这是历史赛果，不是对其他年份的判断。",
+    "source": "https://valorantesports.com/en-PH/tournament/115576361459045501/stage/115576361460159615",
+    "kind": "dated_result",
+    "aliases": [
+      "2026",
+      "全球冠军赛",
+      "世界冠军",
+      "Champions"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "2026-london",
+    "title": "2026伦敦大师赛",
+    "text": "2026伦敦大师赛冠军LEV，决赛3:2击败PRX；EDG为第三名。不要把此成绩与同年上海全球冠军赛混用。",
+    "source": "https://valorantesports.com/es-ES/leagues/vct_masters",
+    "kind": "dated_result",
+    "aliases": [
+      "2026",
+      "伦敦",
+      "Masters London",
+      "EDG"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "2026-shanghai-cn",
+    "title": "2026上海冠军赛CN表现",
+    "text": "2026上海全球冠军赛CN参赛队为TYLOO、JDG、EDG、XLG，四队均在小组赛两场失利后出局。按官方8场系列赛比分加总，系列赛0胜8负；地图2胜16负。2-16是地图总分，不是系列赛场次，也不是每一队都2-16。",
+    "source": "https://valorantesports.com/es-ES/leagues/champions%2Cvct_china",
+    "kind": "dated_result",
+    "aliases": [
+      "2-16",
+      "两缸石榴",
+      "CN瓦",
+      "2026",
+      "上海冠军赛"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "2027-cn-partners",
+    "title": "2027已公布CN合作队伍",
+    "text": "2026-10-22前后官方公布的2027合作队伍CN名单为AG、BLG、EDG、JDG、TE、TYLOO、WBG、XLG，共8队。这是2027合作席位名单，不是2026联赛参赛名单，不能用来覆盖2026的12队记录。",
+    "source": "https://valorantesports.com/en-US/valorantesports/partner-teams",
+    "kind": "announcement_snapshot",
+    "aliases": [
+      "2027",
+      "合作队伍",
+      "WBG",
+      "微博",
+      "席位"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "agent-announcement-hush",
+    "title": "新公布特工Hush的版本边界",
+    "text": "Riot官方新闻页于2026-10-18列出Hush新决斗特工预告。2026-10-24抓取的腾讯国服资料接口仍返回29个特工且未列其国服名，因此不编造中文正式名或断言已在国服上线，需再核对国服公告。",
+    "source": "https://playvalorant.com/en-us/news/",
+    "kind": "announcement_snapshot",
+    "aliases": [
+      "Hush",
+      "新特工",
+      "2026"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-0",
+    "title": "感谢现役",
+    "text": "原本是致意现役选手的表达，VCT CN官方于2026-08-23发布同名纪念视频。2026年秋社区也把它反讽使用并跨到其他电竞圈；语气须看上下文，不能遇到这个词就认定是在辱骂。",
+    "source": "https://www.bilibili.com/video/BV1Nj8t6cEWy/",
+    "kind": "community_usage",
+    "aliases": [
+      "感谢现役",
+      "千言万语"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-1",
+    "title": "两缸石榴",
+    "text": "二杠十六、2-16的谐音式调侃。2026上海冠军赛讨论里常指CN四队地图总分2胜16负；该说法在其他电竞讨论中也有更早用例，不声称是2026新发明。",
+    "source": "https://www.bilibili.com/video/BV1SrCxBaEQn/",
+    "kind": "community_usage",
+    "aliases": [
+      "两缸石榴",
+      "二缸石榴",
+      "2-16"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-2",
+    "title": "国补与国潮",
+    "text": "VCT CN社区会用国补反讽外战失利、像给对手送分；国潮在赢外战时可转为赞扬。属于带情绪的社区话语，不是官方术语或队伍永久实力标签。",
+    "source": "https://wiki.biligame.com/valorant/VCT/梗百科",
+    "kind": "community_usage",
+    "aliases": [
+      "国补",
+      "国潮"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-3",
+    "title": "瓦学弟与GO学长",
+    "text": "跨游戏社区互相玩梗的称呼，瓦指VALORANT，GO通常指CS群体。可能带嘲讽或拉踩，知道含义即可，不自行把群成员或全部玩家贬低成这种标签。",
+    "source": "https://wiki.biligame.com/valorant/VCT/梗百科",
+    "kind": "community_usage",
+    "aliases": [
+      "瓦学弟",
+      "GO学长"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-4",
+    "title": "你手痛不痛",
+    "text": "2026电竞切片中可见手痛不痛、手疼不疼等反问式调侃，既可能是关心，也可能是对发挥的反讽；不据此诊断选手健康，不编造首次出处。",
+    "source": "https://www.bilibili.com/video/BV1TqHe6aEVV/",
+    "kind": "community_usage",
+    "aliases": [
+      "你手痛不痛",
+      "手疼不疼"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-5",
+    "title": "康康",
+    "text": "ZmjjKK的常用昵称；他是2024 EDG夺得Champions冠军时的MVP。昵称与历史荣誉不等于每一场发挥评价。",
+    "source": "https://valorantesports.com/pt-BR/news/closing-out-vct-2024-celebrating-growth-",
+    "kind": "community_usage",
+    "aliases": [
+      "康康",
+      "KangKang",
+      "ZmjjKK"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-6",
+    "title": "牢前缀",
+    "text": "电竞和其他社区有用牢字给绰号加嘲讽意味的用法，通常不是字面上的服刑事实。不能据玩梗推断某人违法或给不熟悉的人主动贴标签。",
+    "source": "https://wiki.biligame.com/valorant/VCT/梗百科",
+    "kind": "community_usage",
+    "aliases": [
+      "牢",
+      "牢前缀"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "knowledge-scope",
+    "title": "知识时效与赛区名称",
+    "text": "本库优先国服正式名称。基础映射、历史赛果、赛季参赛名单、未来合作名单、社区梗分开存储；不要把历史快照当现在。已完成赛果可作为带年份的历史事实；当前阵容、地图池、技能数值和实时赛程仍需最新核验。",
+    "source": "https://val.qq.com/game-data.html",
+    "kind": "stable_reference",
+    "aliases": [
+      "国服",
+      "时效"
+    ],
+    "bucket": "基础",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "slang-red",
+    "title": "红温",
+    "text": "常用网络语，形容生气或着急得上头；不是医学诊断。 属于常用词释义，不声称是2026新梗；首次出处未核实。",
+    "source": "编辑整理的通用词释义；不是首次出处或2026热度考据",
+    "kind": "common_slang",
+    "aliases": [
+      "红温"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "slang-cucumber",
+    "title": "电子榨菜",
+    "text": "把轻松、适合吃饭时看的内容比作下饭配菜，是观看体验的比喻。 属于常用词释义，不声称是2026新梗；首次出处未核实。",
+    "source": "编辑整理的通用词释义；不是首次出处或2026热度考据",
+    "kind": "common_slang",
+    "aliases": [
+      "电子榨菜"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "slang-alive",
+    "title": "活人感",
+    "text": "口语中形容表达自然、随情境变化、不像固定模板；不表示AI具有生物意义生命。 属于常用词释义，不声称是2026新梗；首次出处未核实。",
+    "source": "编辑整理的通用词释义；不是首次出处或2026热度考据",
+    "kind": "common_slang",
+    "aliases": [
+      "活人感"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "slang-guaranteed",
+    "title": "包的",
+    "text": "口语中用于表示包在我身上、很有把握，也可能用于反讽；不能把夸口当可靠保证。 属于常用词释义，不声称是2026新梗；首次出处未核实。",
+    "source": "编辑整理的通用词释义；不是首次出处或2026热度考据",
+    "kind": "common_slang",
+    "aliases": [
+      "包的"
+    ],
+    "bucket": "赛事与梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "common-01",
+    "title": "蚌埠住了",
+    "aliases": [
+      "蚌埠住了",
+      "蚌不住",
+      "绷不住了"
+    ],
+    "text": "通常是绷不住了的谐音，可能忍不住笑，也可能难受或震惊；不能一律理解成愤怒。蚌埠单独出现也可能是真实城市。",
+    "source": "https://www.bilibili.com/video/BV1ZW4y1r7K3/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-02",
+    "title": "尊嘟假嘟",
+    "aliases": [
+      "尊嘟假嘟",
+      "尊嘟",
+      "假嘟"
+    ],
+    "text": "真的假的、真的或假的的卖萌写法，常表达惊讶、确认。不要当作正式真假核验结论。",
+    "source": "https://www.bilibili.com/video/BV1fV4y1i7mH/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-03",
+    "title": "泰裤辣",
+    "aliases": [
+      "泰裤辣",
+      "泰酷辣",
+      "太裤辣"
+    ],
+    "text": "太酷啦的夸张空耳写法，常是赞叹，也可能反讽；不自动理解为裤子或辣味。",
+    "source": "https://www.bilibili.com/video/BV1WP411U7GX/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-04",
+    "title": "针不戳",
+    "aliases": [
+      "针不戳"
+    ],
+    "text": "真不错的谐音，表示赞许或打趣；涉及针灸、器械时先看字面上下文。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-05",
+    "title": "夺笋",
+    "aliases": [
+      "夺笋",
+      "笋都被夺完了"
+    ],
+    "text": "多损的谐音，常调侃说话或行为损人；买菜、挖笋时可能是字面意思，不证明对方恶意。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-06",
+    "title": "栓Q",
+    "aliases": [
+      "栓Q",
+      "栓q"
+    ],
+    "text": "thank you的空耳，有时真感谢，有时无语地说我真的会谢；需要结合前后句。",
+    "source": "https://dailyview.tw/popular/detail/16398",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-07",
+    "title": "芜湖起飞",
+    "aliases": [
+      "芜湖起飞",
+      "芜湖～"
+    ],
+    "text": "可作呜呼、兴奋庆祝的空耳；芜湖也是城市，订票旅游不能替换成欢呼。",
+    "source": "https://ah.people.com.cn/BIG5/n2/2022/0223/c358428-35146558.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-08",
+    "title": "哈基米",
+    "aliases": [
+      "哈基米"
+    ],
+    "text": "中文二创中常用于可爱动物及相关音MAD；词源语义与中文宠物昵称不是一回事，不能当作动物品种。",
+    "source": "https://www.bilibili.com/video/BV1Bj411B7sf/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-09",
+    "title": "曼波",
+    "aliases": [
+      "曼波",
+      "曼波曼波"
+    ],
+    "text": "常见于赛马娘相关空耳和二创音频，也可能指音乐舞蹈；没有画面和上下文时不指认某个具体版本。",
+    "source": "https://www.douyin.com/video/7355871466128166156",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-10",
+    "title": "爱你老己",
+    "aliases": [
+      "爱你老己",
+      "老己"
+    ],
+    "text": "把自己当作朋友来关爱的俏皮说法；老己通常指自己，不是多出了一个聊天成员。",
+    "source": "https://www.bilibili.com/video/BV14FqUBME5b/",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-11",
+    "title": "YYDS",
+    "aliases": [
+      "yyds",
+      "永远的神"
+    ],
+    "text": "永远的神的拼音缩写，常是夸赞，也可能反讽；不表示永远不变的真实排名。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-12",
+    "title": "破防",
+    "aliases": [
+      "破防",
+      "破大防"
+    ],
+    "text": "游戏中可指防御被突破，聊天中可指被感动、受挫或情绪冲击；先判语境，不一律嘲讽。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-13",
+    "title": "绝绝子",
+    "aliases": [
+      "绝绝子"
+    ],
+    "text": "通常夸太棒了，也可能带反讽；按前后语气理解，不能据此断定认真评价。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-14",
+    "title": "躺平",
+    "aliases": [
+      "躺平"
+    ],
+    "text": "日常可自嘲暂时不卷或休息；也可能谈生活态度，不能仅据这个词推断健康或长期意愿。",
+    "source": "https://www.xinhuanet.com/politics/2021-12/07/c_1128137881.htm",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-15",
+    "title": "硬控",
+    "aliases": [
+      "硬控",
+      "被控住了"
+    ],
+    "text": "游戏里是控制技能；聊天中常说被视频或事物吸引得移不开眼，不是字面被拘禁。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-16",
+    "title": "city不city",
+    "aliases": [
+      "city不city",
+      "好city"
+    ],
+    "text": "常调侃时髦、洋气或有都市体验，带旅游与口头语气；不是严格城市分类。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-17",
+    "title": "水灵灵地",
+    "aliases": [
+      "水灵灵地",
+      "水灵灵的"
+    ],
+    "text": "可以夸鲜活精神，也可在我就这么水灵灵地迟到了里自嘲；结合后面的动作。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-18",
+    "title": "班味",
+    "aliases": [
+      "班味",
+      "班味儿"
+    ],
+    "text": "对工作后疲惫气质的调侃，不是体味或健康诊断。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-19",
+    "title": "松弛感",
+    "aliases": [
+      "松弛感"
+    ],
+    "text": "形容从容、不紧绷的感觉；不是不负责或必须保持开心。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-20",
+    "title": "小孩哥小孩姐",
+    "aliases": [
+      "小孩哥",
+      "小孩姐"
+    ],
+    "text": "常夸年轻者表现出熟练本领；只是称呼，不用来核实真实年龄。",
+    "source": "https://www.xinhuanet.com/politics/20241202/59496b2d344b4382b6c12d03d78b8f13/c.html",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-21",
+    "title": "显眼包",
+    "aliases": [
+      "显眼包"
+    ],
+    "text": "对突出、搞怪或引人注意者的戏称，可以亲昵也可能不满；不直接当人格缺陷。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-22",
+    "title": "主打一个",
+    "aliases": [
+      "主打一个"
+    ],
+    "text": "强调后面某特点的句式，如主打一个随缘；不等于真正商品主推。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-23",
+    "title": "特种兵式旅游",
+    "aliases": [
+      "特种兵式旅游",
+      "特种兵旅游"
+    ],
+    "text": "时间紧、行程密、快速打卡的旅游比喻，不涉及军人身份。",
+    "source": "https://news.cctv.cn/2023/12/20/ARTIdiL3N6DaFWHPkCV2btGi231220.shtml",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-24",
+    "title": "电子榨菜",
+    "aliases": [
+      "电子榨菜"
+    ],
+    "text": "吃饭时搭配观看或收听的轻松内容，不是食物或设备配件。",
+    "source": "https://bkso.baidu.com/item/电子榨菜/62063038",
+    "kind": "community_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-25",
+    "title": "红温",
+    "aliases": [
+      "红温"
+    ],
+    "text": "游戏或聊天中调侃生气、焦躁或情绪上头；不能据此断定体温、病症或某人性格。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-26",
+    "title": "上头与下头",
+    "aliases": [
+      "上头",
+      "下头"
+    ],
+    "text": "上头可指沉迷、兴奋或冲动，下头常是扫兴或失去好感；饮酒、位置等字面场景另判。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-27",
+    "title": "抽象与整活",
+    "aliases": [
+      "抽象",
+      "整活"
+    ],
+    "text": "网络聊天里可能指离谱难概括的表达或搞笑创作；数学、艺术中的抽象保留原义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-28",
+    "title": "绷与乐",
+    "aliases": [
+      "绷住了",
+      "乐了",
+      "笑不活了"
+    ],
+    "text": "可以是笑、无奈或反讽，并非每次都在开心。若对方认真受困，先回应事情，别跟着嘲讽。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-29",
+    "title": "情绪价值",
+    "aliases": [
+      "情绪价值"
+    ],
+    "text": "常指让人感到被理解、支持或愉快的互动体验；不是要求无条件迎合。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-30",
+    "title": "社死",
+    "aliases": [
+      "社死",
+      "社会性死亡"
+    ],
+    "text": "通常夸张表达尴尬，不按字面认定死亡；若上下文明示现实危险应认真对待。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-31",
+    "title": "逆天与离谱",
+    "aliases": [
+      "逆天",
+      "离谱"
+    ],
+    "text": "可夸操作强，也可批评荒诞；先看评价对象和上下文，避免机械照搬攻击口气。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "common-32",
+    "title": "包的",
+    "aliases": [
+      "包的",
+      "包赢"
+    ],
+    "text": "常口语表示有把握，也可能玩笑反串；不是程序已完成、额度无限或真实承诺的证据。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_usage",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24",
+    "source_scope": "用法参考，非最早出处或当前热度证明"
+  },
+  {
+    "id": "phonetic-01",
+    "title": "谐音理解：尊嘟假嘟",
+    "aliases": [
+      "尊嘟假嘟",
+      "尊嘟",
+      "假嘟"
+    ],
+    "text": "候选释义：真的假的／真的／假的。边界：只给候选，不当作真假核验。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-02",
+    "title": "谐音理解：针不戳",
+    "aliases": [
+      "针不戳"
+    ],
+    "text": "候选释义：真不错。边界：器械、医疗或原句字面合理时不替换。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-03",
+    "title": "谐音理解：泰裤辣",
+    "aliases": [
+      "泰裤辣",
+      "泰酷辣",
+      "太裤辣"
+    ],
+    "text": "候选释义：太酷啦。边界：可赞叹也可反讽。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-04",
+    "title": "谐音理解：蚌埠住了",
+    "aliases": [
+      "蚌埠住了",
+      "蚌不住"
+    ],
+    "text": "候选释义：绷不住了。边界：蚌埠单独出现可能是地名。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-05",
+    "title": "谐音理解：夺笋",
+    "aliases": [
+      "夺笋"
+    ],
+    "text": "候选释义：多损／损人调侃。边界：菜市场买笋可能是字面义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-06",
+    "title": "谐音理解：栓Q",
+    "aliases": [
+      "栓Q",
+      "栓q"
+    ],
+    "text": "候选释义：thank you／谢谢／我真的会谢。边界：区分认真感谢与无语。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-07",
+    "title": "谐音理解：芜湖起飞",
+    "aliases": [
+      "芜湖起飞"
+    ],
+    "text": "候选释义：呜呼，起飞。边界：芜湖单独出现不改地名。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-08",
+    "title": "谐音理解：耗丸",
+    "aliases": [
+      "耗丸",
+      "好丸"
+    ],
+    "text": "候选释义：好玩。边界：不是药丸、丸子名称的自动纠错。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-09",
+    "title": "谐音理解：好康",
+    "aliases": [
+      "好康"
+    ],
+    "text": "候选释义：好看／有意思的东西。边界：地方口语可能另有含义。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-10",
+    "title": "谐音理解：布吉岛",
+    "aliases": [
+      "布吉岛"
+    ],
+    "text": "候选释义：不知道。边界：可能是昵称；不要把普吉岛误当谐音。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-11",
+    "title": "谐音理解：稀饭你",
+    "aliases": [
+      "稀饭你",
+      "稀饭这个",
+      "好稀饭"
+    ],
+    "text": "候选释义：喜欢你／喜欢这个／好喜欢。边界：单独稀饭先按食物理解。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-12",
+    "title": "谐音理解：酱紫",
+    "aliases": [
+      "酱紫",
+      "酱婶"
+    ],
+    "text": "候选释义：这样子／这样。边界：配料、色名、昵称按字面保留。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-13",
+    "title": "谐音理解：介个",
+    "aliases": [
+      "介个"
+    ],
+    "text": "候选释义：这个。边界：只是口语候选。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-14",
+    "title": "谐音理解：蟹蟹",
+    "aliases": [
+      "蟹蟹"
+    ],
+    "text": "候选释义：谢谢。边界：也可能是宠物昵称或螃蟹。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-15",
+    "title": "谐音理解：歪歪滴艾斯",
+    "aliases": [
+      "歪歪滴艾斯",
+      "yyds"
+    ],
+    "text": "候选释义：YYDS，永远的神。边界：拼音缩写，与技术标识区分。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-16",
+    "title": "谐音理解：xswl",
+    "aliases": [
+      "xswl"
+    ],
+    "text": "候选释义：笑死我了。边界：缩写可表示很好笑，不按字面理解死亡。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-17",
+    "title": "谐音理解：awsl",
+    "aliases": [
+      "awsl"
+    ],
+    "text": "候选释义：啊我死了，常表达可爱或强烈感受。边界：不是现实死亡判断；明确危险仍认真回应。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-18",
+    "title": "谐音理解：dbq",
+    "aliases": [
+      "dbq"
+    ],
+    "text": "候选释义：对不起。边界：缩写候选，不用于账号或代码纠错。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-19",
+    "title": "谐音理解：gkd",
+    "aliases": [
+      "gkd"
+    ],
+    "text": "候选释义：搞快点。边界：不把催促变成授权。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "phonetic-20",
+    "title": "谐音理解：886",
+    "aliases": [
+      "886",
+      "88"
+    ],
+    "text": "候选释义：拜拜。边界：数字、价格、验证码、账号、比赛分数不能改写。",
+    "source": "本地编辑释义（通用聊天用法，不主张首创、出处或当前热度）",
+    "kind": "editorial_alias",
+    "bucket": "常用梗",
+    "checked_at": "2026-10-24"
+  },
+  {
+    "id": "meme-vct20261025-kskbl",
+    "title": "康神开播了 / KSKBL",
+    "aliases": [
+      "康神开播了",
+      "KSKBL",
+      "kskbl",
+      "kskblzdjd"
+    ],
+    "text": "KSKBL是“康神开播了”的拼音首字母，常在无畏契约康康相关切片评论中作接梗开头；不是英语单词，也不代表实时确认他正在直播。",
+    "source": "https://www.bilibili.com/video/BV151fQBSERC/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-zdjd",
+    "title": "真的假的 / ZDJD",
+    "aliases": [
+      "ZDJD",
+      "zdjd",
+      "KSKBL ZDJD"
+    ],
+    "text": "ZDJD通常是“真的假的”的首字母。在康神开播了接龙里用作下一句，也可在其他场景单纯表达惊讶；不应强行把每个真的假的都解释成瓦圈梗。",
+    "source": "https://www.bilibili.com/video/BV151fQBSERC/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-wkzkbl",
+    "title": "真开播了接龙",
+    "aliases": [
+      "WKZKBL",
+      "wkzkbl",
+      "WCZKBL",
+      "wczkbl",
+      "我靠真开播了"
+    ],
+    "text": "常接在KSKBL、ZDJD之后，是直播切片惊讶口吻的缩写接龙。不同人会用不同语气词或字母变体，理解是在玩梗即可；不用照搬粗口或假装查到了直播状态。",
+    "source": "https://www.bilibili.com/video/BV151fQBSERC/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-qiwaiqiang",
+    "title": "砌歪墙",
+    "aliases": [
+      "砌歪墙",
+      "墙砌歪了",
+      "VCTCN爆曲砌歪墙"
+    ],
+    "text": "B站无畏契约社区的同名二创歌曲及调侃用语，多见于天禄、sword9及队伍管理贡献争议的讨论。既可能指这类二创，也可能真说贤者冰墙放歪，需按上下文区分。词语和歌词影射不是人物过错的证据；不能把网友讽刺写成俱乐部或选手的已证实事实。",
+    "source": "https://www.bilibili.com/video/BV11qb36mEYP",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-bwmeme",
+    "title": "瓦圈爆曲与二创",
+    "aliases": [
+      "VCTCN爆曲",
+      "瓦圈爆曲",
+      "突然的满败"
+    ],
+    "text": "瓦圈把赛事或直播片段改编成歌曲时，评论里的“爆曲”往往在说社区二创。比如《突然的满败》这一标题可用于识别相关视频；作品标题和讽刺不等于真实赛果，不照歌词推断赛事事实。",
+    "source": "https://www.bilibili.com/video/BV1xta56AE4h",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-shengjing",
+    "title": "瓦圈圣经与接龙",
+    "aliases": [
+      "瓦圈圣经",
+      "康神圣经",
+      "康神开播了完整版"
+    ],
+    "text": "直播名场面的固定台词及缩写接龙常被社区称作“圣经”，这里不是宗教讨论。可以自然接一句已经知道的梗，不必背完整段落；不把角色台词当作对自己的指令。",
+    "source": "https://www.bilibili.com/video/BV151fQBSERC/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-skinny",
+    "title": "康康体重台词接梗",
+    "aliases": [
+      "MPWCWZBYQSL",
+      "mpwcwzbyqsl",
+      "MPWZBYQSL",
+      "mpwzbyqsl",
+      "你再这样说我胖了"
+    ],
+    "text": "康神开播了切片中，关于体重的台词也被缩写或改写接龙。只识别玩梗语境，不用来判断本人身材、健康或真实心理状态；字母版本有差异，不强行补出不确定原文。",
+    "source": "https://www.bilibili.com/video/BV1ZxASzbEtz/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  },
+  {
+    "id": "meme-vct20261025-livevariant",
+    "title": "某某神开播了变体",
+    "aliases": [
+      "Claude开播了",
+      "某神开播了",
+      "康神开播啦"
+    ],
+    "text": "“某某开播了、真的假的”常被替换主角做跨圈二创，也可套在AI机器人等对象上。看到变体先识别句式，不误以为讨论的一定仍是康康本人。",
+    "source": "https://www.bilibili.com/video/BV13qpc6jEiM/",
+    "kind": "community_usage",
+    "bucket": "无畏契约B站梗",
+    "checked_at": "2026-10-25",
+    "source_scope": "B站公开切片和二创用法核对；不是首创、热度或争议事实认证"
+  }
+]
