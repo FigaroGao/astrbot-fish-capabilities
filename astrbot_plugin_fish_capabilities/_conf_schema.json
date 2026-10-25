@@ -276,7 +276,7 @@
   },
   "bili_owner_mention_enabled": {
     "type": "bool",
-    "description": "主人私聊评论任务可选择@已绑定的主人一次；不会自动给定时评论添加@，不保证通知送达",
+    "description": "允许主人私聊及已授权定时刷站自行判断是否邀请已绑定主人一次；默认不@，可指定正文位置，不保证通知送达",
     "default": false
   },
   "bili_comment_interval_seconds": {
@@ -297,6 +297,76 @@
   "bili_public_shelf_enabled": {
     "type": "bool",
     "description": "主人私聊明确要求时，只读已绑定主人公开点赞收藏；不用于选片推荐或记忆",
+    "default": false
+  },
+  "bili_like_enabled": {
+    "type": "bool",
+    "description": "小鲸绑定B站账号可对实际已读视频自主点赞；仅主人私聊或已授权定时刷站，不投币",
+    "default": false
+  },
+  "bili_favorite_enabled": {
+    "type": "bool",
+    "description": "小鲸绑定B站账号可收藏实际已读视频到专用夹",
+    "default": false
+  },
+  "bili_favorite_folder_id": {
+    "type": "string",
+    "description": "小鲸自己账号的专用视频收藏夹ID，必须归属当前绑定账号；不接受模型指定其他夹",
+    "default": ""
+  },
+  "bili_action_daily_limit": {
+    "type": "int",
+    "description": "每种互动滚动24小时尝试上限，1至100；失败和不确定同样计数，不是必须用满的目标",
+    "default": 20
+  },
+  "bili_reply_enabled": {
+    "type": "bool",
+    "description": "读取自己已登记评论下的回复；普通闲聊从受限短句中选择，复杂请求转主人私聊；每10分钟检查、与原评论共享预算",
+    "default": false
+  },
+  "bili_public_review_enabled": {
+    "type": "bool",
+    "description": "公开草稿可参考主人私聊及已召回记忆；独立审核所有公开评论/楼中楼，拿不准自然询问主人，不直接公开私事",
+    "default": false
+  },
+  "valorant_shop_enabled": {
+    "type": "bool",
+    "description": "主人私聊只读绑定账号每日商店，不购买充值",
+    "default": false
+  },
+  "bili_emote_enabled": {
+    "type": "bool",
+    "description": "B站评论使用账号已核验可用站内表情代码",
+    "default": false
+  },
+  "bili_comment_image_enabled": {
+    "type": "bool",
+    "description": "B站评论配一张QQ图库中已逐图核对、有公开来源的静态表情，必须图文审核",
+    "default": false
+  },
+  "bili_activity_enabled": {
+    "type": "bool",
+    "description": "主人私聊只读关注动态、评论及@消息，不读取私信",
+    "default": false
+  },
+  "bili_live_watch_enabled": {
+    "type": "bool",
+    "description": "每5分钟检查指定UID开播状态，只在下播到开播时提醒一次，初次建立基线",
+    "default": false
+  },
+  "bili_dynamic_post_enabled": {
+    "type": "bool",
+    "description": "普通文字动态发送，必须独立审核，香港每天最多尝试1条，结果不确定不重发",
+    "default": false
+  },
+  "bili_dynamic_auto_enabled": {
+    "type": "bool",
+    "description": "自主碎碎念：9至23点每小时最多按新私聊语境判断一次，可保持安静，发布仍受审核和每日1条限制",
+    "default": false
+  },
+  "forward_records_enabled": {
+    "type": "bool",
+    "description": "按层展开收到或引用的 QQ 合并转发记录，最多6层/80条/12000字；仅本轮资料，不自动长期记忆。",
     "default": false
   }
 }
