@@ -31,7 +31,7 @@ class CommandGate:
         return bool(directly_addressed and text and text.split()[0] in command_names)
 
 
-def install_gate(stage_class, gate, registry):
+def install_gate(stage_class, gate, registry, before_wake=None):
     """Reversible wrapper; existing stage instances resolve their class method.
 
     Standard message handlers run too late: argument errors/permission replies
@@ -44,6 +44,8 @@ def install_gate(stage_class, gate, registry):
 
     @functools.wraps(original)
     async def process(stage, event):
+        if before_wake is not None and await before_wake(event):
+            return
         names = set()
         for metadata in registry.star_handlers_map.values():
             for item in metadata.event_filters:

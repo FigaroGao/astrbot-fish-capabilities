@@ -2,7 +2,7 @@
 
 Protocol flow and payload structure adapted from GuJi08233/astrbot_plugin_val_shop
 (AGPL-3.0); record fields referenced wuche-2453198/astrbot_plugin_valorant_analysis.
-No third-party credentials, certificate bypasses, store calls, or endpoint probes.
+No third-party credentials, certificate bypasses, purchases, or endpoint enumeration.
 """
 import asyncio
 from collections import Counter
@@ -26,7 +26,8 @@ APP_ID = 'wxcbb49f1f39656c2a'
 UA = 'mval/2.6.0.10062 Channel/3 Manufacturer/Redmi Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 Chrome/110.0.0.0 Mobile Safari/537.36'
 PATHS = {'/go/auth/get_sdk_ticket','/go/auth/login_by_wechat',
          '/go/account/get_main_role_raw','/go/agame/career/record/list',
-         '/go/agame/career/record/scoreboard','/go/agame/career/record/player/roundoverview','/go/agame/career/record/player/rounds'}
+         '/go/agame/career/record/scoreboard','/go/agame/career/record/player/roundoverview','/go/agame/career/record/player/rounds',
+         '/go/mlol_store/agame/user_store'}
 
 
 def private_save(path, data):
@@ -138,7 +139,7 @@ def clean(value,limit=100):
 
 
 class ValorantRecords:
-    def __init__(self,path,http=None):self.path=path;self.http=http or MvalHTTP();self.cache=None;self.profile_cache=None;self.lock=asyncio.Lock();self.store=MatchCache(path.with_name('valorant-matches.sqlite3'))
+    def __init__(self,path,http=None):self.path=path;self.http=http or MvalHTTP();self.cache=None;self.profile_cache=None;self.shop_cache=None;self.lock=asyncio.Lock();self.store=MatchCache(path.with_name('valorant-matches.sqlite3'))
 
     def credentials(self):
         try:data=json.loads(self.path.read_text(encoding='utf-8'))
@@ -155,6 +156,33 @@ class ValorantRecords:
         role=roles[0]
         if not role.get('game_role_id') or not role.get('scene'):raise CapabilityError('角色缺少战绩授权字段，未确认战绩可用。')
         return role
+
+    async def shop(self):
+        async with self.lock:
+            credentials=self.credentials()
+            fingerprint=hashlib.sha256(cookie(credentials).encode()).hexdigest()
+            now=time.time()
+            if self.shop_cache and self.shop_cache[0]==fingerprint and now<self.shop_cache[1]:
+                return dict(self.shop_cache[2],cached=True)
+            await self.role(credentials)
+            value=await self.http.post('/go/mlol_store/agame/user_store',{'_t':int(now)},credentials)
+            if value.get('result')!=0:raise CapabilityError('每日商店读取失败，可能需要重新登录掌瓦；未购买或重试。')
+            data=value.get('data')
+            if isinstance(data,list):
+                sections=[x for x in data if isinstance(x,dict) and x.get('key')=='dailystore']
+                data=sections[0] if len(sections)==1 else None
+            if isinstance(data,dict) and data.get('key') not in (None,'dailystore'):data=None
+            if not isinstance(data,dict) or not isinstance(data.get('list'),list):raise CapabilityError('商店数据格式变化，未猜测商品。')
+            items=[]
+            for row in data['list'][:8]:
+                if not isinstance(row,dict) or not row.get('goods_name'):continue
+                items.append({'name':clean(row['goods_name']),'price_text':clean(row.get('rmb_price'))})
+            expires=number(data.get('end_ts'))
+            result={'items':items,'fetched_at':now,'expires_at':expires,'cached':False,
+                    'instruction':'这是绑定微信角色的官方每日商店，只读，不购买、不兑换。price_text保留接口rmb_price显示值，不换算VP或猜折扣；登录失效时需要重新绑定。只在主人私聊展示，不带入公开评论。'}
+            ttl=min(now+300,expires) if expires and expires>now else now+60
+            self.shop_cache=(fingerprint,ttl,result)
+            return result
 
     async def read(self,limit=3):
         bounded_int(limit,1,5,'战绩场次')

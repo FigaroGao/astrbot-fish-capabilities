@@ -8,6 +8,18 @@ class PublicKnowledge:
         self.context=context;self.config=config;self.cache={}
         try:self.entries=json.loads(manifest.read_text(encoding='utf-8'))
         except (OSError,ValueError):self.entries=[]
+    def local_meme_hints(self,text):
+        """Curated local vocabulary only; not an internet search or QQ memory."""
+        rows=[]
+        for entry in self.entries:
+            if not entry['id'].startswith('meme-'):continue
+            for alias in entry.get('aliases',[]):
+                if len(alias)<2:continue
+                pattern=r'(?<![A-Za-z0-9_])'+re.escape(alias)+r'(?![A-Za-z0-9_])' if alias.isascii() else re.escape(alias)
+                if re.search(pattern,str(text)[:6000],re.I):
+                    rows.append({'title':entry['title'],'meaning':entry['text'],'source':entry['source']});break
+            if len(rows)>=3:break
+        return rows
     def query_for(self,text):
         text=conversational_text(text)
         other_game=bool(re.search(r'英雄联盟|LPL|\bLOL\b',text,re.I) and not re.search(r'VCT|无畏契约|VALORANT',text,re.I))

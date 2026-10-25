@@ -9,6 +9,19 @@ from .policy import CapabilityError,bounded_int
 from .http import PublicJSON
 
 
+OWNER_MARKER = '{{owner}}'
+
+
+def render_owner_mention(text, name):
+    """Insert only the verified nickname. Legacy callers may omit the marker."""
+    if OWNER_MARKER not in text:
+        return text+' @'+name
+    before, after = text.split(OWNER_MARKER)
+    left = '' if not before or before[-1].isspace() else ' '
+    right = '' if not after or after[0].isspace() else ' '
+    return (before+left+'@'+name+right+after).strip()
+
+
 class CommentBackend:
     def __init__(self, reader_backend):
         self.backend = reader_backend
@@ -23,21 +36,30 @@ class CommentBackend:
         info = await asyncio.to_thread(verify_account,{k:str(getattr(credential,k,'') or '') for k in ('sessdata','bili_jct','dedeuserid','buvid3')})
         return str(info['mid'])
 
-    async def send(self, video_id, text, mention=None):
+    async def send(self, video_id, text, mention=None, meme=None):
         from bilibili_api import comment
         credential = self.backend.credential()
         info = await self.backend.info(video_id)
         aid = int(info['aid'])
+        pictures=None
+        if meme:
+            from bilibili_api.utils.picture import Picture
+            pictures=Picture.from_file(str(meme.path))
         if mention:
             from bilibili_api.utils.network import Api
             api=comment.API['comment']['send']
             if api.get('url')!='https://api.bilibili.com/x/v2/reply/add' or api.get('method')!='POST':raise CapabilityError('评论接口发生变化，未发布。')
-            result=await Api(**api,credential=credential).update_data(oid=aid,type=1,message=text,plat=1,
+            image_fields={}
+            if pictures:
+                uploaded=await comment.upload_image(image=pictures,credential=credential)
+                image_fields['pictures']=json.dumps([{'img_src':uploaded['image_url'],'img_width':uploaded['image_width'],'img_height':uploaded['image_height'],'img_size':uploaded['img_size']}])
+            result=await Api(**api,credential=credential).update_data(**image_fields,oid=aid,type=1,message=text,plat=1,
                 gaia_source='main_web',statistics=json.dumps({'appId':100,'platform':5}),
                 at_name_to_mid=json.dumps({mention['name']:int(mention['uid'])},ensure_ascii=False)).result
         else:
+            options={'pic':pictures} if pictures else {}
             result = await comment.send_comment(text=text, oid=aid,
-                type_=comment.CommentResourceType.VIDEO, credential=credential)
+                type_=comment.CommentResourceType.VIDEO, credential=credential,**options)
         reply_id = str(result.get('rpid') or result.get('rpid_str') or (result.get('reply') or {}).get('rpid') or '')
         return {'reply_id': reply_id, 'aid': aid,'mention_submitted':bool(mention),'notification_received_verified':False}
 
@@ -73,6 +95,8 @@ class BiliComments:
     def __init__(self, reader, settings, backend=None, clock=time.time):
         self.reader, self.settings, self.clock = reader, settings, clock
         self.backend = backend or CommentBackend(reader.backend)
+        self.reviewer = None
+        self.media = None
         with reader.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS bili_comment_pause(account TEXT PRIMARY KEY,reason TEXT)')
             db.execute('CREATE TABLE IF NOT EXISTS bili_comments(key TEXT PRIMARY KEY, account TEXT, bvid TEXT, stamp REAL, state TEXT, reply_id TEXT, text_hash TEXT)')
@@ -99,7 +123,8 @@ class BiliComments:
             'owner_mention_enabled':bool(self.settings.get('bili_owner_mention_enabled',False)),'owner_bound':bool(self.settings.get('bili_owner_uid')),
             'instruction': '不自动解除暂停；由主人在本地核对账号、验证与回执后处理。'}
 
-    async def post(self, reading_id, text, evidence_ids, mention_owner=False):
+    async def post(self, reading_id, text, evidence_ids, mention_owner=False,meme_id='',meme_sha256=''):
+        original_text=text
         if not self.settings.get('bili_comment_enabled', False):
             raise CapabilityError('B站评论尚未启用；搜索、阅读与推荐可独立使用。')
         account = str(self.settings.get('bili_account_id', ''))
@@ -109,11 +134,21 @@ class BiliComments:
             raise CapabilityError('评论需要 1～220 字。')
         text = text.strip()
         if type(mention_owner) is not bool:raise CapabilityError('mention_owner必须是布尔值。')
+        markers=text.count(OWNER_MARKER)
+        if markers>1 or (markers and not mention_owner):
+            raise CapabilityError('只在决定@主人时放一个{{owner}}占位符；不@就不要占位符。')
         if '@' in text or '＠' in text:raise CapabilityError('不要手写@；只能通过mention_owner提及已绑定的主人一次。')
         if re.search(r'https?://|SESSDATA|bili_jct|sk-[A-Za-z0-9]{10,}|\b1[3-9]\d{9}\b', text, re.I):
             raise CapabilityError('公开评论不能包含凭据、手机号或外部链接。')
         if not isinstance(evidence_ids, list) or not 1 <= len(evidence_ids) <= 8 or not all(isinstance(x,str) for x in evidence_ids):
             raise CapabilityError('评论必须引用实际读取过的字幕依据。')
+        image=None
+        if self.media:
+            await self.media.validate(text)
+        if meme_id:
+            if not self.media or not self.reviewer:raise CapabilityError('图片评论需要图库验证及独立审核。')
+            image=self.media.image(meme_id)
+            if meme_sha256 and image.sha256!=meme_sha256:raise CapabilityError('批准后图片已改变，未发送。')
         now = self.clock()
         with self.reader.connect() as db:
             row = db.execute('SELECT packet,stamp FROM readings WHERE id=?', (reading_id,)).fetchone()
@@ -138,8 +173,15 @@ class BiliComments:
             try:mention=await asyncio.wait_for(self.backend.prepare_mention(owner),15)
             except Exception:raise CapabilityError('无法核验主人B站身份，本次没有发布。') from None
             if str(mention.get('uid'))!=owner or not isinstance(mention.get('name'),str) or not mention['name'].strip() or re.search(r'[@＠\r\n]',mention['name']):raise CapabilityError('主人@映射不合法，未发布。')
-            text=text+' @'+mention['name']
+            text=render_owner_mention(text,mention['name'])
             if len(text)>220:raise CapabilityError('加上@主人后超过220字，请缩短正文。')
+        if self.reviewer:
+            payload={'reading_id':reading_id,'text':original_text,'evidence_ids':evidence_ids,'mention_owner':mention_owner}
+            public={'bvid':video_id,'title':packet.get('title'),'evidence':packet.get('evidence',[])}
+            if image:
+                payload.update(meme_id=meme_id,meme_sha256=image.sha256)
+                public.update(_image_path=str(image.path),image_description=image.description,image_text=image.image_text)
+            await self.reviewer.gate('root',payload,text,public)
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('SELECT 1 FROM bili_comment_pause WHERE account=?', (account,)).fetchone():
@@ -156,7 +198,11 @@ class BiliComments:
                 raise CapabilityError('评论间隔尚未达到当前配置的'+str(interval)+'秒。')
             db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)', (key, account, video_id, now, 'pending', '', hashlib.sha256(text.encode()).hexdigest()))
         try:
-            result = await asyncio.wait_for(self.backend.send(video_id,text,mention=mention) if mention else self.backend.send(video_id,text),20)
+            if image:
+                self.media.library.bytes_for(image)
+                request=self.backend.send(video_id,text,mention=mention,meme=image)
+            else:request=self.backend.send(video_id,text,mention=mention) if mention else self.backend.send(video_id,text)
+            result = await asyncio.wait_for(request,35 if image else 20)
             reply_id = str(result.get('reply_id') or '')
             if not reply_id.isdigit() or int(reply_id) <= 0:
                 raise ValueError('missing_receipt')

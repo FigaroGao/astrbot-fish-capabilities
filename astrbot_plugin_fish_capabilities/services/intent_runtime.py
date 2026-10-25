@@ -122,6 +122,10 @@ class IntentRuntime:
 
     async def run(self,gcp,event):
         self.observe(event)
+        quiet=getattr(self.cap,'group_quiet',None)
+        if quiet and quiet.suppress(event):
+            event.call_llm=True
+            self.diagnostic(event.unified_msg_origin,'owner_quiet');return
         reason=skip_group_task(self.cap.config,event)
         if reason:
             event.call_llm=True
@@ -140,6 +144,7 @@ class IntentRuntime:
         try:
             async with lock:
                 if self.closed:return
+                if quiet and quiet.suppress(event):return
                 if direct and self.latest_direct.get(scope)!=revision:
                     self.diagnostic(scope,'merged_direct');return
                 if not direct:
@@ -179,6 +184,7 @@ class IntentRuntime:
                 event.set_extra('fish_intent_group_snapshot',rows)
                 self.diagnostic(scope,'direct' if direct else 'intent_yes')
                 async for result in gcp._process_message(event):
+                    if quiet and quiet.suppress(event):return
                     started=True
                     yield result
         finally:
