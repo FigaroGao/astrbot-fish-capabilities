@@ -25,3 +25,9 @@ No upstream source caches, SDK wheels, device backups, logs, browser sessions, k
 - B站@映射协议核对jackwener/opencli的clis/bilibili/comment.js；公开点赞接口核对DIYgod/RSSHub的lib/routes/bilibili/like.ts；只参考接口字段，未复制浏览器运行时或整体实现。Bilibili mention fields were checked against jackwener/opencli's clis/bilibili/comment.js and public likes against DIYgod/RSSHub's lib/routes/bilibili/like.ts; only protocol fields were referenced,without copying their browser runtimes or complete implementations.
 - 新增52条公共梗与谐音资料逐条保留来源、核对日期与编辑解释标签；不是实时热榜。The52 added public slang/homophone entries retain per-entry sources,check dates,and editorial labels,and are not a live popularity chart.
 - 本地信箱内容、账号UID绑定、掌瓦数据与缓存、公开书架查询结果、实机健康报告均不随发布。Local letters,UID bindings,VALORANT data/caches,shelf-query results,and device-health reports are excluded.
+
+## 0.6.0新增范围 / Added scope in0.6.0
+
+新增B站互动、通知、动态与表情面板使用可选bilibili-api-python17.4.1接口；图片仍只引用已核验公开图库，不随仓库分发。掌瓦每日商店沿用已注明AGPL来源的本人微信绑定流程，不复制第三方凭据。8条新增社区用语在knowledge/vct-bili-20261025/逐条保留来源与日期，编辑解释不等于首创或争议事实认证。群聊静音与转发展开通过现有AstrBot钩子及OneBot接口，不分发框架。审核上下文、待审草稿、订阅名单、互动回执、信件和数据库全部排除。
+
+New Bilibili interactions, notifications, dynamics and emote-panel access use the optional bilibili-api-python17.4.1 interfaces. Images are references to the verified public library and are not distributed. The VALORANT shop reuses the owner's WeChat binding flow under the AGPL attribution already recorded, without third-party credentials. The eight additional community expressions retain per-entry sources and dates in knowledge/vct-bili-20261025; editorial explanations do not authenticate origins or disputed claims. Group silence and forward expansion use existing AstrBot hooks and OneBot APIs without distributing the framework. Review context, pending drafts, subscriptions, receipts, letters and databases are excluded.

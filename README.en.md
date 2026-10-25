@@ -2,28 +2,27 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
-Extend AstrBot on an idle ARM64 tablet into a QQ bot that understands who a group message addresses, retrieves information on demand, browses Bilibili, initiates private conversations, and controls context costs. The project reuses Termux, Ubuntu proot, NapCat, and AstrBot rather than implementing the QQ protocol. Updated: 2026-10-25; sharing release 0.5.0.
+Extend AstrBot on an idle ARM64 tablet into a QQ bot that understands who a group message addresses, retrieves information on demand, browses Bilibili, initiates private conversations, and controls context costs. The project reuses Termux, Ubuntu proot, NapCat, and AstrBot rather than implementing the QQ protocol. Updated: 2026-10-25; sharing release 0.6.0.
 
-This experimental distribution requires configuration and adaptation. Every capability switch defaults to off. It does not reproduce the original device's accounts, conversations, memories, image library, or login sessions. This English version is a complete section-by-section translation of the Chinese version, with the same configuration, limits, and validation conclusions.
+This experimental distribution requires configuration and adaptation. The master switch and newly added capabilities are disabled in the sharing configuration. It does not reproduce the original device's accounts, conversations, memories, image library, or login sessions. This English version is a complete section-by-section translation of the Chinese version, with the same configuration, limits, and validation conclusions.
 
 ## Additions and fixes in this release
 
-This release collects work completed since public version0.4.0. Deployment observations and interface checks mostly date to2026-10-24; the release was prepared on2026-10-25. Experimental prototypes are not all presented as deployed features.
+This release collects work completed on2026-10-25 since public version0.5.0. Existing search, recommendations, video memory, context budgets, weather, history, match records and QQ recovery remain. Publishing does not redeploy or restart QQ on the original device.
 
-| Module | Changes in0.5.0 |
+| Module | Changes in0.6.0 |
 | --- | --- |
-| Bilibili selection | The signed-in account homepage is an optional default source; keyword search, popular videos, followings, and UP uploads remain distinct; popular results never masquerade as personalized recommendations |
-| Public shelf | On an explicit owner request, anonymously reads the bound owner's public likes/favorites, at most6 entries; rejects private folders and does not use the shelf as a recommendation seed |
-| Comments | A single mention bound to the owner's UID; separate submitted, author-visible, and anonymously visible states; configurable spacing and a rolling24-hour ceiling up to20, without duplicate posts or resends |
-| Previews | Preserves source-preview pixels, uses lossless PNG, and lays out the actual number of frames; reports dimensions and never pretends to recover tiny text absent from a low-resolution source |
-| Mainland VALORANT | WeChat QR binding for a mainland PC account, recent statistics, match players/weapons/multikills/rounds, persistent incremental caching, and stable match references |
-| Statistical fixes | Competitive-only by default, no combined ACS across mixed modes; ACS and performance score are separate; compact details by default with full/round/weapon views on demand |
-| Mailbox | The bot and local Codex can leave letters, reply, acknowledge reading, and inspect unread counts; no automatic Codex wake-up or extra QQ messages |
-| Conversation and groups | Optional depth guidance and silent skipping of obvious math or technical-solving requests in allowed groups; normal discussion and owner-private chat remain available |
-| Knowledge and language | Adds52 public slang/homophone entries, totaling158 with106 game entries; contextual hints do not rewrite the original message |
-| Recovery documentation | Explains native NapCat recovery, bounded native-Termux login, runit, and the independent guard; adds12 recovery state-machine tests |
+| Group silence | Owner commands `/闭嘴` or `/安静` silence the group for120 seconds with automatic resumption; `/开口` or `/恢复说话` resumes early. Old queued segments are suppressed; private chat is unaffected |
+| Nested forwards | Expands forward IDs, inline nodes and QQ merged-forward cards, including quoted cards; at most6 levels/80 nodes/12000 characters, with explicit timeout/failure markers |
+| Bilibili likes/favorites | Acts on actually read videos using the bot's own account and dedicated private folder; separate budgets, durable deduplication and no retry on uncertainty |
+| Comments and nested replies | Checks direct replies to the bot's own comments, with a natural short-reply mode; optional single real owner mention and a shared comment/reply budget |
+| Public-send review | Drafts may use owner-private context and actually recalled memories, followed by independent review. Uncertainty prompts a natural owner question; explicit approval sends the exact draft, while questions are not approval |
+| Comment media | Available platform emotes and approved public-library images, with joint image/text review, SHA256 binding and no arbitrary-path uploads |
+| Dynamics and alerts | Read-only reply/mention/following feeds; live alerts for selected UPs only; optional autonomous text dynamics with at most one daily attempt; no private messaging |
+| Daily shop | Owner-private read-only access to the owner's VALORANT daily shop, distinguishing dailystore from kingdomstore; no purchases or recharges |
+| Public knowledge | Eight Bilibili VALORANT expressions, including KSKBL, ZDJD and 砌歪墙, bring the standard catalog to166, with importable Markdown and sources |
 
-Existing group intent, segmentation, context compression, short activity summaries, private initiative, weather, history, usage, and categorized memes remain. TTS/device control remain disabled prototypes. No verified automatic PC Arena Breakout match API is available. See the [new-capability guide](docs/new-capabilities.en.md).
+Every public write requires separate enablement. Original-device accounts, subscriptions and budgets are not imposed on new users. See the [validation report](docs/validation.en.md), [Bilibili interactions and review guide](docs/bili-social.en.md), and [group silence and forward guide](docs/group-controls.en.md). Earlier functionality remains documented in the [capability guide](docs/new-capabilities.en.md). TTS/device control remain disabled prototypes, and no verified automatic PC Arena Breakout records API is available.
 
 ## Environment and layout
 
@@ -71,6 +70,12 @@ Background proactive messages use a separate serialized sender, with 2–3 natur
 
 Optionally enable group_skip_complex_tasks to silently skip obvious arithmetic, homework, proofs, and coding/debugging requests in allowed groups before generation, even when the bot is mentioned. It sends no refusal template and adds no classification model call. Ordinary numbers, scores, dates, and game discussion are not automatically blocked, and owner-private chat is unchanged. Conservative rules cannot recognize every complex question. conversation_depth_enabled adds temporary quality guidance to normal requests, not an independent thinking schedule or a requirement for long answers.
 
+## Group silence and nested chat records
+
+With`owner_only_commands_enabled`, a configured owner administrator, platform allowlist and authorized group, `/闭嘴` or `/安静` silences that group for120 seconds; `/开口` or `/恢复说话` resumes early. Other members cannot resume it. Mentions do not elicit replies during silence, and old queued segments are not replayed afterward. Private chat continues, and already sent messages are not recalled. The guard covers normal OneBot event sends; third-party direct low-level sends need separate integration.
+
+Enable`forward_records_enabled` separately to expand received or quoted merged forwards, including nested records. Each turn is bounded to6 levels,12 remote reads,80 nodes and12000 characters, with cycle deduplication and explicit timeout/truncation markers. Text is expanded; an image-presence marker is not visual recognition, and a card title is not the full transcript. Reference material is temporarily injected into the current session. The expander stores no transcript or automatic long-term facts, and embedded commands grant no authority. Device checks confirmed hook loading and QQ online status, but a real nested-card end-to-end test still requires an actual sample. See[group controls](docs/group-controls.en.md).
+
 ## Bilibili: selection, reading, and memory
 
 fish_bili_browse returns candidates. With bili_recommendation_enabled, an empty keyword uses the bot's own signed-in homepage; an explicit keyword searches, and source=popular explicitly selects public popular videos. Results include source labels, titles, descriptions, uploaders, durations, available view counts, and previously-read flags, at most6 entries, omitting videos over10 minutes. Titles do not establish reposting or quality. Recommendation failures neither bypass checks nor silently substitute popular results. Candidate reads do not simulate app viewing, fabricate playback/impressions, or promise that the platform learns new preferences.
@@ -89,13 +94,11 @@ In an allowed group, an explicit owner request reads directly. Other members onl
 
 ## Bilibili: QR login and public comments
 
-Local QR login uses tools/bili_login.py; credentials remain private. QR generation, scan authorization, and account verification are distinct stages. Diagnostics identify the stage without printing cookies. Pending verification can resume; a browser login success message does not prove that tool binding finished.
+QR login continues to use`tools/bili_login.py`, keeping credentials in the private data directory. Authorization, tool verification, submission receipts, author visibility and anonymous visibility are distinct states. None should be mistaken for a blanket login or public-visibility guarantee. Root comments require real reading evidence; root and nested replies share a rolling24-hour budget of at most20 attempts, with optional removal of spacing. The same video is not posted to repeatedly, and uncertainty pauses rather than retries. Public writes are disabled in the sharing defaults.
 
-Comments require bili_comment_enabled, the verified bot account, an actual reading_id, and subtitle evidence. Defaults are1800 seconds between attempts and2 attempts per rolling24 hours. Set bili_comment_interval_seconds=0 explicitly to remove spacing and bili_comment_daily_limit=20 to raise the ceiling to20. Examples remain disabled rather than applying the original device's20/0 policy to someone else's account. A video is not commented twice. Failed/uncertain attempts count and pause publishing, without automatic resends, unpausing, or platform-verification bypasses.
+Version0.6.0 optionally uses recent owner-private conversation and actually recalled long-term memories to draft natural comments. A separate no-tool review checks private facts, task answers and privilege-changing content. When uncertain, the bot asks the owner naturally instead of sending only a link. Explicit agreement approves the exact draft; questions, rejection and ambiguous wording do not count. More conservative legacy behavior remains when review is disabled. Model review can still misclassify.
 
-Optionally bind bili_owner_uid and enable bili_owner_mention_enabled. An owner-private task can choose mention_owner=true to mention only that owner once. The program checks the current name by UID and builds a real mention mapping, rather than letting the model write mentions of others. Scheduled comments do not automatically mention the owner. Actual notification delivery has not been tested.
-
-Receipts, author visibility, and anonymous visibility are reported separately. Anonymous visibility requires a cookie-free read matching comment ID, author, and text. It does not promise visibility for every region or indefinitely, or prove notification receipt. Public text must not copy private chats, relations, keys, or group data. Restrictions stop the attempt instead of triggering alternative repeated posts. See the [new-capability guide](docs/new-capabilities.en.md).
+An optional single real bound-owner mention, platform emotes and one approved public-library image are supported. Actual image/text content is reviewed together and file SHA256 is bound to approval. Likes, favorites, nested replies, dynamics, notification reads and selected-UP live alerts have distinct switches and boundaries. See the [Bilibili interaction, review and dynamics guide](docs/bili-social.en.md) for complete configuration, tools and limits.
 
 ## Scheduled browsing, private initiative, and activity memory
 
@@ -138,7 +141,9 @@ Automatic queries extract only public entities and topic words, not whole privat
 
 The dataset is current through 2026-10-24 and does not update itself online. Entries distinguish stable references, season snapshots, completed results, announcements, and community usage. A 2026 roster is not a 2027 list; community opinions are not permanent strength judgments or allegations of illness or misconduct. Rebuild native indexes after editing Markdown and synchronize JSON when changing the entity catalog. Original Chinese data retains mainland names; this English README does not replace them with Hong Kong/Taiwan localization names.
 
-knowledge/common-slang/ adds52 entries:32 common slang items and20 homophone/misheard-sound/abbreviation groups, for158 public entries overall. Import a separate public collection and configure slang_knowledge_names rather than mixing it into private memory. Use catalog.all.json in that directory for the complete public catalog,as described in the new guide. homophone_enabled adds bounded temporary context hints, never rewriting original text. It excludes literals such as URLs/code and never treats a homophone as a command or identity. Editorial explanations, public usage, and verified origins are labeled separately; a snapshot is not today's popularity ranking. See the [new guide](docs/new-capabilities.en.md).
+knowledge/common-slang/ adds52 entries:32 common slang items and20 homophone/misheard-sound/abbreviation groups, previously158 public entries, now166 with the eight0.6.0 additions. Import a separate public collection and configure slang_knowledge_names rather than mixing it into private memory. Use knowledge/vct-bili-20261025/catalog.all.json for the complete0.6.0 public catalog,as described in the new guide. homophone_enabled adds bounded temporary context hints, never rewriting original text. It excludes literals such as URLs/code and never treats a homophone as a command or identity. Editorial explanations, public usage, and verified origins are labeled separately; a snapshot is not today's popularity ranking. See the [new guide](docs/new-capabilities.en.md).
+
+The[additional expression pack](knowledge/vct-bili-20261025/README.md) supplies the eight new entries. Merge JSON by ID and separately rebuild the public knowledge index.
 
 ## Memes, weather, group history, and usage
 
@@ -174,7 +179,7 @@ python -m pytest -q tests
 python -m unittest discover -s recovery -p 'test_*.py'
 ```
 
-The main capability suite passed263 offline tests and recovery/guarding passed18 isolated tests,281 total. Asynchronous tests must actually run rather than be counted as passed when skipped. Results for this sharing release are recorded in the [validation guide](docs/validation.md). Tests use synthetic messages and fake endpoints, without accounts or keys. The original device has been checked for plugin loading, real public Bilibili reading and QR account verification, public knowledge retrieval, context migration/cache reuse, segment components, recovery-manager supervision, and missing-service repair. This release did not restart QQ, send group test messages or real public Bilibili comments, deliberately trigger Tencent verification, or test whole-device reboot. Ordinary-reply segmentation was checked at the component and core-decision levels; final rendering on a phone should still be verified through normal conversation.
+The main capability suite passed389 offline tests and recovery/guarding passed18 isolated tests,407 total. Asynchronous tests must actually run rather than be counted as passed when skipped. Results for this sharing release are recorded in the [validation guide](docs/validation.en.md). Tests use synthetic messages and fake endpoints, without accounts or keys. The original device has been checked for plugin loading, real public Bilibili reading and QR account verification, public knowledge retrieval, context migration/cache reuse, segment components, recovery-manager supervision, and missing-service repair. This release did not restart QQ, send group test messages or real public Bilibili comments, deliberately trigger Tencent verification, or test whole-device reboot. Ordinary-reply segmentation was checked at the component and core-decision levels; final rendering on a phone should still be verified through normal conversation.
 
 | Symptom | Check |
 | --- | --- |
