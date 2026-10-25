@@ -58,5 +58,19 @@
   "bili_comment_interval_seconds": 1800,
   "bili_comment_daily_limit": 2,
   "bili_recommendation_enabled": false,
-  "bili_public_shelf_enabled": false
+  "bili_public_shelf_enabled": false,
+  "bili_like_enabled": false,
+  "bili_favorite_enabled": false,
+  "bili_favorite_folder_id": "",
+  "bili_action_daily_limit": 20,
+  "bili_reply_enabled": false,
+  "bili_public_review_enabled": false,
+  "valorant_shop_enabled": false,
+  "bili_emote_enabled": false,
+  "bili_comment_image_enabled": false,
+  "bili_activity_enabled": false,
+  "bili_live_watch_enabled": false,
+  "bili_dynamic_post_enabled": false,
+  "bili_dynamic_auto_enabled": false,
+  "forward_records_enabled": false
 }
