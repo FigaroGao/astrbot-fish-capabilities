@@ -1,19 +1,27 @@
-# Sharing-release validation: 2026-10-25
+# Sharing-release validation:2026-10-25 ·0.6.0
 
 [中文](validation.md)
 
-The 0.5.0 sharing directory was retested: `pytest -q tests` **263 passed**; `python -m unittest discover -s recovery -p 'test_*.py'` **18 passed**. The **281 tests** use synthetic messages, temporary directories and fake endpoints rather than real passwords or public comments. Dependencies are in the root `.[test]` extra; pytest-asyncio is required, and skipping asynchronous tests because dependencies are missing is not a complete pass.
+The sharing directory was retested with`python -m pytest -q tests`: **389 passed**;`python -m unittest discover -s recovery -p 'test_*.py'`: **18 passed**, for **407 total**. Tests use synthetic messages, temporary directories and fake endpoints, not real passwords or public comments. Dependencies are in the root`.[test]` extra. Asynchronous tests must run; skipping them because dependencies are missing is not a complete pass. The test platform label was generalized before publication and targeted tests were rechecked.
 
 ## Coverage in this release
 
-Plugin tests cover authorization and private-chat isolation, intent concurrency, media budgets, usage, Bilibili QR callbacks and identity checks, homepage recommendations, public likes and favorites scope, comment mention mapping and visibility classification, zero-value semantics for unlimited reading budgets, preview images, group approval, private-initiative budgets, context summaries and failure retention, public knowledge, homophone hints, depth guidance, complex group-task filtering, the mailbox, and VALORANT login state, match fields and incremental cache reads.
+Building on0.5.0 authorization, context, intent, knowledge, login, reading, match-record and cache checks, new coverage includes durable interaction deduplication, comment-thread ownership, independent review and fail-closed behavior, exact single-use approvals and question rejection, emotes and image-byte binding, calendar-day dynamic budgets, live-state transitions, daily-shop fields, nested-forward boundaries, and group silence, early resumption, automatic expiry and old-segment suppression. Counts come from actual execution rather than the number of added files.
 
-Recovery tests comprise 12 state-machine tests and 6 independent-guard tests. They cover waiting for native recovery, readiness checks, two quick-login attempts and one password fallback, persisting attempt counts before a request can time out, stopping for manual verification, waiting for QR scanning without a password, unreachable WebUI, cooldowns and guard repair boundaries. See the [recovery guide](recovery.en.md).
+Recovery retains12 state-machine tests and six independent-guard tests, covering waiting for native NapCat recovery, two quick-login attempts and one optional password fallback, pre-request persistence, counting timeouts, stopping for manual verification, waiting for QR without a password, unreachable WebUI, cooldowns and guard repair boundaries. The recovery manager itself is unchanged in this release. See the[recovery guide](recovery.en.md).
 
-## Device checks and limits of the evidence
+## Original-device reads and loading checks
 
-Earlier checks on the original device included plugin loading, public Bilibili reading and QR verification, real knowledge queries, context migration and cache reuse, ordinary long-text segmentation components and core decisions, manager restart after exit, and missing-service repair. Before this release, read-only checks showed the recovery manager as `online` and the independent guard as `healthy`; the manager source matched the live file. The owner's report of recent stable operation is operational feedback, not a permanent-uptime guarantee.
+Reference-device checks covered Bilibili account identity and favorite-folder ownership/privacy, interaction status, own-comment root/parent/ctime fields, independent text/image review, available emote and eligible image catalogs, following/reply/mention notices, selected-UP live state and background workers. Eight new knowledge chunks were imported into the original public vector index and requested-phrase retrieval succeeded; the daily shop returned four real items. These describe observed samples rather than data every account is guaranteed to receive.
 
-This publication did not restart QQ on the tablet, reinstall recovery, deliberately disconnect the account or send group test messages. No private configuration, account bindings, match records, conversations, mailbox contents or runtime logs were published.
+After group-control deployment, checks confirmed plugin activation, early-entry and segmented-send guards, forward-hook registration and QQ online status. Limited recent history contained no actual nested card for an end-to-end check: **complete reading of the user's nested record remains unverified**. Images in forwards are only marked as present, not visually interpreted. Final ordinary segmentation on a phone still needs normal-use verification.
 
-Real public comments and notification delivery, actual password fallback, Tencent identity verification, full-chain recovery after a device reboot, 27-frame visual coverage across all videos, and ARM64 compatibility across all software versions were not tested. Final segmentation as displayed on a phone and the complete chain from QQ online through OneBot to AstrBot message receipt still require normal-use verification; one online flag cannot replace an end-to-end test. The packaged installer received syntax and path-logic checks without reinstalling the existing device.
+Earlier checks confirmed the recovery manager online, the independent guard healthy, supervised restart after manager exit and missing-service repair. Recent stability is user feedback, not an uptime guarantee. This update did not restart QQ, reinstall recovery or deliberately cause a disconnect.
+
+## Untested operations and publication checks
+
+Publication testing sent no actual Bilibili root/nested/image comments, dynamics or QQ alerts, arbitrarily liked/saved no videos, performed no purchases or recharges, read no Bilibili private messages, triggered no Tencent verification and tested no full-device reboot. Actual public visibility, alert delivery and the first normal write cannot be proven by offline tests or a single online flag.
+
+No real configuration, account bindings, subscriptions, cookies/tokens, match records, conversations, memories, pending drafts, letters, databases, image libraries or logs are published. AGPL attribution is retained, and only public knowledge data is included. New capabilities are disabled in the sharing configuration. AstrBot4.29.1 is the reference version; other versions still require checks of internal pipelines and OneBot integration.
+
+The owner-role timing fix was additionally checked on the device with real framework events and the real waking-stage entry, using an inert sender. All nine assertions passed without real QQ sends. This is a pipeline simulation, not a claim that the user has confirmed the command on the phone.
