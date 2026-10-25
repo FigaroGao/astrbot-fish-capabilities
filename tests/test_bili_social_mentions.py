@@ -39,6 +39,67 @@ async def test_owner_only_mention_one_mapping_and_anonymous_visibility_distinct(
     assert not result['publicly_visible_verified'] and not result['notification_received_verified']
     assert result['visibility_status']=='author_read_only'
 
+
+@pytest.mark.parametrize('text,expected',[
+    ('{{owner}} 这段你可能喜欢。','@owner 这段你可能喜欢。'),
+    ('看到这段想到你，{{owner}}来看看。','看到这段想到你， @owner 来看看。'),
+    ('这段挺有意思 {{owner}}','这段挺有意思 @owner'),
+])
+async def test_marker_places_verified_mention_anywhere(tmp_path,text,expected):
+    backend=Mentions();_,p,w=await prepared(tmp_path,backend)
+    w.settings.update(bili_owner_uid='123',bili_owner_mention_enabled=True)
+    result=await w.post(p['reading_id'],text,[p['evidence'][0]['evidence_id']],True)
+    assert backend.sent==(expected,{'uid':'123','name':'owner'})
+    assert result['mention_submitted'] and not result['notification_received_verified']
+    assert backend.sent[0].count('@')==1 and '{{owner}}' not in backend.sent[0]
+
+
+async def test_ordinary_comment_needs_no_mention_or_owner_lookup(tmp_path):
+    backend=Mentions();backend.prepare_mention=AsyncMock()
+    _,p,w=await prepared(tmp_path,backend)
+    result=await w.post(p['reading_id'],'这个细节挺有意思。',[p['evidence'][0]['evidence_id']])
+    assert backend.sent==('这个细节挺有意思。',None)
+    assert not result['mention_submitted'];backend.prepare_mention.assert_not_called()
+
+
+@pytest.mark.parametrize('text,enabled',[
+    ('{{owner}} 看看 {{owner}}',True),
+    ('{{owner}} 看看',False),
+    ('{{owner}} @other 看看',True),
+    ('{{owner}} ＠other 看看',True),
+])
+async def test_invalid_marker_combinations_never_post(tmp_path,text,enabled):
+    backend=Mentions();_,p,w=await prepared(tmp_path,backend)
+    w.settings.update(bili_owner_uid='123',bili_owner_mention_enabled=True)
+    with pytest.raises(CapabilityError):
+        await w.post(p['reading_id'],text,[p['evidence'][0]['evidence_id']],enabled)
+    assert backend.calls==0
+
+
+async def test_expanded_verified_nickname_still_obeys_final_length(tmp_path):
+    backend=Mentions();backend.prepare_mention=AsyncMock(return_value={'uid':'123','name':'n'*60})
+    _,p,w=await prepared(tmp_path,backend)
+    w.settings.update(bili_owner_uid='123',bili_owner_mention_enabled=True)
+    with pytest.raises(CapabilityError,match='220'):
+        await w.post(p['reading_id'],'文'*210+'{{owner}}',[p['evidence'][0]['evidence_id']],True)
+    assert backend.calls==0
+
+
+@pytest.mark.parametrize('choice,expected',[(True,True),(False,False),('true',False)])
+async def test_scheduled_comment_can_choose_mention_but_never_requires_it(tmp_path,choice,expected):
+    from astrbot_plugin_fish_capabilities.services.bili_duty import BiliDuty
+    reader,p,w=await prepared(tmp_path)
+    w.settings['bili_owner_mention_enabled']=True
+    writer=types.SimpleNamespace(post=AsyncMock(return_value={'submitted':True}))
+    prompts=[]
+    async def generate(prompt):
+        prompts.append(prompt)
+        return json.dumps({'bvid':BV} if len(prompts)==1 else {'bvid':BV,'comment':'一个具体感受。','mention_owner':choice,'evidence_ids':[p['evidence'][0]['evidence_id']]})
+    await BiliDuty(reader,writer,w.settings,generate,AsyncMock()).once('optional-mention')
+    assert writer.post.await_count==1
+    assert writer.post.call_args.kwargs==({'mention_owner':True} if expected else {})
+    assert '默认false' in prompts[-1] and '{{owner}}' in prompts[-1]
+
 @pytest.mark.parametrize('case',['disabled','manual_other_at','uid_mismatch'])
 async def test_bad_mention_never_posts(tmp_path,case):
     backend=Mentions();_,p,w=await prepared(tmp_path,backend)

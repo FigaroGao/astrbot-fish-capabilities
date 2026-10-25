@@ -11,7 +11,7 @@ def plain(text):
 
 
 class Event:
-    def __init__(self,text,owner=False,private=False,mention=False,platform='qq-fish'):
+    def __init__(self,text,owner=False,private=False,mention=False,platform='qq_test'):
         self.message_str=text;self.owner=owner;self.private=private;self.platform=platform
         self.parts=[plain(text)];self.stopped=False;self.extras={};self.cleared=False
         if mention:
@@ -33,7 +33,7 @@ class Event:
     ('香港天气如何',False,True,False),('为什么 /help 不可用',True,False,False),
     ('https://example.com',False,False,False)])
 def test_owner_only_command_detection(text,private,mention,blocked):
-    gate=CommandGate(['owner'],['qq-fish'])
+    gate=CommandGate(['owner'],['qq_test'])
     assert gate.blocks(Event(text,private=private,mention=mention),{'wake_prefix':['/']},{'help','reset'}) is blocked
     assert not gate.blocks(Event(text,owner=True,private=private,mention=mention),{'wake_prefix':['/']},{'help','reset'})
     assert not gate.blocks(Event(text,platform='webchat'),{'wake_prefix':['/']},{'help','reset'})
@@ -46,7 +46,7 @@ async def test_gate_precedes_parsing_and_is_reversible():
         async def process(self,event):calls.append(event.message_str)
     original=Stage.process
     registry=types.SimpleNamespace(star_handlers_map={})
-    uninstall=install_gate(Stage,CommandGate(['owner'],['qq-fish']),registry)
+    uninstall=install_gate(Stage,CommandGate(['owner'],['qq_test']),registry)
     event=Event('/help invalid arguments')
     await Stage().process(event)
     assert event.stopped and event.cleared and event.extras['fish_command_blocked']
