@@ -2,9 +2,12 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
-Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.7.0 · 2026-10-26**.
+Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.7.1 · 2026-10-26**.
 
 This is a configurable trial release, not a bundle containing an existing account. All capability switches default to off; owner identities and authorized scopes are empty. Repository maintainer credits do not configure the bot's owner. No private conversations, memories, persona prompts or login sessions are distributed.
+
+
+Release 0.7.1 adds [cold-archive recollection, 05:00 nightly review and mailbox connection status](docs/cold-memory.en.md). Only generic implementation is shared, disabled by default, without private archives or device bindings.
 
 ## Start here
 
@@ -17,6 +20,8 @@ This is a configurable trial release, not a bundle containing an existing accoun
 
 | Capability | Behavior and requirements |
 | --- | --- |
+| Private archive and recollection | Append-only local text, bounded cue-based quotations and editable sourced diaries; current explicit corrections take precedence |
+| Mailbox connection | Device heartbeats are separate from actual reading and replies; no automatic Codex wakeup |
 | Unified timetable | The owner can use natural language in private chat through `fish_tasks` to create, update, pause, resume or cancel tasks; reminders, weather, shop, browsing and checks reuse one scheduler |
 | Cross-window timeline | Stores bounded QQ and Bilibili activity summaries for owner-private retrieval; historical events are not current states and are not automatically disclosed to groups |
 | Memory retrieval and correction | `fish_memory_edit` searches old memories in the current scope, independently reviews corrections, checks versions and keeps an audit; requires compatible LivingMemory interfaces |

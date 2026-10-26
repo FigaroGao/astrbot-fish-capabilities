@@ -20,3 +20,13 @@ config.local.json
 *.png
 *.jpg
 *.jpeg
+
+# Local archive and computer heartbeat state; examples remain shareable.
+computer-link-local/
+cold-memory/
+computer-heartbeat.json
+computer-link.json
+*.lock
+*.pause
+*.status.json
+*.heartbeat-tmp
