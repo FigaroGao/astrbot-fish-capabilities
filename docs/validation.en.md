@@ -1,3 +1,17 @@
+# Share-release validation: 2026-10-26 · 0.7.0
+
+[中文](validation.md)
+
+The sanitized share directory was actually tested using pytest. With one new all-off/empty-identity configuration regression, **471 main-capability tests passed**, plus **18 independent recovery/watchdog tests**, for **489 total**. Host Python 3.11 emitted one audioop deprecation warning; the project includes conditional audioop-lts for Python 3.13, while the reference AstrBot environment uses Python 3.12. Tests use temporary directories, synthetic messages and interface substitutes, without real passwords or public posts.
+
+New coverage includes task persistence, migration, deduplication, pause/cancel, long-task isolation and cross-midnight timing; timeline scopes, retrieval and redaction; memory-correction versions, scopes, audit and summary updates; owner-mention ownership, video evidence sources and HTML receipts; ASR reservation budgets, caching, timeouts and switching; group self-pause and disabled sharing defaults. Existing functionality tests continue to pass.
+
+Earlier reference-tablet checks covered task migration/loading, real memory searches and activity records, audio conversion and four Paraformer routes, including successful recognition through the main hook and the 8 kHz file route. These do not establish fresh installations on every device or real QQ voice-message end-to-end delivery. No correction was written to real memories for testing; mock-engine tests do not substitute for that. This release did not manufacture a public owner mention, post comments/status updates, test a full-device reboot, trigger Tencent verification or restart online QQ.
+
+Published material contains generic source, synthetic tests, all-off templates and public references only. Inspection of current files and visible Git history found no reported private nickname. Real bindings, keys, cookies, private persona prompts, chats, memories, letters, databases and runtime logs are excluded. New Chinese guides have complete section-by-section English translations. Offline tests do not establish real platform receipts, public visibility or final user delivery.
+
+## Previous release validation (0.6.0)
+
 # Sharing-release validation:2026-10-25 ·0.6.0
 
 [中文](validation.md)

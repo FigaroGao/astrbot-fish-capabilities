@@ -1,3 +1,5 @@
+> 0.7.0 update: this page retains earlier capability instructions. For the unified timetable, 30-minute decisions from 10:00 until 03:00 the next day, optional removal of private-message limits, and description/actual visual evidence for comments, use the [new release guide](release-0.7.0.en.md). The older subtitle-only restriction below is superseded.
+
 # New0.5.0 capabilities: configuration and use
 
 [中文 — 完整对应版本](new-capabilities.md)
