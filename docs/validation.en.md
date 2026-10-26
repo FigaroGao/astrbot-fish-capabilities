@@ -1,3 +1,15 @@
+# Share-release validation: 2026-10-26 · 0.7.1
+
+[中文](validation.md)
+
+The all-off, empty-identity share directory actually passed **488 main-capability tests** and **18 independent recovery/watchdog tests**, **506 total**. This includes seventeen archive/connection/diary/isolation tests and the sharing-default regression. Host Python 3.11 still reports one audioop deprecation warning; skipped tests were not counted as passes.
+
+Reference-tablet checks covered owner-private/framework persona resolution, recollection tool activation, scope rejection, text archival, Bilibili public-path isolation, computer heartbeat and QQ/OneBot online status. A fabricated quotation, simulated 03:30 night clock and actual model completed one diary and quotation check; this does not establish natural 05:00 scheduled execution. The existing nightly task was subsequently updated to 05:00 and read back, without creating a duplicate or restarting NapCat.
+
+Natural overnight scheduling, actual disconnection beyond ten minutes and Windows login startup remain untested. No QQ test messages or public posts were sent for this publication. Private diaries, chats, letters, heartbeat settings, device serials and databases are excluded; only generic source, all-off templates, sanitized examples and complete Chinese/English guides are published.
+
+## Previous release validation (0.7.0)
+
 # Share-release validation: 2026-10-26 · 0.7.0
 
 [中文](validation.md)

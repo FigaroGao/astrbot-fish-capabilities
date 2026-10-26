@@ -136,3 +136,7 @@ For unattended recovery, read the [recovery guide](recovery.en.md), adjust actua
 | QR scanned but verify fails | Continue the existing pending-verification flow using the local login tool and check account ownership; do not disclose cookies or start parallel QR flows repeatedly |
 
 Test text, weather, authorized group scopes, a period under screen lock and network recovery, recording actual outcomes. Mark anything not run as unverified. Deployers must explicitly arrange any public-write test. Keep backups outside the repository and WebUIs off the public internet.
+
+## 9. Optional: private archives and mailbox connection
+
+After text chat is stable, follow the [0.7.1 guide](cold-memory.en.md) for archives, recollection and nightly diaries. Keep computer ADB heartbeat settings outside the repository. The initial nightly time is 05:00 Hong Kong; update existing timetable tasks rather than duplicating them. Missing heartbeat or recent chat causes a skip, not necessarily a fault. This does not automatically wake Codex.
