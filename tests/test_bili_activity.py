@@ -40,9 +40,9 @@ async def test_live_selected_only_transition_and_restart_dedup(tmp_path):
     a,b,r,g,n,t,c=make(tmp_path)
     await a.watch('7');assert a.watches()['watching']==[{'uid':'7','name':'指定UP'}]
     await a.poll();n.assert_not_called()
-    b.online=True;t[0]+=301;await a.poll();n.assert_awaited_once()
+    b.online=True;t[0]+=601;await a.poll();n.assert_awaited_once()
     assert '开播啦' in n.call_args.args[0]
-    other=BiliActivity(a.reader,a.config,r,g,n,b,clock=lambda:t[0]);t[0]+=301
+    other=BiliActivity(a.reader,a.config,r,g,n,b,clock=lambda:t[0]);t[0]+=601
     await other.poll();n.assert_awaited_once()
     await a.watch('7',remove=True);assert not a.watches()['watching']
 
@@ -55,13 +55,13 @@ async def test_first_online_is_baseline_not_catchup_notice(tmp_path):
 async def test_failed_poll_does_not_reset_online_and_create_duplicate(tmp_path):
     a,b,r,g,n,t,c=make(tmp_path);b.online=True
     await a.watch('7');b.fail=True;await a.poll()
-    b.fail=False;t[0]+=301;await a.poll();n.assert_not_called()
+    b.fail=False;t[0]+=601;await a.poll();n.assert_not_called()
 
 
 async def test_live_notification_error_is_not_replayed(tmp_path):
     a,b,r,g,n,t,c=make(tmp_path);await a.watch('7');b.online=True
     n.side_effect=TimeoutError();await a.poll();assert n.await_count==1
-    t[0]+=301;await a.poll();assert n.await_count==1
+    t[0]+=601;await a.poll();assert n.await_count==1
 
 
 async def test_feed_and_notification_reads_do_not_access_private_messages(tmp_path):
