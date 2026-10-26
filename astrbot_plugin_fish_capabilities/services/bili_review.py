@@ -35,16 +35,23 @@ class PublicReview:
         p=self.root/'bili-private-context.json';tmp=p.with_suffix('.tmp')
         tmp.write_text(json.dumps(value,ensure_ascii=False),encoding='utf-8');tmp.chmod(0o600);tmp.replace(p)
 
+    def set_private_archive_blocked(self,blocked):
+        flag=self.root/'cold-public-context-blocked'
+        if blocked:
+            flag.write_text('private archive conversation',encoding='utf-8');flag.chmod(0o600)
+        else:flag.unlink(missing_ok=True)
+
     def context(self):
         value={}
+        cold_blocked=(self.root/'cold-public-context-blocked').exists()
         try:
             candidate=json.loads((self.root/'bili-private-context.json').read_text(encoding='utf-8'))
-            if candidate['at']>=self.clock()-7*86400:value=candidate
+            if not cold_blocked and candidate['at']>=self.clock()-7*86400:value=candidate
         except Exception:pass
         timeline=getattr(self,'timeline',None)
         if timeline:
             events=timeline.search('',20)['events']
-            value['private_activity_timeline']=[e for e in events if e['kind']!='task'][:4]
+            value['private_activity_timeline']=[e for e in events if e['kind']!='task' and not e.get('details',{}).get('cold_derived') and (not cold_blocked or e['kind'].startswith('bili'))][:4]
         # Adding a Bili event must not forge fresh owner activity. Dynamic
         # eligibility still uses the original private-context 'at' timestamp.
         return value
