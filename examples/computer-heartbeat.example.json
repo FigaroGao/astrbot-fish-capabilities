@@ -1,0 +1,4 @@
+{
+  "adb": "C:/Android/platform-tools/adb.exe",
+  "serial": "YOUR_AUTHORIZED_DEVICE_SERIAL"
+}

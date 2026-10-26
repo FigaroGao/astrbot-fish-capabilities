@@ -94,5 +94,7 @@
     "paraformer-8k-v2"
   ],
   "asr_monthly_seconds": 35000,
-  "asr_max_seconds": 180
+  "asr_max_seconds": 180,
+  "cold_archive_enabled": false,
+  "memory_dream_enabled": false
 }
