@@ -116,14 +116,21 @@ class IntentRuntime:
         if text.startswith('```'):
             text=text.split('\n',1)[1].rsplit('```',1)[0].strip()
         parsed=json.loads(text)
-        return (isinstance(parsed,dict) and parsed.get('should_reply') is True
-                and type(parsed.get('addressed_to_bot')) is bool
-                and isinstance(parsed.get('reason'),str) and 0<len(parsed['reason'])<=160)
+        valid=(isinstance(parsed,dict) and type(parsed.get('should_reply')) is bool
+               and type(parsed.get('addressed_to_bot')) is bool
+               and isinstance(parsed.get('reason'),str) and 0<len(parsed['reason'])<=160)
+        if not valid:return False
+        if parsed.get('stop_conversation') is True and parsed['should_reply'] is True:return False
+        if (parsed.get('stop_conversation') is True and parsed['should_reply'] is False
+                and self.cap.config.get('intent_self_pause_enabled',False)
+                and any(row.get('role')=='assistant' for row in rows)):
+            return 'stop_conversation'
+        return parsed['should_reply']
 
     async def run(self,gcp,event):
         self.observe(event)
-        quiet=getattr(self.cap,'group_quiet',None)
-        if quiet and quiet.suppress(event):
+        silencer=getattr(self.cap,'group_quiet',None)
+        if silencer and silencer.suppress(event):
             event.call_llm=True
             self.diagnostic(event.unified_msg_origin,'owner_quiet');return
         reason=skip_group_task(self.cap.config,event)
@@ -144,7 +151,7 @@ class IntentRuntime:
         try:
             async with lock:
                 if self.closed:return
-                if quiet and quiet.suppress(event):return
+                if silencer and silencer.suppress(event):return
                 if direct and self.latest_direct.get(scope)!=revision:
                     self.diagnostic(scope,'merged_direct');return
                 if not direct:
@@ -176,15 +183,22 @@ class IntentRuntime:
                     except asyncio.CancelledError:raise
                     except Exception:
                         self.diagnostic(scope,'judge_error_silent');return
+                    if silencer and silencer.suppress(event):
+                        self.diagnostic(scope,'quiet_state_changed_during_judge');return
                     if not verdict or revision!=self.revisions[scope] or not self.eligible(scope,self.clock()):
                         self.diagnostic(scope,'no_or_stale');return
+                    if verdict=='stop_conversation':
+                        if silencer and self.cap.config.get('intent_self_pause_enabled',False):
+                            silencer.set(scope,120)
+                            self.diagnostic(scope,'self_paused_120s')
+                        return
                 else:
                     rows=list(self.records[scope])
                 event.set_extra('fish_intent_approved',True)
                 event.set_extra('fish_intent_group_snapshot',rows)
                 self.diagnostic(scope,'direct' if direct else 'intent_yes')
                 async for result in gcp._process_message(event):
-                    if quiet and quiet.suppress(event):return
+                    if silencer and silencer.suppress(event):return
                     started=True
                     yield result
         finally:

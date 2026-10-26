@@ -36,11 +36,18 @@ class PublicReview:
         tmp.write_text(json.dumps(value,ensure_ascii=False),encoding='utf-8');tmp.chmod(0o600);tmp.replace(p)
 
     def context(self):
+        value={}
         try:
-            value=json.loads((self.root/'bili-private-context.json').read_text(encoding='utf-8'))
-            if value['at']<self.clock()-7*86400:return {}
-            return value
-        except Exception:return {}
+            candidate=json.loads((self.root/'bili-private-context.json').read_text(encoding='utf-8'))
+            if candidate['at']>=self.clock()-7*86400:value=candidate
+        except Exception:pass
+        timeline=getattr(self,'timeline',None)
+        if timeline:
+            events=timeline.search('',20)['events']
+            value['private_activity_timeline']=[e for e in events if e['kind']!='task'][:4]
+        # Adding a Bili event must not forge fresh owner activity. Dynamic
+        # eligibility still uses the original private-context 'at' timestamp.
+        return value
 
     def key(self,kind,payload,text):
         return hashlib.sha256(json.dumps([str(self.config.get('bili_account_id','')),kind,payload,text],sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:20]

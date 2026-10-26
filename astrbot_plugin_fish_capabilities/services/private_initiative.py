@@ -3,10 +3,12 @@ import asyncio,json,re,sqlite3,time
 from contextlib import contextmanager
 from datetime import datetime,timedelta,timezone
 from .bili_duty import parsed
+from .timing import activity_timing
 
 class Initiative:
-    def __init__(self,path,generate,deliver,clock=time.time):
+    def __init__(self,path,generate,deliver,clock=time.time,config=None):
         self.path=path;self.generate=generate;self.deliver=deliver;self.clock=clock
+        self.config=config if config is not None else {}
         with self.db() as db:
             db.executescript('CREATE TABLE IF NOT EXISTS chat(stamp REAL,role TEXT,text TEXT); CREATE TABLE IF NOT EXISTS state(k TEXT PRIMARY KEY,v REAL); CREATE TABLE IF NOT EXISTS decisions(slot TEXT PRIMARY KEY,stamp REAL,state TEXT); CREATE TABLE IF NOT EXISTS sends(stamp REAL,state TEXT); CREATE TABLE IF NOT EXISTS topics(id INTEGER PRIMARY KEY,stamp REAL,text TEXT);')
         with self.db() as db:db.execute('CREATE TABLE IF NOT EXISTS activity(id INTEGER PRIMARY KEY,stamp REAL,expires REAL,kind TEXT,note TEXT,due REAL,done INTEGER DEFAULT 0)')
@@ -58,7 +60,7 @@ class Initiative:
     async def tick(self):
         self.last_error_type=None
         self.activity_output={}
-        slot=datetime.fromtimestamp(self.clock(),timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H')
+        slot=activity_timing(self.config,self.clock())['slot']
         try:
             outcome=await self._tick()
         except asyncio.CancelledError:
@@ -75,16 +77,21 @@ class Initiative:
         return outcome
 
     async def _tick(self):
-        now=self.clock();local=datetime.fromtimestamp(now,timezone(timedelta(hours=8)))
-        if not 9<=local.hour<23:return 'quiet_hours'
-        slot=local.strftime('%Y-%m-%d %H');day=local.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        now=self.clock();timing=activity_timing(self.config,now);local=timing['local']
+        if not timing['allowed']:return 'quiet_hours'
+        slot=timing['slot'];day=local.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        daily_limit=int(self.config.get('private_initiative_daily_limit',2))
+        cooldown=int(self.config.get('private_initiative_cooldown_seconds',10800))
+        if daily_limit<0 or cooldown<0:raise ValueError('Invalid private contact budget')
         with self.db() as db:
             db.execute('BEGIN IMMEDIATE');state=dict(db.execute('SELECT k,v FROM state'))
             if state.get('busy_until',0)>now:return 'busy'
             if state.get('revision',0)>now-900:return 'recent_conversation'
-            if db.execute('SELECT COUNT(*) FROM sends WHERE stamp>=?',(day,)).fetchone()[0]>=2:return 'daily_limit'
-            if db.execute('SELECT 1 FROM sends WHERE stamp>?',(now-10800,)).fetchone():return 'cooldown'
+            if daily_limit and db.execute('SELECT COUNT(*) FROM sends WHERE stamp>=?',(day,)).fetchone()[0]>=daily_limit:return 'daily_limit'
+            if cooldown and db.execute('SELECT 1 FROM sends WHERE stamp>?',(now-cooldown,)).fetchone():return 'cooldown'
             if db.execute('SELECT 1 FROM decisions WHERE slot=?',(slot,)).fetchone():return 'already_judged'
+            last=db.execute('SELECT MAX(stamp) FROM decisions').fetchone()[0]
+            if last is not None and now-last<timing['interval_seconds']:return 'already_judged'
             history=[{'at':t,'role':r,'text':s} for t,r,s in db.execute('SELECT stamp,role,text FROM chat ORDER BY stamp DESC LIMIT 8')][::-1]
             topic=db.execute('SELECT id,text FROM topics WHERE stamp>? ORDER BY id DESC LIMIT 1',(now-86400,)).fetchone()
             if not history and not topic:return 'no_context'
@@ -100,7 +107,11 @@ class Initiative:
         with self.db() as db:
             db.execute('BEGIN IMMEDIATE');current=dict(db.execute('SELECT k,v FROM state'))
             if current.get('revision')!=state.get('revision') or current.get('busy_until',0)>self.clock():return 'new_activity'
-            if db.execute('SELECT COUNT(*) FROM sends WHERE stamp>=?',(day,)).fetchone()[0]>=2 or db.execute('SELECT 1 FROM sends WHERE stamp>?',(self.clock()-10800,)).fetchone():return 'budget_changed'
+            daily_limit=int(self.config.get('private_initiative_daily_limit',2))
+            cooldown=int(self.config.get('private_initiative_cooldown_seconds',10800))
+            if daily_limit<0 or cooldown<0:raise ValueError('Invalid private contact budget')
+            if ((daily_limit and db.execute('SELECT COUNT(*) FROM sends WHERE stamp>=?',(day,)).fetchone()[0]>=daily_limit)
+                or (cooldown and db.execute('SELECT 1 FROM sends WHERE stamp>?',(self.clock()-cooldown,)).fetchone())):return 'budget_changed'
             db.execute('INSERT INTO sends VALUES(?,?)',(now,'reserved'))
             if topic:db.execute('DELETE FROM topics WHERE id<=?',(topic[0],))
         try:

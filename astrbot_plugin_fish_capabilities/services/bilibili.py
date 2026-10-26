@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .reading_sources import attach_sources
 
 import asyncio
 import hashlib
@@ -99,10 +100,11 @@ class BiliBackend:
         except CapabilityError: raise
         except Exception:
             subtitle_status='unavailable_or_login_required'
-        comments=[];danmaku=[]
+        comments=[];danmaku=[];comment_status='unavailable'
         try:
             from bilibili_api import comment
             result=await asyncio.wait_for(comment.get_comments(oid=int(info['aid']),type_=comment.CommentResourceType.VIDEO,page_index=1,credential=self.credential()),12)
+            comment_status='available'
             for row in (result.get('replies') or [])[:10]:
                 comments.append({'text':plain((row.get('content') or {}).get('message'))[:300],'likes':int(row.get('like',0))})
         except Exception:pass
@@ -111,7 +113,7 @@ class BiliBackend:
             rows=await asyncio.wait_for(dmv.get_danmakus(cid=cid,from_seg=0,to_seg=1 if info['duration']>360 else 0),12)
             for row in rows[::max(1,len(rows)//30)][:30]:danmaku.append({'text':plain(row.text)[:100],'time':float(getattr(row,'dm_time',0))})
         except Exception:pass
-        return {'info':info,'segments':segments,'subtitle_status':subtitle_status,'comments':comments,'danmaku':danmaku}
+        return {'info':info,'segments':segments,'subtitle_status':subtitle_status,'comments':comments,'danmaku':danmaku,'comment_status':comment_status}
 
 
 class BiliReader:
@@ -195,7 +197,7 @@ class BiliReader:
             with self.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 recent=db.execute('SELECT packet FROM readings WHERE bvid=? AND stamp>? ORDER BY stamp DESC LIMIT 1',(video_id,time.time()-3600)).fetchone()
-                if recent and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or (json.loads(recent[0]).get('preview_layout_version',0)>=2 and 'visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
+                if recent and json.loads(recent[0]).get('source_schema_version',0)>=2 and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or (json.loads(recent[0]).get('preview_layout_version',0)>=2 and 'visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
                     packet=dict(json.loads(recent[0]),cached=True)
                     self.memory.remember(packet)
                     return packet
@@ -223,7 +225,7 @@ class BiliReader:
             for row in sorted(rows,key=lambda x:x['start']):
                 covered+=max(0,row['end']-max(previous,row['start']));previous=max(previous,row['end'])
             packet={'bvid':video_id,'duration':duration,'title':plain(info.get('title')),'description':plain(info.get('desc')),
-                    'comments':raw.get('comments',[])[:10],'danmaku':raw.get('danmaku',[])[:30],
+                    'comment_status':raw.get('comment_status','unknown'),'comments':raw.get('comments',[])[:10],'danmaku':raw.get('danmaku',[])[:30],
                     'url':'https://www.bilibili.com/video/'+video_id,'fetched_at':time.time(),
                     'subtitle_status':raw.get('subtitle_status'),'evidence':rows,
                     'subtitle_coverage':min(1,covered/duration) if duration else None,
@@ -232,6 +234,7 @@ class BiliReader:
             if self.visual_reader:
                 try:packet.update(await asyncio.wait_for(self.visual_reader(packet,info),50))
                 except Exception:packet.update(visual_status='unavailable',visual_content_seen=False)
+            attach_sources(packet)
             reading_id=hashlib.sha256(json.dumps(packet,ensure_ascii=False,sort_keys=True).encode()).hexdigest()[:24]
             packet['reading_id']=reading_id
             with self.connect() as db:
@@ -239,6 +242,7 @@ class BiliReader:
                 old=[r[0] for r in db.execute('SELECT id FROM readings ORDER BY stamp DESC LIMIT -1 OFFSET 100')]
                 db.executemany('DELETE FROM readings WHERE id=?',[(x,) for x in old])
             self.memory.remember(packet)
+            if getattr(self,'timeline',None):self.timeline.add('bili_read',reading_id,'读了视频：'+packet['title'],details={'bvid':video_id,'summary':str(packet.get('visual_summary') or packet.get('description') or '')[:300],'sampled_visual':packet.get('visual_content_seen',False)})
             return packet
 
     def reflect(self, reading_id: str, reflection: str, evidence_ids: list[str]) -> dict:
@@ -249,7 +253,7 @@ class BiliReader:
             row=db.execute('SELECT packet FROM readings WHERE id=?',(reading_id,)).fetchone()
             if not row: raise CapabilityError('阅读凭据不存在或已过期，不能凭空写观后感。')
             packet=json.loads(row[0]); allowed={e['evidence_id'] for e in packet['evidence']}
-            if not set(evidence_ids)<=allowed: raise CapabilityError('札记引用了未读过的字幕来源。')
+            if not set(evidence_ids)<=allowed: raise CapabilityError('札记引用了未读过的来源。')
             count=db.execute('SELECT COUNT(*) FROM notes WHERE stamp>?',(time.time()-86400,)).fetchone()[0]
             if self.daily_notes>0 and count>=self.daily_notes: raise CapabilityError('今天的札记预算已用完。')
             cursor=db.execute('INSERT INTO notes(reading,stamp,reflection,sources) VALUES(?,?,?,?)',(reading_id,time.time(),reflection.strip(),json.dumps(evidence_ids)))

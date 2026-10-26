@@ -9,8 +9,9 @@ import re
 import time
 from datetime import datetime, timezone, timedelta
 
-from .bili_comments import CommentBackend
+from .bili_comments import CommentBackend, comment_text_matches
 from .policy import CapabilityError
+from .timing import poll_delay, poll_interval
 
 
 REPLIES = {
@@ -112,7 +113,7 @@ class ReplyInbox:
             account, now = self.account(), self.clock()
             with self.reader.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
-                if db.execute('SELECT 1 FROM bili_reply_checks WHERE account=? AND stamp>?',(account,now-600)).fetchone():
+                if db.execute('SELECT 1 FROM bili_reply_checks WHERE account=? AND stamp>?',(account,now-poll_interval(self.config))).fetchone():
                     return {'state':'cooldown','new':0}
                 db.execute('INSERT INTO bili_reply_checks VALUES(?,?)',(account,now))
             await self.identity()
@@ -132,7 +133,7 @@ class ReplyInbox:
                         if str(original.get('rpid')) != root or str((original.get('member') or {}).get('mid')) != account:
                             raise CapabilityError('根评论身份无法确认。')
                         body = (original.get('content') or {}).get('message','')
-                        if hashlib.sha256(body.encode()).hexdigest() != digest:
+                        if not comment_text_matches(body,digest=digest):
                             raise CapabilityError('根评论内容不匹配。')
                         for item in (value.get('replies') or [])[:20]:
                             if count>=5:break
@@ -254,6 +255,7 @@ class ReplyInbox:
         with self.reader.connect() as db:
             db.execute("UPDATE bili_comments SET state='submitted',reply_id=? WHERE key=?",(receipt,key))
             db.execute("UPDATE bili_reply_inbox SET state='submitted',receipt=? WHERE account=? AND id=?",(receipt,account,target))
+        if getattr(self,'timeline',None):self.timeline.add('bili_reply',self.account()+':'+receipt,response,state='submitted',details={'target':target,'receipt':receipt})
         return {'submitted':True,'reply_id':receipt,'notification_received_verified':False,'instruction':'只是提交回执，不声称对方已收到、公开可见或读取成功。'}
 
     async def notices(self):
@@ -275,7 +277,7 @@ class ReplyInbox:
 
     async def run(self):
         while True:
-            await asyncio.sleep(600)  # No catch-up burst immediately after reload.
+            await asyncio.sleep(poll_delay(self.config))  # Shared wall-clock maintenance slots.
             try:
                 result=await self.check()
                 if self.review:await self.review.notices()

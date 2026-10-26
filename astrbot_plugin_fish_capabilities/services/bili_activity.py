@@ -8,6 +8,7 @@ from .bili_comments import CommentBackend
 from .bilibili import plain
 from .bili_social import uid
 from .policy import CapabilityError
+from .timing import activity_timing, poll_interval, poll_delay
 
 HK=timezone(timedelta(hours=8))
 
@@ -116,7 +117,7 @@ class BiliActivity:
             with self.reader.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 old=db.execute('SELECT stamp FROM bili_activity_checks WHERE account=?',(account,)).fetchone()
-                if old and now-old[0]<300:return {'state':'cooldown'}
+                if old and now-old[0]<poll_interval(self.config):return {'state':'cooldown'}
                 db.execute('INSERT OR REPLACE INTO bili_activity_checks VALUES(?,?)',(account,now))
             await self.identity();sent=0;errors=0
             for watched in self.watches()['watching']:
@@ -155,6 +156,7 @@ class BiliActivity:
                 await self.review.notices()
                 raise CapabilityError('发送结果不确定，已停止，不自动重试。') from None
             with self.reader.connect() as db:db.execute("UPDATE bili_dynamic_posts SET state='submitted',receipt=? WHERE id=?",(receipt,key))
+            if getattr(self,'timeline',None):self.timeline.add('bili_dynamic',self.account()+':'+receipt,text,state='submitted',details={'url':'https://t.bilibili.com/'+receipt})
             return {'submitted':True,'id':receipt,'url':'https://t.bilibili.com/'+receipt,'instruction':'仅提交回执，不等于公开可见或通知送达。'}
     def posts(self):
         self.enabled('bili_activity_enabled')
@@ -164,8 +166,8 @@ class BiliActivity:
     async def think(self):
         self.enabled('bili_dynamic_post_enabled')
         if not self.config.get('bili_dynamic_auto_enabled',False):return {'state':'manual_only'}
-        now=self.clock();local=datetime.fromtimestamp(now,HK)
-        if not 9<=local.hour<23:return {'state':'quiet_hours'}
+        now=self.clock();timing=activity_timing(self.config,now);local=timing['local']
+        if not timing['allowed']:return {'state':'quiet_hours'}
         context=self.review.context();activity=float(context.get('at',0))
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
@@ -173,8 +175,10 @@ class BiliActivity:
             if db.execute('SELECT 1 FROM bili_dynamic_posts WHERE account=? AND stamp>=?',(self.account(),day)).fetchone():return {'state':'daily_limit'}
             previous=db.execute('SELECT MAX(activity) FROM bili_dynamic_thoughts WHERE account=?',(self.account(),)).fetchone()[0]
             if not activity or (previous is not None and activity<=previous):return {'state':'no_new_context'}
-            slot=local.strftime('%Y-%m-%d %H')
+            slot=timing['slot']
             if db.execute('SELECT 1 FROM bili_dynamic_thoughts WHERE account=? AND slot=?',(self.account(),slot)).fetchone():return {'state':'already_thought'}
+            last=db.execute('SELECT MAX(stamp) FROM bili_dynamic_thoughts WHERE account=?',(self.account(),)).fetchone()[0]
+            if last is not None and now-last<timing['interval_seconds']:return {'state':'already_thought'}
             db.execute('INSERT INTO bili_dynamic_thoughts VALUES(?,?,?,?,?)',(self.account(),slot,now,activity,'reserved'))
         try:
             result=await self.generate(context)
@@ -186,7 +190,7 @@ class BiliActivity:
         except Exception:return {'state':'draft_failed'}
     async def run(self):
         while True:
-            await asyncio.sleep(300)
+            await asyncio.sleep(poll_delay(self.config))
             status={}
             try:status['live']=await self.poll()
             except Exception as exc:status['live']={'error_type':type(exc).__name__}

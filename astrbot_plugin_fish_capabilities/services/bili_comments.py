@@ -2,6 +2,7 @@
 from __future__ import annotations
 import asyncio
 import hashlib
+import html
 import json
 import re
 import time
@@ -10,6 +11,14 @@ from .http import PublicJSON
 
 
 OWNER_MARKER = '{{owner}}'
+
+
+def comment_text_matches(received, *, text=None, digest=None):
+    """Legacy reply reads HTML-escape text; preserve exact and literal-entity cases."""
+    if not isinstance(received,str):return False
+    candidates=(received,html.unescape(received))
+    if text is not None:return any(value==text for value in candidates)
+    return isinstance(digest,str) and any(hashlib.sha256(value.encode()).hexdigest()==digest for value in candidates)
 
 
 def render_owner_mention(text, name):
@@ -68,7 +77,7 @@ class CommentBackend:
         result = await comment.get_comments(oid=aid, type_=comment.CommentResourceType.VIDEO,
             order=comment.OrderType.TIME, page_index=1, credential=self.backend.credential())
         return any(str(row.get('rpid')) == reply_id and str((row.get('member') or {}).get('mid')) == account
-            and (row.get('content') or {}).get('message') == text for row in result.get('replies') or [])
+            and comment_text_matches((row.get('content') or {}).get('message'),text=text) for row in result.get('replies') or [])
 
     async def prepare_mention(self,owner_uid):
         from bilibili_api import user
@@ -86,7 +95,7 @@ class CommentBackend:
             if value.get('code')!=0:return None
             data=value.get('data') or {};rows=list(data.get('replies') or [])+list(data.get('top_replies') or [])
             for row in rows:
-                if str(row.get('rpid'))==str(reply_id) and str((row.get('member') or {}).get('mid'))==str(account) and (row.get('content') or {}).get('message')==text:return True
+                if str(row.get('rpid'))==str(reply_id) and str((row.get('member') or {}).get('mid'))==str(account) and comment_text_matches((row.get('content') or {}).get('message'),text=text):return True
             if not data.get('replies'):break
         return False
 
@@ -141,7 +150,7 @@ class BiliComments:
         if re.search(r'https?://|SESSDATA|bili_jct|sk-[A-Za-z0-9]{10,}|\b1[3-9]\d{9}\b', text, re.I):
             raise CapabilityError('公开评论不能包含凭据、手机号或外部链接。')
         if not isinstance(evidence_ids, list) or not 1 <= len(evidence_ids) <= 8 or not all(isinstance(x,str) for x in evidence_ids):
-            raise CapabilityError('评论必须引用实际读取过的字幕依据。')
+            raise CapabilityError('评论必须引用实际读取过、与观点相关的来源依据。')
         image=None
         if self.media:
             await self.media.validate(text)
@@ -177,7 +186,7 @@ class BiliComments:
             if len(text)>220:raise CapabilityError('加上@主人后超过220字，请缩短正文。')
         if self.reviewer:
             payload={'reading_id':reading_id,'text':original_text,'evidence_ids':evidence_ids,'mention_owner':mention_owner}
-            public={'bvid':video_id,'title':packet.get('title'),'evidence':packet.get('evidence',[])}
+            public={'bvid':video_id,'title':packet.get('title'),'evidence':[e for e in packet.get('evidence',[]) if e['evidence_id'] in evidence_ids],'source_inventory':packet.get('source_inventory',[]),'limitation':'只据所列来源审核，不将抽样画面称为完整观看，不将歌词覆盖率当作主题相关性'}
             if image:
                 payload.update(meme_id=meme_id,meme_sha256=image.sha256)
                 public.update(_image_path=str(image.path),image_description=image.description,image_text=image.image_text)
@@ -222,6 +231,7 @@ class BiliComments:
             except Exception:pass
         state='visible' if visible is True else ('author_visible' if author_visible else 'submitted')
         with self.reader.connect() as db:db.execute('UPDATE bili_comments SET state=? WHERE key=?',(state,key))
+        if getattr(self,'timeline',None):self.timeline.add('bili_comment',account+':'+reply_id,text,state=state,details={'bvid':video_id,'reply_id':reply_id,'publicly_visible':visible is True})
         return {'submitted':True,'author_visible_verified':bool(author_visible),'publicly_visible_verified':visible is True,
             'visibility_status':'anonymous_read_verified' if visible is True else ('author_read_only' if author_visible else 'unconfirmed'),
             'mention_submitted':bool(mention),'notification_received_verified':False,'reply_id':reply_id,
