@@ -72,5 +72,27 @@
   "bili_live_watch_enabled": false,
   "bili_dynamic_post_enabled": false,
   "bili_dynamic_auto_enabled": false,
-  "forward_records_enabled": false
+  "forward_records_enabled": false,
+  "initiative_start_hour": 10,
+  "initiative_end_hour": 3,
+  "initiative_interval_minutes": 30,
+  "background_poll_seconds": 600,
+  "companionship_enabled": false,
+  "private_initiative_daily_limit": 2,
+  "private_initiative_cooldown_seconds": 10800,
+  "intent_self_pause_enabled": false,
+  "timetable_enabled": false,
+  "timeline_enabled": false,
+  "memory_edit_enabled": false,
+  "bili_owner_at_enabled": false,
+  "asr_enabled": false,
+  "asr_embedding_provider_id": "aliyun_memory_embedding",
+  "asr_models": [
+    "paraformer-realtime-v2",
+    "paraformer-v2",
+    "paraformer-realtime-8k-v2",
+    "paraformer-8k-v2"
+  ],
+  "asr_monthly_seconds": 35000,
+  "asr_max_seconds": 180
 }
