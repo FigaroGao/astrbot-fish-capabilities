@@ -2,11 +2,16 @@
 
 [中文](validation.md)
 
-The all-off, empty-identity share directory actually passed **488 main-capability tests** and **18 independent recovery/watchdog tests**, **506 total**. This includes seventeen archive/connection/diary/isolation tests and the sharing-default regression. Host Python 3.11 still reports one audioop deprecation warning; skipped tests were not counted as passes.
+The all-off, empty-identity share directory actually passed **490 main-capability tests** and **18 independent recovery/watchdog tests**, **508 total**. This includes seventeen archive/connection/diary/isolation tests and the sharing-default regression. Host Python 3.11 still reports one audioop deprecation warning; skipped tests were not counted as passes.
 
 Reference-tablet checks covered owner-private/framework persona resolution, recollection tool activation, scope rejection, text archival, Bilibili public-path isolation, computer heartbeat and QQ/OneBot online status. A fabricated quotation, simulated 03:30 night clock and actual model completed one diary and quotation check; this does not establish natural 05:00 scheduled execution. The existing nightly task was subsequently updated to 05:00 and read back, without creating a duplicate or restarting NapCat.
 
 Natural overnight scheduling, actual disconnection beyond ten minutes and Windows login startup remain untested. No QQ test messages or public posts were sent for this publication. Private diaries, chats, letters, heartbeat settings, device serials and databases are excluded; only generic source, all-off templates, sanitized examples and complete Chinese/English guides are published.
+
+
+### 2026-10-26 correction: actual TextPart constructor arguments
+
+Changed both `cold_memory_hints` and `unified_capability_hints` from positional `TextPart(...)` to the required `TextPart(text=...)`. The previous exception interrupted these two hint-injection hooks rather than establishing an AstrBot shutdown; memory retrieval continued below the errors in the screenshot. Two regression tests now enforce the real Pydantic keyword-constructor contract. Both entry points were also individually executed in actual AstrBot on the reference tablet, confirming temporary text creation and QQ/OneBot online status without test messages or model calls. Earlier substitutes missed this interface constraint, so earlier passing tests did not establish device verification of these hooks. Fixing the code does not erase historical ERROR lines from the terminal.
 
 ## Previous release validation (0.7.0)
 
