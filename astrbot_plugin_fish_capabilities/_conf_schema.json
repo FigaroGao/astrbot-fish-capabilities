@@ -458,5 +458,15 @@
     "description": "单条语音最多识别秒数",
     "type": "int",
     "default": 180
+  },
+  "cold_archive_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "主人私聊文字按日只读冷存档，按需有限回忆，不供群或公开内容使用；选中片段会交给当前云端模型。"
+  },
+  "memory_dream_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "统一时间表中的夜间私有回顾，默认香港05:00、电脑连接且近期无主人聊天才运行，每晚最多尝试一次，不发消息。"
   }
 }
