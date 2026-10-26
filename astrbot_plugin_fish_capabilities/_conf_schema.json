@@ -169,7 +169,7 @@
   },
   "bili_schedule_times": {
     "type": "list",
-    "description": "香港时间HH:MM，每天最多两次",
+    "description": "香港时间HH:MM；统一时间表启用时仅作首次迁移种子，之后通过fish_tasks修改实际任务；旧模式最多12个时间点。",
     "default": [
       "20:30"
     ]
@@ -368,5 +368,95 @@
     "type": "bool",
     "description": "按层展开收到或引用的 QQ 合并转发记录，最多6层/80条/12000字；仅本轮资料，不自动长期记忆。",
     "default": false
+  },
+  "initiative_start_hour": {
+    "type": "int",
+    "description": "主动私聊与自主动态允许开始的香港时间小时",
+    "default": 10
+  },
+  "initiative_end_hour": {
+    "type": "int",
+    "description": "主动私聊与自主动态允许结束的香港时间小时；小于开始时间表示跨午夜，结束小时不包含",
+    "default": 3
+  },
+  "initiative_interval_minutes": {
+    "type": "int",
+    "description": "两次主动表达判断至少间隔的分钟数；30表示每小时最多两次，实际发言预算另算",
+    "default": 30
+  },
+  "background_poll_seconds": {
+    "type": "int",
+    "description": "评论回复、指定UP开播、余额采样共用的检查间隔秒数；600表示每10分钟对齐检查",
+    "default": 600
+  },
+  "companionship_enabled": {
+    "type": "bool",
+    "description": "保留原有人格主体，追加以情感陪伴为主的交流重心提示；不修改人格原文或权限",
+    "default": false
+  },
+  "private_initiative_daily_limit": {
+    "type": "int",
+    "description": "私聊主动发送的香港日历日上限，0不限制；不影响半小时判断和忙碌避让",
+    "default": 2
+  },
+  "private_initiative_cooldown_seconds": {
+    "type": "int",
+    "description": "私聊两次主动发送的额外冷却秒数，0解除；判断频率仍单独限制",
+    "default": 10800
+  },
+  "intent_self_pause_enabled": {
+    "type": "bool",
+    "description": "群聊意图判断或模型调用工具主动退场120秒，复用主人闭嘴状态，主人可提前解除",
+    "default": false
+  },
+  "timetable_enabled": {
+    "description": "统一时间表：复用AstrBot时钟，管理定时任务，启用后替代旧轮询循环",
+    "type": "bool",
+    "default": false
+  },
+  "timeline_enabled": {
+    "description": "主人私聊检索B站与QQ私有活动时间线",
+    "type": "bool",
+    "default": false
+  },
+  "memory_edit_enabled": {
+    "description": "当前主人私聊的长期记忆检索与有依据的纠错",
+    "type": "bool",
+    "default": false
+  },
+  "bili_owner_at_enabled": {
+    "description": "仅已绑定主人B站UID提及小鲸时，读视频和评论并经审核决定评论",
+    "type": "bool",
+    "default": false
+  },
+  "asr_enabled": {
+    "description": "识别主人私聊及授权群的直接QQ语音；保留身份、静音及接话判断，不启用语音合成",
+    "type": "bool",
+    "default": false
+  },
+  "asr_embedding_provider_id": {
+    "description": "引用已有阿里云向量模型提供商的Key，不复制到插件配置",
+    "type": "string",
+    "default": "aliyun_memory_embedding"
+  },
+  "asr_models": {
+    "description": "长期ASR模型优先顺序；仅本地预算耗尽或明确免费额度拒绝时切换，不在结果不确定时反复扣量",
+    "type": "list",
+    "default": [
+      "paraformer-realtime-v2",
+      "paraformer-v2",
+      "paraformer-realtime-8k-v2",
+      "paraformer-8k-v2"
+    ]
+  },
+  "asr_monthly_seconds": {
+    "description": "每模型每月本平板保守预留上限，不是云端真实余量；外部调用不在本计数内，建议控制台开启免费用完即停",
+    "type": "int",
+    "default": 35000
+  },
+  "asr_max_seconds": {
+    "description": "单条语音最多识别秒数",
+    "type": "int",
+    "default": 180
   }
 }

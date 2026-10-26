@@ -1,8 +1,8 @@
 name: astrbot_plugin_fish_capabilities
 display_name: 大肥鱼能力扩展
 author: FigaroGao & Codex
-version: 0.6.0
+version: 0.7.0
 astrbot_version: ">=4.29.1,<5"
 support_platforms:
   - aiocqhttp
-desc: 试用版：群聊静音、嵌套转发、B站互动与独立审核、动态提醒、掌瓦商店、记忆语境及公共知识。
+desc: 试用版：统一时间表、活动时间线、记忆纠错、语音识别、群聊意图、B站互动、天气及战绩。
