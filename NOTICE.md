@@ -31,3 +31,17 @@ No upstream source caches, SDK wheels, device backups, logs, browser sessions, k
 新增B站互动、通知、动态与表情面板使用可选bilibili-api-python17.4.1接口；图片仍只引用已核验公开图库，不随仓库分发。掌瓦每日商店沿用已注明AGPL来源的本人微信绑定流程，不复制第三方凭据。8条新增社区用语在knowledge/vct-bili-20261025/逐条保留来源与日期，编辑解释不等于首创或争议事实认证。群聊静音与转发展开通过现有AstrBot钩子及OneBot接口，不分发框架。审核上下文、待审草稿、订阅名单、互动回执、信件和数据库全部排除。
 
 New Bilibili interactions, notifications, dynamics and emote-panel access use the optional bilibili-api-python17.4.1 interfaces. Images are references to the verified public library and are not distributed. The VALORANT shop reuses the owner's WeChat binding flow under the AGPL attribution already recorded, without third-party credentials. The eight additional community expressions retain per-entry sources and dates in knowledge/vct-bili-20261025; editorial explanations do not authenticate origins or disputed claims. Group silence and forward expansion use existing AstrBot hooks and OneBot APIs without distributing the framework. Review context, pending drafts, subscriptions, receipts, letters and databases are excluded.
+
+## 0.8.0来源与素材 / Sources and assets in 0.8.0
+
+记忆、接话、图库及观影的参考仓库和实现区别见[中文更新](docs/release-0.8.0.md)及[完整英文版](docs/release-0.8.0.en.md)。DSH storyboard仅参考可定位概览与选择细看的思路；dsh-fish-tone仅参考判断层，未复制语料或随机加词。新增Python服务独立实现，LivingMemory仍受上游许可约束。
+
+Design sources and implementation differences for memory, conversation, media, and viewing are listed in the linked release guides. DSH storyboard inspired addressable overviews and selective detail; dsh-fish-tone inspired judgment only, without copying its corpus or random-word logic. New Python services are independently implemented; LivingMemory remains subject to upstream licensing.
+
+角色资料卡保留各来源署名与条件，包含上善无形、ZipZipPipe、Small-tailqwq及各素材/归档贡献者；具体归属、核对状态及URL见examples/ai_character_atlas/cards.json。不附图片字节，不能把代码AGPL当成图片再分发许可。Pixiv原页无法直接访问时明确记录归档依据；OpenPet额外版本只索引，不视为已核准再分发。
+
+Character cards retain source-specific attribution and terms, including 上善无形, ZipZipPipe, Small-tailqwq, and the relevant asset/archive contributors; see examples/ai_character_atlas/cards.json for exact attribution, verification status, and URLs. No image bytes are included; the code's AGPL is not an artwork redistribution license. Archive-based checks are explicitly recorded when the Pixiv original was unavailable; extra OpenPet variants are indexed only, not treated as cleared for redistribution.
+
+Codex重置公告来自第三方codex.markets，不代表OpenAI或个人账户额度。信件、配置、身份、记忆与真机私有报告不上传。
+
+Codex reset announcements come from third-party codex.markets and do not represent OpenAI or personal account quota. Letters, configuration, identities, memories, and private device evidence are excluded.

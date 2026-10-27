@@ -2,7 +2,10 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
-Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.7.1 · 2026-10-26**.
+Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.8.0 · 2026-10-27**.
+
+
+Version 0.8.0 adds twenty companionship/management improvements, read-only tone diagnostics, batched group conversation, private meme opportunities, selective video/page reading/character references, comment media candidates, and public Codex announcements. See the [complete update and migration guide](docs/release-0.8.0.en.md) and [actual deployment and untested limits](docs/deployment-20261027.en.md). All shared feature switches remain disabled by default.
 
 This is a configurable trial release, not a bundle containing an existing account. All capability switches default to off; owner identities and authorized scopes are empty. Repository maintainer credits do not configure the bot's owner. No private conversations, memories, persona prompts or login sessions are distributed.
 
