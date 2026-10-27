@@ -103,6 +103,8 @@ async def test_memory_scope_hash_evidence_and_rebuild(tmp_path):
     out=await editor.correct(engine,scope,'fish',1,version,'新事实','更正错误','这条已经改了','这条已经改了')
     assert out['new_id']==2
     assert engine.replace_memory.await_args.kwargs['metadata']['key_facts']==['新事实']
+    assert engine.replace_memory.await_args.kwargs['metadata']['persona_summary']=='新事实'
+    assert engine.replace_memory.await_args.kwargs['metadata']['fish_provenance']['supersedes']==1
     with sqlite3.connect(editor.path) as db:
         saved=db.execute('SELECT before,state FROM edits').fetchone()
     assert '旧事实' in json.loads(saved[0])['record']['text'] and saved[1]=='completed'
