@@ -189,9 +189,29 @@
     "description": "主人接收推荐的完整私聊UMO；必须匹配已配置主人",
     "default": ""
   },
+  "codex_resets_enabled": {
+    "type": "bool",
+    "description": "仅主人私聊查询codex.markets第三方公开重置公告，不读取个人额度/账号；15分钟缓存，定时检查需通过统一时间表创建codex_resets任务，新公告才提醒",
+    "default": false
+  },
   "bili_visual_enabled": {
     "type": "bool",
-    "description": "读取不超过10分钟视频的最多9格进度条预览图，单次识图",
+    "description": "读取不超过10分钟视频的抽样预览；可配合自适应选帧，仍不代表完整视听",
+    "default": false
+  },
+  "bili_storyboard_enabled": {
+    "type": "bool",
+    "description": "开启画面读取时使用v4预检、模型选帧/裁剪、广告候选过滤；图片/聊天视频逐页读所有已发现页面（最多48页），普通视频最多两次识图",
+    "default": false
+  },
+  "bili_gallery_scan_enabled": {
+    "type": "bool",
+    "description": "疑似图片/聊天视频用ffmpeg按0.5秒扫描整段时间轴，再逐页读；需ffmpeg及正常播放权限，单文件96MB、解码90秒，失败回退预览并提示不完整。无TTS或音频识别",
+    "default": false
+  },
+  "bili_character_enabled": {
+    "type": "bool",
+    "description": "使用本地已核对角色资料卡和最多3张参考图，在现有概览调用中识别AI拟人形象；不绑定具体账号，不修改人格或关系记忆；缺少资料时不猜",
     "default": false
   },
   "bili_vision_provider_id": {
@@ -467,6 +487,77 @@
   "memory_dream_enabled": {
     "type": "bool",
     "default": false,
-    "description": "统一时间表中的夜间私有回顾，默认香港05:00、电脑连接且近期无主人聊天才运行，每晚最多尝试一次，不发消息。"
+    "description": "统一时间表中的夜间私有回顾，默认香港03:30、电脑连接且近期无主人聊天才运行，每晚最多尝试一次，不发消息。"
+  },
+  "learning_enabled": {
+    "type": "bool",
+    "description": "启用按范围审核的表达样例、可修正观察和观影认识，不重写人格主体",
+    "default": false
+  },
+  "group_learning_enabled": {
+    "type": "bool",
+    "description": "允许已授权群提交当前发言人的印象候选；须主人在管理页审核才会参与本群对话",
+    "default": false
+  },
+  "group_digest_enabled": {
+    "type": "bool",
+    "description": "主人私聊查群优先使用本地增量摘要，可按来源ID回查原文",
+    "default": false
+  },
+  "companion_dashboard_enabled": {
+    "type": "bool",
+    "description": "在AstrBot原生插件视图开放活动、图库、学习、用量及隔离模拟管理页；沿用管理员登录",
+    "default": false
+  },
+  "private_unanswered_backoff_enabled": {
+    "type": "bool",
+    "description": "连续三次主动联系未获回应时逐渐延长间隔；不恢复每日次数或固定三小时硬上限",
+    "default": false
+  },
+  "task_intent_gate_enabled": {
+    "type": "bool",
+    "description": "自主活动遇到正在聊天或发送时有限延后；明确提醒和日程报告不被模型跳过",
+    "default": false
+  },
+  "meme_embedding_provider_id": {
+    "type": "string",
+    "description": "表情描述的云端Embedding提供商ID；留空复用asr_embedding_provider_id，不填模型Key",
+    "default": ""
+  },
+  "bili_comment_autonomy_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "B站评论自主回复，不征求主人许可",
+    "hint": "普通评论与楼中楼经独立审核后自主发；不适合、敏感或拿不准则安静跳过。保留回执去重、评论预算及动态独立规则。"
+  },
+  "tone_diagnostics_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "只读表达诊断，零额外模型调用",
+    "hint": "授权范围回复只记录规则/位置/次数，不存原文、不改字。可在管理台查看或手动诊断；结果不是人味评分，不自动写入表达偏好。"
+  },
+  "bot_primary_name": {
+    "type": "string",
+    "default": "",
+    "description": "当前个体的主要名字，供群聊意图判断识别",
+    "hint": "普通文字提及仍需看上下文；实际@和引用依据账号ID，不按同名字符串抢答。"
+  },
+  "bot_nonexclusive_names": {
+    "type": "list",
+    "default": [],
+    "description": "非专属称呼，不单凭这些词判断正在叫自己",
+    "hint": "可以包含通用机器人绰号或旧称呼；明确@当前账号仍能确定对象。"
+  },
+  "intent_live_batch_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "活跃群最多12秒合并一批，不因普通跟帖永远丢弃",
+    "hint": "保留发前复核、静音、@他人保护及频率上限；明确结束或换题不追答。"
+  },
+  "meme_opportunity_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "主人私聊情绪闲聊时给模型最多3张可选表情说明",
+    "hint": "本地选择候选，不调用模型/向量/识图，不自动发送；最终由模型选ID，仍遵守原发送限制。"
   }
 }

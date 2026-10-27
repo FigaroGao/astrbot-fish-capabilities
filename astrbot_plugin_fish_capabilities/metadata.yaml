@@ -1,8 +1,8 @@
 name: astrbot_plugin_fish_capabilities
 display_name: 大肥鱼能力扩展
 author: FigaroGao & Codex
-version: 0.7.1
-astrbot_version: ">=4.29.1,<5"
+version: 0.8.0
+astrbot_version: ">=4.23.3,<5"
 support_platforms:
   - aiocqhttp
-desc: 试用版：私有冷档回忆、夜间日记、信箱连接、统一时间表、记忆纠错、语音识别及B站互动。
+desc: 小鲸能力扩展：有来源的记忆、意图接话、统一日程、B站活动、增量群摘要、表达学习、语义表情和原生管理视图。

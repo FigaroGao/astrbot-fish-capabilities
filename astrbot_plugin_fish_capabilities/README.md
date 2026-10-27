@@ -1,14 +1,7 @@
-# 大肥鱼能力扩展 0.7.1
+# 小鲸 / 大肥鱼能力扩展 0.8.0
 
-完整安装与限制见[中文首页](../README.md)及其[完整英文翻译](../README.en.md)。本次更新见[B站互动与公开审核](../docs/bili-social.md)、[群聊静音与嵌套转发](../docs/group-controls.md)，旧能力见[配置指南](../docs/new-capabilities.md)，QQ恢复见[独立指南](../docs/recovery.md)。分享配置默认关闭新增能力，不复制实机配置或私有数据。参考AstrBot 4.29.1，内部钩子需按版本核验。
+AstrBot插件目录。默认全部关闭、身份留空；请从[仓库安装教程](../docs/getting-started.md)逐项配置。不要把整个仓库根目录当单个插件安装。
 
-Complete setup instructions and limits are available in the [Chinese README](../README.md) and its [full English translation](../README.en.md). This release is documented in [Bilibili interactions and public review](../docs/bili-social.en.md) and [group silence and nested forwards](../docs/group-controls.en.md). Earlier capabilities are in the [configuration guide](../docs/new-capabilities.en.md), and QQ recovery has a [separate guide](../docs/recovery.en.md). New capabilities default to disabled in the sharing configuration. No device settings or private data are copied. AstrBot 4.29.1 is the reference version; internal hooks require version-specific checks.
+新增能力、依赖、迁移与边界见[0.8.0中文说明](../docs/release-0.8.0.md)及其[完整英文翻译](../docs/release-0.8.0.en.md)。参考部署及未测事项见[验证记录](../docs/deployment-20261027.md)。不分发真实账号、私聊、记忆、完整人格或角色图片。
 
-
-新用户见[从零部署](../docs/getting-started.md)，本版变更见[0.7.1](../docs/cold-memory.md)。
-
-New users: [from-zero deployment](../docs/getting-started.en.md); changes: [0.7.1](../docs/cold-memory.en.md).
-
-新用户见[从零部署](../docs/getting-started.md)，本版变更见[0.7.1](../docs/cold-memory.md)。
-
-New users: [from-zero deployment](../docs/getting-started.en.md); changes: [0.7.1](../docs/cold-memory.en.md).
+This is the AstrBot plugin directory. All capabilities default to disabled and identities are empty. Follow the [installation guide](../docs/getting-started.en.md) and enable features individually; do not install the repository root as a single plugin. See the [0.8.0 guide](../docs/release-0.8.0.en.md) and [deployment evidence](../docs/deployment-20261027.en.md) for dependencies, migration, and limitations. No real accounts, private chats, memories, full persona, or character artwork are distributed.
