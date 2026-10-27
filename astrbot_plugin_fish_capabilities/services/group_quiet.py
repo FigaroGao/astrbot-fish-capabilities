@@ -35,12 +35,12 @@ class GroupQuiet:
         return self.muted(scope) or (epoch is not None and epoch!=self.state.get(scope,{}).get('epoch',0))
 
 
-def install_send_guard(event_class, quiet):
+def install_send_guard(event_class, quiet, before_send=None):
     original=event_class.send
     if getattr(original,'_fish_quiet_guard',False):raise RuntimeError('Quiet send guard already installed')
     @functools.wraps(original)
     async def send(event,*args,**kwargs):
-        if quiet.suppress(event):
+        if quiet.suppress(event) or (before_send is not None and not await before_send(event)) or quiet.suppress(event):
             event.clear_result()
             event.stop_event()
             return

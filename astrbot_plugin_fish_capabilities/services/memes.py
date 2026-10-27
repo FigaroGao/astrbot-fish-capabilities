@@ -37,6 +37,35 @@ class MemeLibrary:
         self.used: dict[tuple[str,str],float]={}
         self.verified: dict[tuple, str]={}
 
+    def manageable(self):
+        self.catalog()  # Validate every existing entry/path/hash before editing.
+        if not (self.root/'manifest.json').exists():return {'version':'','entries':[]}
+        raw=(self.root/'manifest.json').read_bytes()
+        return {'version':hashlib.sha256(raw).hexdigest(),'entries':json.loads(raw)}
+
+    def review_preview(self,meme_id):
+        data=self.manageable();row=next((r for r in data['entries'] if str(r.get('id'))==meme_id),None)
+        if row is None:raise CapabilityError('图片ID不存在。')
+        path=contained_file(self.root,str(row['file']),suffixes={'.png','.jpg','.jpeg','.gif','.webp'})
+        meme=Meme(str(row['id']),str(row['category']),path,(),str(row['sha256']))
+        return self.bytes_for(meme),path.suffix.lower()
+
+    def edit(self,meme_id,version,*,description,image_text,usage_notes,tags,category,approved):
+        fields=((description,160),(image_text,300),(usage_notes,240))
+        if any(not isinstance(v,str) or len(v)>n for v,n in fields) or category not in CATEGORIES:
+            raise CapabilityError('描述、文字或场景超长，或分类无效。')
+        if not isinstance(tags,list) or len(tags)>8 or any(not isinstance(t,str) or len(t)>40 for t in tags) or type(approved)is not bool:
+            raise CapabilityError('标签最多8个、每个40字，审核状态必须为布尔值。')
+        data=self.manageable()
+        if data['version']!=version:raise CapabilityError('图库已变化，请刷新后再修改。')
+        rows=data['entries'];target=next((r for r in rows if str(r.get('id'))==meme_id),None)
+        if target is None:raise CapabilityError('表情ID不存在。')
+        target.update(description=description,image_text=image_text,usage_notes=usage_notes,tags=tags,category=category,approved=approved)
+        manifest=self.root/'manifest.json';backup=self.root/'manifest.before-edit.json'
+        backup.write_bytes(manifest.read_bytes());backup.chmod(0o600)
+        tmp=manifest.with_suffix('.edit');tmp.write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding='utf-8');tmp.chmod(0o600);tmp.replace(manifest)
+        return {'saved':True,'version':hashlib.sha256(manifest.read_bytes()).hexdigest()}
+
     def catalog(self) -> list[Meme]:
         manifest=self.root/'manifest.json'
         if not manifest.is_file(): return []

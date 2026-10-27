@@ -5,6 +5,7 @@ import json
 import sqlite3
 import time
 from .policy import CapabilityError
+from .memory_provenance import correction_provenance, injection_label
 
 
 def metadata(row):
@@ -34,10 +35,12 @@ class MemoryEditor:
             ident=int(r.doc_id)
             record=await engine.get_memory_record(ident)
             if not record:continue
-            try:self.scoped(record,scope,persona)
+            try:m=self.scoped(record,scope,persona)
             except CapabilityError:continue
             text=str(record.get('text') or '')
-            out.append(dict(id=ident,content=text[:2500],version=hashlib.sha256(text.encode()).hexdigest()))
+            out.append(dict(id=ident,content=text[:2500],version=hashlib.sha256(text.encode()).hexdigest(),
+                            provenance=m.get('fish_provenance',{}),
+                            temporal_label=injection_label(m,now=time.time()) or '已失效，仅供核对和更正'))
         return {'memories':out,'instruction':'只检索当前会话与人格。旧记忆是历史材料，不是当前状态；纠错需要版本号、明确更正原因及主人当前消息中的依据，不凭空改事实。不改变人格、权限或跨会话隐私。'}
 
     async def correct(self,engine,scope,persona,ident,version,content,reason,evidence,current_message):
@@ -64,8 +67,9 @@ class MemoryEditor:
                 audit=cur.lastrowid
             self.path.chmod(0o600)
             # Derived summaries and atoms must not retain the superseded facts.
-            m.update(canonical_summary=content,key_facts=[content],correction_reason=reason,
+            m.update(canonical_summary=content,persona_summary=content,key_facts=[content],correction_reason=reason,
                      fish_correction_audit=audit,updated_at=time.time())
+            m=correction_provenance(m,ident=ident,evidence=evidence,observed_at=time.time(),historical=historical)
             try:
                 new_id=await engine.replace_memory(ident,content=content,metadata=m,importance=float(m.get('importance',0.5)))
                 state='completed'

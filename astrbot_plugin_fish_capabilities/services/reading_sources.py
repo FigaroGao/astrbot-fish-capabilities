@@ -1,6 +1,16 @@
 """Typed provenance for observed material, never inferred full-video coverage."""
 
 
+def public_cover(value):
+    from urllib.parse import urlsplit,urlunsplit
+    try:
+        parts=urlsplit(str(value))
+        host=(parts.hostname or '').lower()
+        if parts.scheme not in ('https','http') or not host.endswith('.hdslb.com') or parts.username or parts.password or parts.port not in (None,80,443):return ''
+        return urlunsplit(('https',host,parts.path,'',''))
+    except (ValueError,TypeError):return ''
+
+
 def attach_sources(packet):
     subtitles=[dict(row,kind='subtitle',limitation='字幕可能有误或只是背景歌词，不保证与画面主题相关。')
                for row in packet.get('evidence',[]) if row.get('evidence_id','').startswith(packet['bvid']+':s')]
@@ -14,6 +24,10 @@ def attach_sources(packet):
         extra.append(dict(evidence_id=packet['bvid']+':visual',kind='sampled_visual',text=visual[:2400],
                           timestamps=packet.get('preview_timestamps',[])[:27],
                           limitation='仅成功分析的抽样画面；小字、未采样部分和声音未知，不得补全。'))
+    for page in packet.get('gallery_pages',[])[:48]:
+        if not isinstance(page,dict) or not isinstance(page.get('id'),str) or not isinstance(page.get('text'),str):continue
+        extra.append(dict(evidence_id=packet['bvid']+':page:'+page['id'],kind='sampled_visual',text=page['text'][:1000],
+                          timestamps=[page.get('time')],limitation=('此页只读到部分内容，不能当作完整文字。' if page.get('partial') else '')+'逐页读取的一张已发现图片；不保证极短闪图、原始全部页面或模糊文字完整。'))
     packet['evidence']=extra+subtitles
     packet['source_schema_version']=2
     packet['source_inventory']=[dict(kind=e['kind'],evidence_id=e['evidence_id']) for e in extra]

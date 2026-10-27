@@ -101,14 +101,22 @@ class IntentRuntime:
                 and hourly<int(self.cap.config.get('intent_hourly_limit',6))
                 and daily<int(self.cap.config.get('intent_daily_limit',20)))
 
-    def diagnostic(self,scope,decision):
+    def diagnostic(self,scope,decision,factors=None):
         # No chat contents or model reasoning in diagnostics.
+        previous=self.last_decisions.get(scope,{})
         self.last_decisions[scope]={'at':self.clock(),'decision':decision}
+        if factors is not None:
+            self.last_decisions[scope].update(factors=factors,factors_at=self.clock())
+        elif previous.get('factors') is not None:
+            self.last_decisions[scope].update(factors=previous['factors'],factors_at=previous.get('factors_at'))
 
     async def judge(self,scope,rows):
+        names=self.cap.config.get('bot_nonexclusive_names',[])
+        identity={'primary_name':str(self.cap.config.get('bot_primary_name',''))[:24],
+                  'nonexclusive_names':[n[:24] for n in names[:8] if isinstance(n,str)] if isinstance(names,list) else []}
         response=await asyncio.wait_for(self.cap.context.llm_generate(
             chat_provider_id=str(self.cap.config.get('intent_provider_id','deepseek/deepseek-flash')),
-            prompt=json.dumps({'bot_id':self.bot_id,'recent_group_messages':rows},ensure_ascii=False),
+            prompt=json.dumps({'bot_id':self.bot_id,'bot_identity':identity,'recent_group_messages':rows},ensure_ascii=False),
             contexts=[],system_prompt=JUDGE_PROMPT+('\n本群不接算术、做题、证明、调试或复杂专业求解任务，遇到此类请求should_reply=false；游戏、生活和认真交流不因话题有深度而自动拒绝。' if self.cap.config.get('group_skip_complex_tasks',False) else ''),max_tokens=350,
             thinking={'type':'disabled'}),
             timeout=float(self.cap.config.get('intent_timeout_seconds',12)))
@@ -120,12 +128,51 @@ class IntentRuntime:
                and type(parsed.get('addressed_to_bot')) is bool
                and isinstance(parsed.get('reason'),str) and 0<len(parsed['reason'])<=160)
         if not valid:return False
+        factors=parsed.get('factors')
+        if factors is not None:
+            names={'content','interest','social','timing','continuity'}
+            if (not isinstance(factors,dict) or set(factors)!=names
+                    or any(type(v)is not int or not 0<=v<=2 for v in factors.values())):return False
+            self.diagnostic(scope,'judged',factors)
+            if factors['social']==0 or factors['timing']==0:return False
         if parsed.get('stop_conversation') is True and parsed['should_reply'] is True:return False
         if (parsed.get('stop_conversation') is True and parsed['should_reply'] is False
                 and self.cap.config.get('intent_self_pause_enabled',False)
                 and any(row.get('role')=='assistant' for row in rows)):
             return 'stop_conversation'
         return parsed['should_reply']
+
+    async def before_delivery(self,event):
+        """Reassess a stale draft once before its first actual send.
+
+        Finishing an already-started segmented reply is left to the existing
+        quiet guard. A new direct request replaces an unsent older draft.
+        """
+        if not self.enabled(event) or not event.get_extra('fish_intent_approved'):
+            return True
+        if event.get_extra('fish_intent_delivery_started'):
+            return True
+        scope=event.unified_msg_origin
+        revision=event.get_extra('fish_intent_generation_revision')
+        if revision is None:
+            return True
+        if self.latest_direct.get(scope,0)>revision:
+            self.diagnostic(scope,'unsent_draft_replaced_by_direct');return False
+        if self.revisions[scope]>revision:
+            check_revision=self.revisions[scope]
+            self.bot_id=str(event.get_self_id())
+            try:verdict=await self.judge(scope,list(self.records[scope]))
+            except asyncio.CancelledError:raise
+            except Exception:
+                self.diagnostic(scope,'delivery_recheck_failed_silent');return False
+            if not verdict or self.revisions[scope]!=check_revision:
+                self.diagnostic(scope,'delivery_no_or_stale');return False
+            if verdict=='stop_conversation':
+                silencer=getattr(self.cap,'group_quiet',None)
+                if silencer:silencer.set(scope,120)
+                self.diagnostic(scope,'delivery_self_paused_120s');return False
+        event.set_extra('fish_intent_delivery_started',True)
+        return True
 
     async def run(self,gcp,event):
         self.observe(event)
@@ -158,8 +205,12 @@ class IntentRuntime:
                     if not self.eligible(scope,self.clock()):
                         self.diagnostic(scope,'cooldown_or_budget');return
                     begin=self.clock(); quiet=float(self.cap.config.get('intent_quiet_seconds',20))
+                    live_batch=self.cap.config.get('intent_live_batch_enabled',False) is True
                     while self.clock()-self.last_input[scope]<quiet:
-                        if self.closed or self.clock()-begin>=60 or self.latest_direct.get(scope,0)>revision:
+                        if self.closed or self.latest_direct.get(scope,0)>revision:
+                            self.diagnostic(scope,'quiet_wait_cancelled');return
+                        if self.clock()-begin>=(12 if live_batch else 60):
+                            if live_batch:break
                             self.diagnostic(scope,'quiet_wait_cancelled');return
                         await self.sleep(min(1,quiet))
                     revision=self.revisions[scope]; rows=list(self.records[scope])
@@ -185,8 +236,22 @@ class IntentRuntime:
                         self.diagnostic(scope,'judge_error_silent');return
                     if silencer and silencer.suppress(event):
                         self.diagnostic(scope,'quiet_state_changed_during_judge');return
-                    if not verdict or revision!=self.revisions[scope] or not self.eligible(scope,self.clock()):
-                        self.diagnostic(scope,'no_or_stale');return
+                    if not verdict:
+                        self.diagnostic(scope,'intent_no');return
+                    if not self.eligible(scope,self.clock()):
+                        self.diagnostic(scope,'cooldown_or_budget');return
+                    if revision!=self.revisions[scope]:
+                        if not live_batch or verdict=='stop_conversation' or self.latest_direct.get(scope,0)>revision:
+                            self.diagnostic(scope,'judged_but_stale');return
+                        latest=list(self.records[scope]);last=latest[-1];text=last.get('text','')
+                        targets=last.get('targets',[])
+                        import re
+                        if (any(t['id'] not in ('unknown','0','all',bot) for t in targets) or
+                            task_reason(text) or re.search(r'已经解决|不用回|不用了|先别说|换个话题|问题解决了',text)):
+                            self.diagnostic(scope,'new_context_closed_or_other_target');return
+                        # Merge ordinary follow-ups into the one generation.
+                        # The existing first-send recheck still sees later input.
+                        rows=latest;revision=self.revisions[scope]
                     if verdict=='stop_conversation':
                         if silencer and self.cap.config.get('intent_self_pause_enabled',False):
                             silencer.set(scope,120)
@@ -195,6 +260,7 @@ class IntentRuntime:
                 else:
                     rows=list(self.records[scope])
                 event.set_extra('fish_intent_approved',True)
+                event.set_extra('fish_intent_generation_revision',self.revisions[scope])
                 event.set_extra('fish_intent_group_snapshot',rows)
                 self.diagnostic(scope,'direct' if direct else 'intent_yes')
                 async for result in gcp._process_message(event):

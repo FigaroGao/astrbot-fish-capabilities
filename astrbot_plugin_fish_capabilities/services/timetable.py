@@ -14,11 +14,12 @@ HK = ZoneInfo('Asia/Hong_Kong')
 
 
 class Timetable:
-    def __init__(self, path, actions, timeline=None, clock=time.time):
+    def __init__(self, path, actions, timeline=None, clock=time.time, gate=None):
         self.path, self.actions, self.timeline, self.clock = path, actions, timeline, clock
         self.lock = asyncio.Lock()
         self.engine = None
         self.running = {}
+        self.gate=gate
         self.job_id = 'fish-capabilities-unified-clock'
         with self.db() as db:
             db.executescript('''
@@ -27,6 +28,8 @@ class Timetable:
             CREATE TABLE IF NOT EXISTS executions(task TEXT, revision INTEGER, slot TEXT,
               stamp REAL, state TEXT, error_type TEXT, PRIMARY KEY(task,revision,slot));
             CREATE TABLE IF NOT EXISTS migrations(name TEXT PRIMARY KEY);
+            CREATE TABLE IF NOT EXISTS deferrals(task TEXT,revision INTEGER,slot TEXT,
+              not_before REAL,deadline REAL,reason TEXT,PRIMARY KEY(task,revision,slot));
             ''')
 
     @contextmanager
@@ -89,6 +92,10 @@ class Timetable:
                 db.execute('UPDATE tasks SET enabled=? WHERE id=?',(int(operation=='resume'),task_id))
             else: raise CapabilityError('不支持的操作。')
         if operation in ('pause','cancel') and task_id in self.running:self.running[task_id].cancel()
+        if operation in ('pause','cancel'):
+            with self.db() as db:
+                db.execute('DELETE FROM deferrals WHERE task=?',(task_id,))
+                db.execute("UPDATE executions SET state='cancelled' WHERE task=? AND state='deferred'",(task_id,))
         return {'task_id':task_id,'operation':operation,'saved':True}
 
     def list(self):
@@ -128,6 +135,11 @@ class Timetable:
                     if current!=(1,revision):continue
                     if db.execute('SELECT 1 FROM executions WHERE task=? AND revision=? AND slot=?',(ident,revision,slot)).fetchone():continue
                     db.execute('INSERT INTO executions VALUES(?,?,?,?,?,?)',(ident,revision,slot,self.clock(),'reserved',''))
+                    # A fresh autonomous slot supersedes older unstarted
+                    # deferrals for this same task; never accumulate catch-up
+                    # browsing or several delayed proactive checks at once.
+                    db.execute("UPDATE executions SET state='defer_coalesced' WHERE task=? AND state='deferred' AND slot!=?",(ident,slot))
+                    db.execute('DELETE FROM deferrals WHERE task=? AND slot!=?',(ident,slot))
                 if ident in self.running and not self.running[ident].done():
                     with self.db() as db:db.execute('UPDATE executions SET state=? WHERE task=? AND revision=? AND slot=?',('overlap_skipped',ident,revision,slot))
                     continue
@@ -136,19 +148,54 @@ class Timetable:
                 def finished(t,key=ident):
                     if self.running.get(key) is t:self.running.pop(key,None)
                 task.add_done_callback(finished)
+            # Only work explicitly deferred before any side effect is retried.
+            # Transport failures and ambiguous sends are never retried here.
+            with self.db() as db:
+                pending=db.execute('SELECT d.task,d.revision,d.slot,d.deadline,t.action,t.args,t.enabled,t.revision FROM deferrals d LEFT JOIN tasks t ON t.id=d.task WHERE d.not_before<=?',(self.clock(),)).fetchall()
+            for ident,revision,slot,deadline,action,args,on,current_revision in pending:
+                invalid=not on or current_revision!=revision or deadline<=self.clock()
+                if invalid:
+                    with self.db() as db:
+                        db.execute('DELETE FROM deferrals WHERE task=? AND revision=? AND slot=?',(ident,revision,slot))
+                        db.execute('UPDATE executions SET state=? WHERE task=? AND revision=? AND slot=?',('defer_expired' if on and current_revision==revision else 'cancelled',ident,revision,slot))
+                    continue
+                if ident in self.running and not self.running[ident].done():continue
+                with self.db() as db:
+                    db.execute("UPDATE executions SET state='reserved' WHERE task=? AND revision=? AND slot=?",(ident,revision,slot))
+                task=asyncio.create_task(self.execute(ident,action,args,revision,slot));self.running[ident]=task
+                def resumed(t,key=ident):
+                    if self.running.get(key) is t:self.running.pop(key,None)
+                task.add_done_callback(resumed)
 
     async def execute(self,ident,action,args,revision,slot):
         state,error='completed',''
         try:
             with self.db() as db:current=db.execute('SELECT enabled,revision FROM tasks WHERE id=?',(ident,)).fetchone()
             if current!=(1,revision):state='cancelled';return
-            await self.actions[action](ident+':'+str(revision)+':'+slot,**json.loads(args))
+            if self.gate is not None and action in ('bili_scroll','private_initiative','dynamic_thought'):
+                verdict=await self.gate(action)
+                decision=verdict.get('decision') if isinstance(verdict,dict) else None
+                if decision not in ('run','skip','defer'):raise CapabilityError('活动判断结果无效。')
+                if decision=='skip':state='intent_skipped';return
+                if decision=='defer':
+                    delay=verdict.get('delay_seconds',900)
+                    if type(delay)is not int or not 60<=delay<=3600:raise CapabilityError('活动延后时间无效。')
+                    reason=verdict.get('reason_code','availability')
+                    if reason not in ('conversation_active','delivery_active','availability'):reason='availability'
+                    with self.db() as db:
+                        db.execute('INSERT INTO deferrals VALUES(?,?,?,?,?,?) ON CONFLICT(task,revision,slot) DO UPDATE SET not_before=excluded.not_before,reason=excluded.reason',
+                            (ident,revision,slot,self.clock()+delay,self.clock()+3600,reason))
+                    state='deferred';return
+            result=await self.actions[action](ident+':'+str(revision)+':'+slot,**json.loads(args))
+            outcome=result.get('state') if isinstance(result,dict) else result if isinstance(result,str) else None
+            if isinstance(outcome,str) and __import__('re').fullmatch(r'[a-z_]{1,60}',outcome):state=outcome
         except asyncio.CancelledError:
             state='interrupted'
         except Exception as exc:
             state,error='failed',type(exc).__name__
         finally:
             with self.db() as db:
+                if state!='deferred':db.execute('DELETE FROM deferrals WHERE task=? AND revision=? AND slot=?',(ident,revision,slot))
                 db.execute('UPDATE executions SET state=?,error_type=? WHERE task=? AND revision=? AND slot=?',(state,error,ident,revision,slot))
                 db.execute('DELETE FROM executions WHERE stamp<?',(self.clock()-90*86400,))
             if self.timeline:self.timeline.add('task',ident+':'+str(revision)+':'+slot,action,state=state)

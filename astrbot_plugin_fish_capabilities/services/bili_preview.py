@@ -3,6 +3,7 @@ import asyncio,io,math,urllib.parse,urllib.request,hashlib
 from pathlib import Path
 from .http import PublicJSON,NoRedirect
 from .policy import CapabilityError
+from .bili_gallery import media_user_agent
 
 def positions(index,duration,count=9):
     count=max(1,min(27,int(count)))
@@ -20,10 +21,46 @@ class Preview:
     async def create(self,video_id,info,count=9):
         duration=float(info.get('duration',0))
         if not 0<duration<=600:raise CapabilityError('只读取不超过10分钟的视频。')
-        result=await PublicJSON().get('https://api.bilibili.com/x/player/videoshot?'+urllib.parse.urlencode({'bvid':video_id,'cid':info.get('cid'),'index':1}),{'api.bilibili.com'})
+        result=await PublicJSON(user_agent=media_user_agent()).get('https://api.bilibili.com/x/player/videoshot?'+urllib.parse.urlencode({'bvid':video_id,'cid':info.get('cid'),'index':1}),{'api.bilibili.com'})
         data=result.get('data') or {};chosen=positions(data.get('index',[]),duration,count)
         if result.get('code')!=0 or not chosen:raise CapabilityError('该视频没有可用预览图；没有下载整段视频。')
         return await asyncio.to_thread(self.build,video_id,data,chosen)
+
+    async def candidates(self,video_id,info):
+        """Sparse, bounded whole-timeline preflight, not a decoded-video scan."""
+        duration=float(info.get('duration',0))
+        if not math.isfinite(duration) or not 0<duration<=600:raise CapabilityError('只读取不超过10分钟的视频。')
+        result=await PublicJSON(user_agent=media_user_agent()).get('https://api.bilibili.com/x/player/videoshot?'+urllib.parse.urlencode({'bvid':video_id,'cid':info.get('cid'),'index':1}),{'api.bilibili.com'})
+        data=result.get('data') or {}
+        if result.get('code')!=0:raise CapabilityError('没有可用预览图。')
+        valid=[(i,float(t)) for i,t in enumerate(data.get('index',[])) if type(t) in (int,float) and math.isfinite(t) and 0<=t<=duration]
+        if not valid:raise CapabilityError('没有可用预览时间索引。')
+        # First/last included. Limit source pages separately from output sheets.
+        selected=[valid[round(n*(len(valid)-1)/(min(54,len(valid))-1))] for n in range(min(54,len(valid)))] if len(valid)>1 else valid
+        return await asyncio.to_thread(self.extract_candidates,data,selected)
+
+    def extract_candidates(self,data,chosen):
+        from PIL import Image
+        nx,ny,w,h=[int(data.get(k,0)) for k in ('img_x_len','img_y_len','img_x_size','img_y_size')]
+        if not 1<=nx<=20 or not 1<=ny<=20 or not 16<=w<=640 or not 16<=h<=480:raise CapabilityError('预览图结构异常。')
+        images=data.get('image',[]);pages=sorted({i//(nx*ny) for i,_ in chosen if i//(nx*ny)<len(images)})
+        if len(pages)>6:pages=[pages[round(n*(len(pages)-1)/5)] for n in range(6)]
+        panels=[]
+        for page in pages:
+            url=str(images[page]);url='https:'+url if url.startswith('//') else url;p=urllib.parse.urlsplit(url)
+            if p.scheme!='https' or not (p.hostname or '').endswith('.hdslb.com') or p.username or p.password or p.port not in (None,443):raise CapabilityError('预览图地址异常。')
+            request=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Referer':'https://www.bilibili.com/'})
+            with urllib.request.build_opener(NoRedirect()).open(request,timeout=8) as response:raw=response.read(8_000_001)
+            if len(raw)>8_000_000:raise CapabilityError('预览图过大。')
+            with Image.open(io.BytesIO(raw)) as image:
+                if image.width*image.height>20_000_000:raise CapabilityError('预览图尺寸过大。')
+                for tile,stamp in chosen:
+                    if tile//(nx*ny)!=page:continue
+                    local=tile%(nx*ny);x=(local%nx)*w;y=(local//nx)*h
+                    if x+w<=image.width and y+h<=image.height:
+                        panels.append({'id':f'f{tile}','time':stamp,'image':image.crop((x,y,x+w,y+h)).convert('RGB')})
+        if not panels:raise CapabilityError('没有可用预览画面。')
+        return sorted(panels,key=lambda p:p['time'])
     def build(self,video_id,data,chosen):
         from PIL import Image,ImageDraw
         nx,ny,w,h=[int(data.get(k,0)) for k in ('img_x_len','img_y_len','img_x_size','img_y_size')]
