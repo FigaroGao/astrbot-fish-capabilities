@@ -1,3 +1,9 @@
+## 2026-10-27: 0.8.0 integration
+
+Public 0.8.0 package verification: 588 passed, 0 skipped, including a real ffmpeg synthetic test and disabled/unbound shared-default checks; one existing audioop deprecation warning. New relative documentation links and known private-identity/key-pattern checks passed.
+
+The device-source suite passed 587 tests and 74 source files matched the tablet. Real streaming/130-frame scanning, per-page reading of a three-page text fixture, three reference-family matches, announcement queries, and task baseline checks passed. Later real Bilibili HTTP 412 was not bypassed; no test QQ messages or Bilibili media posts were sent. See [deployment evidence](deployment-20261027.en.md) for complete limits.
+
 # Share-release validation: 2026-10-26 · 0.7.1
 
 [中文](validation.md)
