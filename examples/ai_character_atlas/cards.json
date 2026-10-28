@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-27",
-  "phase": "已部署本地资料卡，三个优先形象已接入概览视觉参考匹配；未训练模型或导入云端Embedding。",
+  "updated_at": "2026-10-28",
+  "phase": "六种优先视觉参考：三种AI拟人形象及三个挽昼；角色与梗资料只作理解依据，不绑定现实账号或私人关系。",
   "commonness_basis": "以本次B站页面和相关创作者/素材源为样例；未做频率统计或唯一标准认定",
   "rules": [
     "按品牌家族、画师版本、服装/比例、具体账号四层分别记录",
@@ -78,6 +78,24 @@
       "url": "https://github.com/AwesomeHou/openpet-ai-girls/tree/72677712a7991b32f87c219dd8a6d86e5cc4f672",
       "kind": "publication",
       "checked_at": "2026-10-27"
+    },
+    {
+      "id": "zzz-dracaene-source",
+      "url": "https://www.bilibili.com/video/BV1F3nt6wE56/",
+      "kind": "user_supplied_public_reference_video",
+      "checked_at": "2026-10-28"
+    },
+    {
+      "id": "zzz-lindverne-source",
+      "url": "https://www.bilibili.com/video/BV1E5nt6FEto/",
+      "kind": "user_supplied_public_reference_video",
+      "checked_at": "2026-10-28"
+    },
+    {
+      "id": "zzz-eldreda-source",
+      "url": "https://www.bilibili.com/video/BV1L6n46pEAu/",
+      "kind": "user_supplied_public_reference_video",
+      "checked_at": "2026-10-28"
     }
   ],
   "references": {
@@ -155,6 +173,42 @@
         "AwesomeHou/openpet-ai-girls"
       ],
       "rights": "未取得独立美术再分发许可核验，默认仅本地研究和来源索引"
+    },
+    "zzz-dracaene": {
+      "sha256": "7c175e2a303c8944b8c063980b73c3e632bfea9e297b59a2db57135aafcb739b",
+      "visually_checked": true,
+      "url": "https://www.bilibili.com/video/BV1F3nt6wE56/",
+      "view": "用户指定角色参考视频的完整立绘画面，时间15.5秒；保留来源水印和姓名，非无水印原画",
+      "attribution": [
+        "HoYoverse / miHoYo（角色与原始美术）",
+        "参考视频上传者见来源页面（保留水印）"
+      ],
+      "rights": "游戏美术及视频截图未重新许可；仅本机识别参考，不随代码分发图片字节",
+      "source_kind": "user_identified_video_reference"
+    },
+    "zzz-lindverne": {
+      "sha256": "1092290dd50042965849d089226c6cc4f99d7704a30b83af7f08b13eed72572e",
+      "visually_checked": true,
+      "url": "https://www.bilibili.com/video/BV1E5nt6FEto/",
+      "view": "用户指定角色参考视频的完整立绘画面，时间14.5秒；保留来源水印和姓名，非无水印原画",
+      "attribution": [
+        "HoYoverse / miHoYo（角色与原始美术）",
+        "参考视频上传者见来源页面（保留水印）"
+      ],
+      "rights": "游戏美术及视频截图未重新许可；仅本机识别参考，不随代码分发图片字节",
+      "source_kind": "user_identified_video_reference"
+    },
+    "zzz-eldreda": {
+      "sha256": "0b9b2a561a583bd9429446ebc7ebfc61c9f72e8828248d9436225f7f14631273",
+      "visually_checked": true,
+      "url": "https://www.bilibili.com/video/BV1L6n46pEAu/",
+      "view": "用户指定角色参考视频的完整立绘画面，时间14.5秒；保留来源水印和姓名，非无水印原画",
+      "attribution": [
+        "HoYoverse / miHoYo（角色与原始美术）",
+        "参考视频上传者见来源页面（保留水印）"
+      ],
+      "rights": "游戏美术及视频截图未重新许可；仅本机识别参考，不随代码分发图片字节",
+      "source_kind": "user_identified_video_reference"
     }
   },
   "cards": [
@@ -411,11 +465,158 @@
       "auto_identity_assignment": false,
       "visual_matching_ready": false,
       "account_binding_allowed": false
+    },
+    {
+      "id": "zzz.sunbringer.dracaene",
+      "family": "ZenlessZoneZero",
+      "display_name": "德蕾琪娜·挽昼",
+      "aliases": [
+        "小挽昼",
+        "小挽",
+        "德蕾琪娜",
+        "三位挽昼",
+        "绝区零挽昼"
+      ],
+      "status": "priority_reference",
+      "visual_features": [
+        "银灰色波浪发，刘海遮住一只眼睛",
+        "可见金色眼睛，头部较小的暗色角状装饰",
+        "深色短裙有大块蓝灰色花朵，手臂与鞋上也有花形装饰",
+        "背后有大块黑灰色圆盘/盾状花形结构，身形比另外两位更小"
+      ],
+      "disambiguation": [
+        "大中小是社区便称，不凭身高单独认定身份",
+        "三位共享挽昼称呼，但仍是不同角色；不要混成同一人的三个发型",
+        "普通白发/角角色不必然是挽昼，不足时保持未知角色"
+      ],
+      "references": [
+        "zzz-dracaene"
+      ],
+      "public_notes": [
+        "《绝区零》中的挽昼之一；对应社区称呼：小挽昼。",
+        "形象与名字由主人给定参考视频并逐图核对，游戏玩法、年龄和亲属关系不凭图片推定。"
+      ]
+    },
+    {
+      "id": "zzz.sunbringer.lindverne",
+      "family": "ZenlessZoneZero",
+      "display_name": "林德薇恩·挽昼",
+      "aliases": [
+        "中挽昼",
+        "中挽",
+        "林德薇恩",
+        "三位挽昼",
+        "绝区零挽昼"
+      ],
+      "status": "priority_reference",
+      "visual_features": [
+        "银灰色长发、可见粉红色眼睛",
+        "向后弯曲的大型黑色双角，有粉红/红色内侧细节",
+        "黑灰色短裙/战斗服，胸口和裙摆有鲜明粉红色交叉/花形纹样",
+        "黑色长手套/靴与大块深色护甲装饰；和高个长披风形象区分"
+      ],
+      "disambiguation": [
+        "大中小是社区便称，不凭身高单独认定身份",
+        "三位共享挽昼称呼，但仍是不同角色；不要混成同一人的三个发型",
+        "普通白发/角角色不必然是挽昼，不足时保持未知角色"
+      ],
+      "references": [
+        "zzz-lindverne"
+      ],
+      "public_notes": [
+        "《绝区零》中的挽昼之一；对应社区称呼：中挽昼。",
+        "形象与名字由主人给定参考视频并逐图核对，游戏玩法、年龄和亲属关系不凭图片推定。"
+      ]
+    },
+    {
+      "id": "zzz.sunbringer.eldreda",
+      "family": "ZenlessZoneZero",
+      "display_name": "艾尔妲·挽昼",
+      "aliases": [
+        "大挽昼",
+        "大挽",
+        "艾尔妲",
+        "三位挽昼",
+        "绝区零挽昼"
+      ],
+      "status": "priority_reference",
+      "visual_features": [
+        "银白色长发，黑色大型弯角有暗红内侧",
+        "身形高挑，深蓝黑长披风/拖尾形成展开的星空轮廓",
+        "黑蓝色衣装配金色星形细节与红色宝石装饰",
+        "腿部可见不对称深色装饰，与小个蓝花短裙、粉色短裙形象区分"
+      ],
+      "disambiguation": [
+        "大中小是社区便称，不凭身高单独认定身份",
+        "三位共享挽昼称呼，但仍是不同角色；不要混成同一人的三个发型",
+        "普通白发/角角色不必然是挽昼，不足时保持未知角色"
+      ],
+      "references": [
+        "zzz-eldreda"
+      ],
+      "public_notes": [
+        "《绝区零》中的挽昼之一；对应社区称呼：大挽昼。",
+        "形象与名字由主人给定参考视频并逐图核对，游戏玩法、年龄和亲属关系不凭图片推定。"
+      ]
     }
   ],
   "runtime_deployment": {
-    "date": "2026-10-27",
-    "priority_reference_cards": 3,
+    "date": "2026-10-28",
+    "priority_reference_cards": 6,
     "recognition_scope": "画面形象，不是具体账号；参考样本测试通过，不代表任意二创准确率。"
-  }
+  },
+  "meme_notes": [
+    {
+      "id": "zzz-sunbringer-three",
+      "character_ids": [
+        "zzz.sunbringer.dracaene",
+        "zzz.sunbringer.lindverne",
+        "zzz.sunbringer.eldreda"
+      ],
+      "aliases": [
+        "挽昼",
+        "大中小",
+        "三位",
+        "三个"
+      ],
+      "meaning": "大中小挽昼是便于区分三位角色的社区称呼：小挽昼德蕾琪娜、中挽昼林德薇恩、大挽昼艾尔妲；不是把三个人认成同一个个体。",
+      "kind": "name_mapping_with_user_reference",
+      "source": "https://zenless.hoyoverse.com/m/zh-cn/news/166997",
+      "checked_at": "2026-10-28"
+    },
+    {
+      "id": "zzz-young-mom-template",
+      "character_ids": [
+        "zzz.sunbringer.dracaene",
+        "zzz.sunbringer.lindverne",
+        "zzz.sunbringer.eldreda"
+      ],
+      "aliases": [
+        "年轻妈妈",
+        "单亲妈妈",
+        "两个孩子",
+        "房租"
+      ],
+      "meaning": "这类二创把三位同框的外观套进“年轻/单亲妈妈带两个孩子”的反差模板，借成熟与较小身形的并排形象制造笑点。不是官方母子关系，不从梗反推真实年龄、婚育或人物亲属关系。要结合视频实际配文，不只是看到三个白发角色就套梗。",
+      "kind": "community_meme_interpretation",
+      "source": "https://www.bilibili.com/video/BV1phxT6xEb7/",
+      "checked_at": "2026-10-28"
+    },
+    {
+      "id": "zzz-three-bowls",
+      "character_ids": [
+        "zzz.sunbringer.dracaene",
+        "zzz.sunbringer.lindverne",
+        "zzz.sunbringer.eldreda"
+      ],
+      "aliases": [
+        "三碗粥",
+        "碗粥"
+      ],
+      "meaning": "“三碗粥”可作为“三位挽昼”的谐音玩笑；这是社区语境候选，不是角色正式名字，也不把正常吃粥的句子自动解释成游戏梗。",
+      "kind": "editorial_phonetic_explanation",
+      "source": "https://www.ptt.cc/bbs/C_Chat/M.1792725541.A.4E6.html",
+      "checked_at": "2026-10-28"
+    }
+  ]
 }

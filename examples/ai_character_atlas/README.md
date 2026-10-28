@@ -1,11 +1,15 @@
-# AI拟人形象资料卡 / AI character reference cards
+# 视频角色参考资料卡
 
-[中文功能说明](../../docs/release-0.8.0.md#选择式视频与角色) · [Full English guide](../../docs/release-0.8.0.en.md#selective-video-reading-and-characters)
+2026-10-28：当前包含10张资料卡，其中6张优先视觉参考：DeepSeek女仆鲸鱼娘、GPT白龙娘、Claude橙发形象，以及《绝区零》的小、中、大挽昼。另4张保留为形态或来源索引。AI拟人形象并非厂商官方形象；没有统计全站出现频率。
 
-7张资料卡，最多3张优先参考接入概览视觉调用。仅附文字、来源URL及校验值，不含图片、私人路径、身份绑定或Embedding。取得素材时须核对各自许可并保留作者署名；公开可见不等于允许再分发。Pixiv原页本次无法直接访问，相关作者图借有来源的归档核对；OpenPet其他版本仅作索引，未作为已核准可再分发素材。
+`services/character_atlas.py`已接入视频规划和聊天中的相关称呼理解。部署需要开启`bili_character_enabled`、准备已逐图核对且哈希一致的本地参考文件，并在运行时参考记录填写文件名。本目录只发布文字、来源链接、署名与校验信息，不附图片字节或本机路径，不能直接替代完整本地参考目录。
 
-本机插件数据目录下创建`character-atlas`，放`cards.json`及按其references中file命名的合法参考图；SHA256需一致。打开`bili_character_enabled`。没有有效图时不会假装识别。角色外观不等于账号，小鲸/姐姐不是通用形象别名。参考匹配不是未见样本准确率基准。
+启用角色识别后，视频默认初筛最多检查18个候选画面（显式请求更密时可至27），精读帧数仍由规划选择；参考图不算视频画面。仅接纳实际帧编号、组合特征和达到阈值的视觉判断；Q版或换装不因衣服不同直接排除，也不能从参考图补写视频里不存在的书本或标记。无法辨认时保留未知角色，不保证任意二创都准确。
 
-Seven text cards; up to three priority references join the overview visual call. Only descriptions, source URLs, and checksums are included: no image bytes, private paths, account binding, or embeddings. Check each source's terms and retain attribution; public visibility is not redistribution permission. The original Pixiv page was unavailable in this research, so attributed archives were used to inspect those author images. Other OpenPet variants are indexed only, not treated as cleared for redistribution.
+小挽昼为德蕾琪娜·挽昼，中挽昼为林德薇恩·挽昼，大挽昼为艾尔妲·挽昼，分别记录用户指定的公开BV来源。梗资料把社区昵称、谐音和二创模板与官方角色设定分开；“年轻妈妈带两个孩子”不是据此确认的官方亲属关系。“三碗粥”需结合游戏/梗语境，普通吃饭不自动解释成游戏梗。
 
-Create `character-atlas` under the plugin's local data directory. Add `cards.json` and lawfully obtained reference images named by each references.file field, with matching SHA256. Enable `bili_character_enabled`. Missing valid images do not produce a pretend recognition setup. Appearance is not account identity; Xiaojing/sister are not generic character aliases. Reference matching is not an unseen-sample accuracy benchmark.
+每张卡包含别名、可见特征、易混淆点、来源与参考图记录。资料不包含私人配置、聊天或账号绑定；“小鲸”“姐姐”不作为公共形象别名。看到DeepSeek形象不代表具体就是小鲸，看到GPT形象也不代表现实对话中的任何账号。
+
+第三方素材使用时保留各自署名和条件，本项目代码许可不替代图片权利。Pixiv原页早先无法直接访问，相关图通过带来源的归档查看；OpenPet精灵表仅索引。挽昼参考视频的本地截图保留原水印，仅用于本地识别，不随代码再分发。
+
+实机补修及验证边界见[睡眠边界与角色识别补修](../../docs/update-20261028.md)。
