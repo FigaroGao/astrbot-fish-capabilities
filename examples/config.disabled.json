@@ -113,5 +113,9 @@
   "bot_primary_name": "",
   "bot_nonexclusive_names": [],
   "intent_live_batch_enabled": false,
-  "meme_opportunity_enabled": false
+  "meme_opportunity_enabled": false,
+  "bili_scroll_unlimited_enabled": false,
+  "bili_scroll_session_seconds": 600,
+  "bili_dynamic_daytime_enabled": false,
+  "bili_dynamic_reply_enabled": false
 }
