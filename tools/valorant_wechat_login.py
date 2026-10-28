@@ -76,7 +76,7 @@ async def login():
         path=BASE/'data/config/astrbot_plugin_fish_capabilities_config.json'
         config=json.loads(path.read_text(encoding='utf-8-sig'));config['valorant_enabled']=True;private_save(path,config)
         pending.unlink(missing_ok=True)
-        print('已绑定。请在AstrBot WebUI重载大肥鱼能力插件，再在主人私聊让她查最近3局。')
+        print('已绑定。请在AstrBot WebUI重载小鲸能力插件后，在主人私聊说“帮我看看刚才那局”获取简版复盘，或查询近期战绩、KD和常用特工。近期列表默认3场、每次最多5场；近期统计默认20场、最多30场样本。简版复盘对比此前同模式最多5局，不代表只能查看3局。')
         print('角色核验不等于战绩接口已通过；首次读取会单独检查。')
     except Exception as exc:
         private_save(ROOT/'valorant-login-diagnostic.json',{'at':time.time(),'error_type':type(exc).__name__,'pending_saved':pending.exists(),'stage':stage,'elapsed_seconds':round(time.monotonic()-started,1),'last_scan_status':last if type(last) is int else None})
