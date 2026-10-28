@@ -90,3 +90,16 @@ def test_ordinary_dialogue_splits_without_truncating():
     assert url in dialog_segments('看看这个\n'+url)
     code='```python\n'+('print(1)\n'*30)+'```'
     assert code in dialog_segments('代码如下：'+code)
+
+
+def test_long_video_tool_keeps_claude_identity_and_visual_basis():
+    from astrbot_plugin_fish_capabilities.services.context_budget import compact_tool
+    packet={'bvid':'BVtest','visual_summary':'长'*2200,'character_matches':[{'character_id':'claude.orange-scholar','name':'Claude橙发形象','family':'Claude','confidence':.98,'visible_evidence':'画面橙发与太阳形头饰','frame_ids':['f2'],'account_identity_verified':True}],
+            'character_meme_context':[{'kind':'community_usage','meaning':'不当作官方关系'}]}
+    result=json.loads(compact_tool(json.dumps(packet,ensure_ascii=False)))
+    assert result['character_matches'][0]['name']=='Claude橙发形象'
+    assert '太阳' in result['character_matches'][0]['visible_evidence']
+    assert result['character_matches'][0]['account_identity_verified'] is False
+    nested=json.loads(compact_tool(json.dumps({'total_videos':1,'memories':[packet]},ensure_ascii=False)))
+    assert nested['memories'][0]['character_matches'][0]['family']=='Claude'
+    assert nested['memories'][0]['character_meme_context']

@@ -124,3 +124,63 @@ async def test_static_gallery_reads_unique_images_only(tmp_path):
     assert result['gallery_discovered_pages']==3 and result['preview_frames']==3
     assert result['gallery_all_available_pages_read'] is True
     assert result['gallery_all_video_pages_confirmed'] is False
+
+
+async def test_planner_changes_nine_hint_to_eighteen_and_preserves_details(tmp_path):
+    frames=[panel(i,(i*7,20,30)) for i in range(27)]
+    async def candidates(*args):return frames
+    async def generate(prompt,paths,kind,tokens):
+        if kind=='bili_visual_plan':
+            assert 'frame_ids' in prompt and 'frame_count' in prompt
+            return json.dumps({'type':'ordinary','frame_count':18,'details':[{'id':'f0','region':[0,.5,1,1]}]})
+        return '画面内容。'
+    result=await Storyboard(SimpleNamespace(root=tmp_path,candidates=candidates),generate).read({'bvid':'BVtest','preview_requested':9},{})
+    assert result['preview_frames']==18 and result['preview_selection_method']=='planner_density'
+    assert result['preview_detail_count']==1 and result['preview_detail_manifest'][0]['region']==[0,.5,1,1]
+
+
+def test_planner_selects_actual_frames_and_rejects_unknown_and_ads():
+    from astrbot_plugin_fish_capabilities.services.bili_storyboard import select_overview
+    frames=[panel(i,(i,20,30)) for i in range(6)]
+    result,method=select_overview({'frame_ids':['f4','f0','f4']},frames,frames,[],9)
+    assert [p['id'] for p in result]==['f0','f4'] and method=='planner_frame_ids'
+    for plan in [{'frame_ids':['f999']},{'frame_ids':[{}]},{'frame_count':True},{'frame_count':28},{'frame_ids':['f1']}]:
+        result,method=select_overview(plan,frames,frames,[{'start':10,'end':10}],3)
+        assert method=='request_hint_fallback' and all(p['id']!='f1' for p in result)
+
+
+async def test_gallery_fallback_still_recognizes_characters(tmp_path):
+    import hashlib
+    from astrbot_plugin_fish_capabilities.services.character_atlas import CharacterAtlas
+    from astrbot_plugin_fish_capabilities.services.policy import CapabilityError
+    image=tmp_path/'ref.png';Image.new('RGB',(30,30),'blue').save(image)
+    data={'cards':[{'id':'claude','family':'Claude','display_name':'Claude','status':'priority_reference','references':['r'],'visual_features':['orange','sun'],'disambiguation':[]}],
+          'references':{'r':{'file':'ref.png','sha256':hashlib.sha256(image.read_bytes()).hexdigest(),'visually_checked':True}}}
+    (tmp_path/'cards.json').write_text(json.dumps(data))
+    async def unavailable(*a):raise CapabilityError('no preview')
+    frames=[panel(0,'blue')]
+    async def scan(*a):return frames,{'source':'decoded_video_samples'}
+    async def generate(prompt,paths,kind,tokens):
+        if kind=='bili_visual_plan':return json.dumps({'type':'slides','characters':[{'character_id':'claude','frame_ids':['f0'],'confidence':.95,'evidence':'实际画面有橙色头发与太阳形头饰'}]})
+        return json.dumps({'pages':[{'id':'f0','status':'read','text':'actual frame description'}]})
+    result=await Storyboard(SimpleNamespace(root=tmp_path,candidates=unavailable),generate,SimpleNamespace(scan=scan),CharacterAtlas(tmp_path)).read({'bvid':'BVtest'},{})
+    assert result['character_matches'][0]['family']=='Claude'
+    assert result['character_matches'][0]['source']=='decoded_video_samples'
+
+
+async def test_character_pass_does_not_skip_a_closeup_between_nine_samples(tmp_path):
+    class Atlas:
+        def bundle(self):return [],[]
+        def matches(self,*a,**kw):return []
+        def meme_context(self,*a):return []
+    frames=[panel(i,(i*17,30,90)) for i in range(13)]
+    async def candidates(*a):return frames
+    async def generate(prompt,paths,kind,tokens):
+        if kind=='bili_visual_plan':
+            # f5 was absent in spread(thirteen, nine); it can be the sole clear
+            # close-up. The final read may still select fewer frames.
+            assert '"id": "f5"' in prompt and '"id": "f12"' in prompt
+            return json.dumps({'type':'ordinary','frame_ids':['f5']})
+        return 'A close-up in the actually selected frame.'
+    result=await Storyboard(SimpleNamespace(root=tmp_path,candidates=candidates),generate,characters=Atlas()).read({'bvid':'BVtest','preview_requested':9},{})
+    assert result['preview_frames']==1 and result['preview_timestamps']==[frames[5]['time']]
