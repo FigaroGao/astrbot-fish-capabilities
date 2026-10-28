@@ -579,5 +579,10 @@
     "type": "bool",
     "description": "检查自己已登记动态下绑定主人的新评论，经核验与独立审核回复，不回放旧评论。",
     "default": false
+  },
+  "canvas_enabled": {
+    "type": "bool",
+    "description": "主人私聊只读查询城大Canvas；先在本机fish-canvas-login输入Token，不在聊天中提供。",
+    "default": false
   }
 }
