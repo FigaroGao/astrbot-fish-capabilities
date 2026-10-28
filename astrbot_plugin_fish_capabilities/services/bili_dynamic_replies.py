@@ -139,6 +139,7 @@ class DynamicReplies:
                                 db.execute("UPDATE dynamic_reply_items SET state='submitted',receipt=? WHERE account=? AND id=?",(receipt,account,target['id']))
                                 db.execute("UPDATE bili_comments SET state='submitted',reply_id=? WHERE key=?",(receipt,key))
                             sent+=1
+                            if getattr(self,'timeline',None):self.timeline.add('bili_dynamic_reply',account+':'+receipt,text,state='submitted',details={'post':post,'target':target['id'],'receipt':receipt})
                         except asyncio.CancelledError:raise
                         except Exception:
                             with self.reader.connect() as db:db.execute("UPDATE dynamic_reply_items SET state='skipped' WHERE account=? AND id=? AND state='reserved'",(account,target['id']))

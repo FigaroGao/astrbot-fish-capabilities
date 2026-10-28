@@ -15,6 +15,8 @@ class ForwardRecords:
         self.seen = set()
         self.fetches = self.nodes = self.chars = self.steps = 0
         self.lines = []
+        self.images = []
+        self.node_context = (0,'未标明姓名')
         self.found = self.limited = self.failed = False
 
     def emit(self, text):
@@ -124,7 +126,16 @@ class ForwardRecords:
         elif kind == 'text':
             if inside:
                 self.emit(data.get('text', ''))
-        elif kind in ('image', 'video', 'record', 'file'):
+        elif kind == 'image':
+            if inside:
+                if len(self.images)>=6:
+                    self.limited=True;self.emit('[图片：超过本轮6张识别上限，未识别图像]')
+                else:
+                    label='F'+str(len(self.images)+1)
+                    number,speaker=self.node_context
+                    self.images.append({'label':label,'data':dict(data),'depth':depth,'node':number})
+                    self.emit('['+label+' 第'+str(depth)+'层·发言人 '+speaker+' 图片：待识别，尚未识别图像；对应此节点，不代表发言人身份已核验]')
+        elif kind in ('video', 'record', 'file'):
             if inside:
                 self.emit({'image':'[图片：本次只展开文字，未识别图像]', 'video':'[视频]', 'record':'[语音]', 'file':'[文件]' }[kind])
         elif kind == 'at':
@@ -142,7 +153,9 @@ class ForwardRecords:
         sender = sender if isinstance(sender, dict) else {}
         name = sender.get('card') or sender.get('nickname') or value.get('name') or '未标明姓名'
         self.emit(f'\n[第{depth}层·发言人 {str(name)[:60]}]')
-        await self.walk(value.get('message') or value.get('content') or [], depth, True)
+        previous=self.node_context;self.node_context=(self.nodes,str(name)[:60])
+        try:await self.walk(value.get('message') or value.get('content') or [], depth, True)
+        finally:self.node_context=previous
 
     async def read(self, raw):
         try:

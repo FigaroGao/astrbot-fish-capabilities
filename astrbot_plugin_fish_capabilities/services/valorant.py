@@ -319,6 +319,17 @@ class ValorantRecords:
                 except CapabilityError:status[name]='unavailable'
             return detail_view(detail_packet(row,parts,role,status,requests,sync),view,top_players)
 
+    async def review(self):
+        from .valorant_review import brief
+        packet=await self.match(1,view='full',top_players=0)
+        async with self.lock:
+            credentials=self.credentials();role=await self.role(credentials);account=self.account(credentials,role)
+            rows=self.store.rows(account,30);index=next((i for i,r in enumerate(rows) if str(r.get('battle_id'))==packet['match_ref']),None)
+            if index is None:raise CapabilityError('账号或缓存已变化，请重新读取最近对局。')
+            row=rows[index];mode=mode_of(row)
+            prior=[r for r in rows[index+1:] if r.get('battle_id') and mode_of(r)==mode][:5] if mode in ('competitive','unrated') else []
+            return brief(packet,row,prior,self.store,account,role)
+
 
 def number(value):
     if isinstance(value,bool):return None

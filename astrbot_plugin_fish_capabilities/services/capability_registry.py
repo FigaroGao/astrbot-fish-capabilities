@@ -38,6 +38,8 @@ TOOL_FEATURES = {'fish_bili_activity': 'bili_activity',
  'fish_valorant_shop': 'valorant_shop',
  'fish_weather': 'weather'}
 GROUP_FEATURES = {'weather','meme','knowledge','quota','bili_group','intent_self_pause','asr','companionship','conversation_depth'}
+TOOL_FEATURES['fish_canvas']='canvas'
+TOOL_FEATURES['fish_course_context']='canvas'
 TOOL_FEATURES['fish_group_observation']='group_learning'
 TOOL_FEATURES['fish_tone_diagnose']='tone_diagnostics'
 TOOL_FEATURES['fish_codex_resets']='codex_resets'
