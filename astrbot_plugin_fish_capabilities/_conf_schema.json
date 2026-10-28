@@ -559,5 +559,25 @@
     "default": false,
     "description": "主人私聊情绪闲聊时给模型最多3张可选表情说明",
     "hint": "本地选择候选，不调用模型/向量/识图，不自动发送；最终由模型选ID，仍遵守原发送限制。"
+  },
+  "bili_scroll_unlimited_enabled": {
+    "type": "bool",
+    "description": "一次刷站不固定三条，由模型选择继续或停止；保留执行时间、失败停止及公共评论限制。",
+    "default": false
+  },
+  "bili_scroll_session_seconds": {
+    "type": "int",
+    "description": "自主刷站单轮执行时间窗（秒），不是视频条数额度。",
+    "default": 600
+  },
+  "bili_dynamic_daytime_enabled": {
+    "type": "bool",
+    "description": "碎碎念限香港10–23点，自然日内分散机会，不在零点抢空预算；旧夜间语境过期。",
+    "default": false
+  },
+  "bili_dynamic_reply_enabled": {
+    "type": "bool",
+    "description": "检查自己已登记动态下绑定主人的新评论，经核验与独立审核回复，不回放旧评论。",
+    "default": false
   }
 }
