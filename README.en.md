@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
+Latest fixes: [2026-10-28 changes, configuration and validation](docs/update-20261028.en.md). Includes video/dynamic repairs, sleep boundaries, six character references and comment-emote style; every item is fully translated from Chinese.
+
 Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.8.0 · 2026-10-27**.
 
 
