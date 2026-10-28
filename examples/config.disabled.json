@@ -117,5 +117,6 @@
   "bili_scroll_unlimited_enabled": false,
   "bili_scroll_session_seconds": 600,
   "bili_dynamic_daytime_enabled": false,
-  "bili_dynamic_reply_enabled": false
+  "bili_dynamic_reply_enabled": false,
+  "canvas_enabled": false
 }
