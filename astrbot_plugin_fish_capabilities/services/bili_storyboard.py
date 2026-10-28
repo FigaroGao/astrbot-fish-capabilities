@@ -13,7 +13,7 @@ from .bili_duty import parsed
 from .policy import CapabilityError
 from .bili_ad_reference import guidance
 
-VERSION = 6
+VERSION = 9
 
 
 def distinct(panels):
@@ -94,6 +94,19 @@ def choose_details(plan,shown,candidates,ads,limit=6):
     return output[:limit]
 
 
+def select_overview(plan,shown,candidates,ads,fallback):
+    """The visual planner chooses actual observed IDs or a bounded new density."""
+    allowed={p['id']:p for p in shown if not excluded(p,ads)}
+    ids=plan.get('frame_ids');chosen=[]
+    if isinstance(ids,list) and 1<=len(ids)<=27 and all(isinstance(i,str) and i in allowed for i in ids):
+        chosen=[allowed[i] for i in dict.fromkeys(ids)]
+    if chosen:return sorted(chosen,key=lambda p:p['time']),'planner_frame_ids'
+    count=plan.get('frame_count')
+    if type(count) is int and 1<=count<=27:
+        return spread(distinct([p for p in candidates if not excluded(p,ads)]),count),'planner_density'
+    return spread(distinct([p for p in candidates if not excluded(p,ads)]),fallback),'request_hint_fallback'
+
+
 class Storyboard:
     def __init__(self,preview,generate,gallery=None,characters=None):
         self.preview=preview;self.generate=generate;self.gallery=gallery;self.characters=characters
@@ -123,15 +136,19 @@ class Storyboard:
         image.save(path);path.chmod(0o600);return path
 
     async def read(self,packet,info):
+        force_pages=False;fallback_scan_status=None
         try:candidates=await self.preview.candidates(packet['bvid'],info)
         except CapabilityError:
             if not self.gallery:raise
             scanned,status=await self.gallery.scan(packet['bvid'],info)
             if not scanned:raise CapabilityError('预览和真实视频检查均不可用，未声称看完。')
-            return await self.read_pages(scanned,[],'preview_unavailable',status)
+            candidates=scanned;force_pages=True;fallback_scan_status=status
         unique=await asyncio.to_thread(distinct,candidates)
         count=max(1,min(27,int(packet.get('preview_requested',9))))
-        overview=spread(unique,count)
+        # A sparse nine-frame first pass can skip the only close-up of a second
+        # character. Broaden the identification pass without forcing the final
+        # reading density, which the planner still chooses independently.
+        overview=spread(unique,max(count,min(18,len(unique))) if self.characters else count)
         paths,manifest=await asyncio.to_thread(self.render,overview)
         character_cards=[];character_note=''
         if self.characters:
@@ -141,6 +158,7 @@ class Storyboard:
                 paths+=references
                 character_note=('\n最后的参考图不是视频画面，不得把参考图里的角色说成实际出镜；仅对前面实际帧编号匹配。'
                     '至少结合两项可见特征、置信度>=0.85才填characters，否则留空。不是识别人物账号，鲸鱼娘不自动是小鲸，GPT不自动是姐姐；不推断CP/亲属或私事。'
+                    '二创可换装或变成Q版，参考服装和书本不是必要条件；只描述实际帧中看到的标记，没看见书不能从参考图补一本书。'
                     '可额外输出characters:[{"character_id":"目录ID","frame_ids":["实际帧ID"],"confidence":0.9,"evidence":"实际画面支持的特征，不引用参考图冒充画面证据"}]。'
                     '\n角色参考目录：'+json.dumps(character_cards,ensure_ascii=False))
             except asyncio.CancelledError:raise
@@ -149,33 +167,36 @@ class Storyboard:
             '先判断画面类型并寻找明确的商业插播。品牌、商品、评测、讲解广告本身不等于插播广告。只有明确赞助推广、购买引导等依据且置信度>=0.9时标记ads；'
             'first/last必须是实际看过的广告端点编号，不猜测片段边界，不把中间未见部分声称已验证。拿不准保留。'
             '若文字或聊天需看清，可指定details，region是归一化[x0,y0,x1,y1]，全图[0,0,1,1]；最多6个。'
-            '返回JSON {"type":"chat|slides|ordinary|uncertain","ads":[{"first":"f0","last":"f3","confidence":0.95,"explicit_promotion":true,"reason":"可见的推广依据"}],'
+            '不是要求固定9张；根据实际复杂程度自行选最终画面。可用frame_ids列实际已看编号；需更密时给frame_count（1至27），从全时间候选补取；没有必要时不为凑数多看。图片/聊天优先type=chat/slides进入逐页路径，不受这个数量约束。'
+            '返回JSON {"type":"chat|slides|ordinary|uncertain","frame_ids":[],"frame_count":9,"ads":[{"first":"f0","last":"f3","confidence":0.95,"explicit_promotion":true,"reason":"可见的推广依据"}],'
             '"details":[{"id":"f2","region":[0,0.4,1,1]}],"windows":[[20,35]]}。没有需要时用空数组。'
             '\n'+guidance()+'\n标题仅供参考：'+str(packet.get('title',''))[:200]+'\n实际帧清单：'+json.dumps(manifest,ensure_ascii=False))
         plan_status='ok'
         try:
-            plan=parsed(await self.generate(instruction+character_note,paths,'bili_visual_plan',1300 if character_cards else 900))
+            plan=parsed(await self.generate(instruction+character_note,paths,'bili_visual_plan',1900 if len(character_cards)>3 else (1300 if character_cards else 900)))
         except asyncio.CancelledError:raise
         except Exception:
             plan={};plan_status='unavailable'
         ads=reviewed_ads(plan,overview)
-        characters=self.characters.matches(plan,[p for p in overview if not excluded(p,ads)],character_cards) if self.characters else []
+        characters=self.characters.matches(plan,[p for p in overview if not excluded(p,ads)],character_cards,source='decoded_video_samples' if force_pages else 'initial_sampled_preview') if self.characters else []
+        meme_context=self.characters.meme_context(characters,str(packet.get('title',''))+' '+str(packet.get('description',''))) if self.characters else []
         character_context='\n初步角色匹配（仍需对照实际画面，不证明账号身份）：'+json.dumps(characters,ensure_ascii=False) if characters else ''
-        if plan.get('type') in ('chat','slides') or (len(unique)<=8 and len(unique)<len(candidates)*.5):
+        if force_pages or plan.get('type') in ('chat','slides') or (len(unique)<=8 and len(unique)<len(candidates)*.5):
             scan_status={'source':'preview_only','scan_status':'not_configured','limitation':'仅检查已有预览，不能保证图片完整。'}
-            if self.gallery:
+            if force_pages:scan_status=fallback_scan_status
+            if self.gallery and not force_pages:
                 try:
                     scanned,scan_status=await self.gallery.scan(packet['bvid'],info)
                     if scanned:candidates=scanned
                 except asyncio.CancelledError:raise
                 except Exception:scan_status={'source':'preview_only','scan_status':'unavailable','limitation':'真实视频检查失败，保留预览，不能保证图片完整。'}
             result=await self.read_pages(candidates,ads,plan_status,scan_status,character_context)
-            result['character_matches']=characters
+            result['character_matches']=characters;result['character_meme_context']=meme_context
             return result
         available=distinct([p for p in candidates if not excluded(p,ads)])
         # Refill from unseen candidates, keeping original requested budget plus
         # up to three useful replacement positions, never exceeding 27.
-        final=spread(available,min(27,count+min(3,len([p for p in overview if excluded(p,ads)]))))
+        final,selection_method=select_overview(plan,overview,candidates,ads,min(27,count+min(3,len([p for p in overview if excluded(p,ads)]))))
         details=choose_details(plan,overview,candidates,ads)
         if not final:
             return {'visual_status':'advertisement_only_samples','visual_content_seen':False,'visual_summary':'',
@@ -195,10 +216,11 @@ class Storyboard:
         return {'visual_status':'sampled_preview','visual_content_seen':True,'visual_summary':summary[:1800],
                 'preview_layout_version':VERSION,'preview_timestamps':[p['time'] for p in final],'preview_frames':len(final),
                 'preview_frame_manifest':manifest,'preview_candidate_count':len(candidates),'preview_unique_count':len(unique),
+                'preview_selection_method':selection_method,'preview_detail_count':len(details),'preview_detail_manifest':[m for m in manifest if 'region' in m],
                 'preview_content_type':plan.get('type') if isinstance(plan.get('type'),str) and plan.get('type') in ('chat','slides','ordinary','uncertain') else 'uncertain',
                 'preview_plan_status':plan_status,'preview_ad_filter_status':'sampled_candidates_filtered' if ads else ('no_confident_ads' if plan_status=='ok' else 'unavailable'),
                 'preview_excluded_ads':ads,'preview_sampling_limitation':'稀疏预览；不能确认完整覆盖、全部静态图片或全部广告。',
-                'character_matches':characters,
+                'character_matches':characters,'character_meme_context':meme_context,
                 'full_video_watched':False,'full_video_downloaded':False,'audio_heard':False}
 
     async def read_pages(self,candidates,ads,plan_status,scan_status,character_context=''):

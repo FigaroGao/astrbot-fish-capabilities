@@ -168,7 +168,14 @@ class BiliActivity:
         if not self.config.get('bili_dynamic_auto_enabled',False):return {'state':'manual_only'}
         now=self.clock();timing=activity_timing(self.config,now);local=timing['local']
         if not timing['allowed']:return {'state':'quiet_hours'}
+        if self.config.get('bili_dynamic_daytime_enabled',False):
+            if not 10<=local.hour<23:return {'state':'dynamic_quiet_hours'}
+            # A different earliest opportunity every day; never an obligation to post.
+            seed=hashlib.sha256((self.account()+local.strftime('%Y-%m-%d')).encode()).digest()
+            opening=local.replace(hour=10,minute=0,second=0,microsecond=0).timestamp()+(int.from_bytes(seed[:2],'big')%22)*1800
+            if now<opening:return {'state':'waiting_daily_opportunity'}
         context=self.review.context();activity=float(context.get('at',0))
+        if self.config.get('bili_dynamic_daytime_enabled',False) and (not activity or now-activity>6*3600):return {'state':'context_stale'}
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             day=local.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
@@ -181,7 +188,7 @@ class BiliActivity:
             if last is not None and now-last<timing['interval_seconds']:return {'state':'already_thought'}
             db.execute('INSERT INTO bili_dynamic_thoughts VALUES(?,?,?,?,?)',(self.account(),slot,now,activity,'reserved'))
         try:
-            result=await self.generate(context)
+            result=await self.generate(dict(context,current_hong_kong_time=local.isoformat(),posting_is_optional=True))
             if not isinstance(result,dict) or result.get('post') is not True:return {'state':'chose_silence'}
             text=result.get('text')
             if not isinstance(text,str) or not 1<=len(text.strip())<=180:raise CapabilityError('动态草稿长度不合适。')

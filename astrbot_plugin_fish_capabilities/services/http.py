@@ -4,8 +4,20 @@ import asyncio
 import json
 import urllib.parse
 import urllib.request
+import urllib.error
 
 from .policy import CapabilityError
+
+
+class PublicRequestError(CapabilityError):
+    """Safe transport status; no URL, query, response body or credentials."""
+    def __init__(self, status=None):
+        self.http_status=status
+        if status==412:message='B站/公共服务返回HTTP 412（请求被站点拒绝），不是画面数不够；本次未取得资料，不自动连续重试。'
+        elif status==429:message='公共服务返回HTTP 429（请求过频），本次停止，稍后再试。'
+        elif status:message=f'公共服务返回HTTP {status}，本次未取得资料。'
+        else:message='公共服务连接或响应失败，本次未取得资料；不能据此断言是登录或模型故障。'
+        super().__init__(message)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -29,8 +41,10 @@ class PublicJSON:
             if len(data)>self.max_bytes: raise CapabilityError('服务返回内容过大。')
             return json.loads(data)
         except CapabilityError: raise
+        except urllib.error.HTTPError as exc:
+            raise PublicRequestError(exc.code) from exc
         except Exception as exc:
-            raise CapabilityError('公共服务请求失败，请稍后重试；没有返回编造数据。') from exc
+            raise PublicRequestError() from exc
 
     async def get(self, url: str, allowed_hosts: set[str]):
         return await asyncio.to_thread(self._get,url,allowed_hosts)

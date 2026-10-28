@@ -1,6 +1,7 @@
 """Scoped rolling conversation summaries; originals remain in the chat database."""
 import asyncio,copy,hashlib,json,sqlite3,time
 from contextlib import contextmanager
+from .character_atlas import compact_matches
 
 def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 def rounds(rows):
@@ -10,18 +11,25 @@ def rounds(rows):
         out[-1].append(row)
     return out
 
+def compact_video(data):
+    result={k:data[k] for k in ['bvid','reading_id','title','url','duration','visual_content_seen','subtitle_status','subtitle_coverage'] if k in data}
+    for key in ['description','visual_summary','summary','reflection']:
+        if isinstance(data.get(key),str):result[key]=data[key][:350]
+    result['evidence']=[{k:e.get(k) for k in ['evidence_id','start','text']} for e in data.get('evidence',[])[:3] if isinstance(e,dict)]
+    for e in result['evidence']:e['text']=str(e.get('text',''))[:120]
+    result['character_matches']=compact_matches(data.get('character_matches',[]))
+    result['character_meme_context']=data.get('character_meme_context',[])[:3] if isinstance(data.get('character_meme_context'),list) else []
+    result['note']='旧阅读结果已精简，完整资料仍在独立视频记忆；不可据此声称完整观看。'
+    return result
+
 def compact_tool(content):
     if not isinstance(content,str) or len(content)<1400:return content
     try:data=json.loads(content)
     except (ValueError,TypeError):return content[:1000]+'\n[旧工具结果已缩短；需要原文时重新查询来源]'
     if isinstance(data,dict) and data.get('bvid'):
-        result={k:data[k] for k in ['bvid','reading_id','title','url','duration','visual_content_seen','subtitle_status','subtitle_coverage'] if k in data}
-        for key in ['description','visual_summary','summary','reflection']:
-            if isinstance(data.get(key),str):result[key]=data[key][:350]
-        result['evidence']=[{k:e.get(k) for k in ['evidence_id','start','text']} for e in data.get('evidence',[])[:3] if isinstance(e,dict)]
-        for e in result['evidence']:e['text']=str(e.get('text',''))[:120]
-        result['note']='旧阅读结果已精简，完整资料仍在独立视频记忆；不可据此声称完整观看。'
-        return json.dumps(result,ensure_ascii=False)
+        return json.dumps(compact_video(data),ensure_ascii=False)
+    if isinstance(data,dict) and isinstance(data.get('memories'),list):
+        return json.dumps({'total_videos':data.get('total_videos'),'memories':[compact_video(m) for m in data['memories'][:3] if isinstance(m,dict) and m.get('bvid')],'note':'旧视频记忆已精简，角色匹配与梗语境保留，不代表完整观看。'},ensure_ascii=False)
     return json.dumps(data,ensure_ascii=False)[:1100]+'\n[旧工具结果已精简，可重新查询]'
 
 def slim(rows,old=False):
