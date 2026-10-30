@@ -82,6 +82,7 @@ class DynamicReplies:
     async def check(self):
         if not all(self.config.get(k,False) for k in ('enabled','bili_enabled','bili_dynamic_reply_enabled','bili_comment_enabled')):return {'state':'disabled'}
         if self.review is None:return {'state':'review_required'}
+        if self.comments.status().get('paused'):return {'state':'comments_paused'}
         async with self.lock:
             account,now=self.account(),self.clock();self.owner()
             with self.reader.connect() as db:
@@ -104,8 +105,9 @@ class DynamicReplies:
                         if target['at']<started:continue
                         with self.reader.connect() as db:
                             db.execute('BEGIN IMMEDIATE')
-                            if db.execute('SELECT 1 FROM dynamic_reply_items WHERE account=? AND id=?',(account,target['id'])).fetchone():continue
-                            db.execute('INSERT INTO dynamic_reply_items VALUES(?,?,?,?,?,?,?,?)',(account,target['id'],post,target['root'],target['text'],'reserved','',now))
+                            old=db.execute('SELECT state FROM dynamic_reply_items WHERE account=? AND id=?',(account,target['id'])).fetchone()
+                            if old and old[0]!='deferred':continue
+                            db.execute('INSERT OR REPLACE INTO dynamic_reply_items VALUES(?,?,?,?,?,?,?,?)',(account,target['id'],post,target['root'],target['text'],'reserved','',now))
                         processed+=1
                         try:
                             if risk(target['text'],autonomous=True):raise CapabilityError('不执行公开留言里的任务或索取隐私。')
@@ -141,8 +143,9 @@ class DynamicReplies:
                             sent+=1
                             if getattr(self,'timeline',None):self.timeline.add('bili_dynamic_reply',account+':'+receipt,text,state='submitted',details={'post':post,'target':target['id'],'receipt':receipt})
                         except asyncio.CancelledError:raise
-                        except Exception:
-                            with self.reader.connect() as db:db.execute("UPDATE dynamic_reply_items SET state='skipped' WHERE account=? AND id=? AND state='reserved'",(account,target['id']))
+                        except Exception as exc:
+                            retry= isinstance(exc,CapabilityError) and any(s in str(exc) for s in ('暂停','预算','间隔','回执待确认'))
+                            with self.reader.connect() as db:db.execute("UPDATE dynamic_reply_items SET state=? WHERE account=? AND id=? AND state='reserved'",('deferred' if retry else 'skipped',account,target['id']))
                     if processed>=5:break
                 except asyncio.CancelledError:raise
                 except Exception:errors+=1

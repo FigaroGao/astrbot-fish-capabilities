@@ -40,6 +40,24 @@ class CourseProgress:
         with sqlite3.connect(self.path) as db:rows=db.execute('SELECT alias,course_id,name,code FROM course_links ORDER BY alias LIMIT 100').fetchall()
         return [dict(alias=a,course_id=i,name=n,code=c) for a,i,n,c in rows]
 
+    def schedule(self,query=''):
+        """Read only the owner's locally confirmed Lecture schedule, not Canvas guesses."""
+        import re
+        if not isinstance(query,str) or len(query)>120:raise CapabilityError('课表查询最多120字。')
+        path=self.path.with_name('owner-lecture-schedule.private.json')
+        if not path.exists():return {'confirmed':False,'lectures':[],'instruction':'尚无主人确认的课表，不能根据Canvas课程列表猜上课时间。'}
+        data=json.loads(path.read_text(encoding='utf-8'))
+        rows=data['lectures'];q=query.casefold().strip()
+        day=re.search(r'(?:星期|礼拜|周)([一二三四五六日天1-7])',q)
+        if day:
+            key=day.group(1);weekday=int(key) if key.isdigit() else {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':7,'天':7}[key]
+            rows=[r for r in rows if r['weekday']==weekday]
+        aliases=self.links();matched={a['code'][-6:].casefold() for a in aliases if a['alias'] in q}
+        matches=[r for r in rows if r['course'].casefold() in q or r['course'].casefold() in matched or any(n.casefold() in q for n in r['name'].split('／'))]
+        if matches:rows=matches
+        elif not day and q and not re.search('课表|课程表|lecture|schedule|上课|课程|全部|本周',q):rows=[]
+        return {'confirmed':True,'semester':data['semester'],'timezone':data['timezone'],'confirmed_on':data['confirmed_by_owner_on'],'teaching_week_dates':data.get('teaching_week_dates'),'lectures':rows,'instruction':'这是主人已确认的本学期常规Lecture课表；教学周起止未确认，假期、调课和停课需另核实，不能据此断言此刻在上课。仅主人私聊，不公开；没有自动创建提醒。'}
+
     def bind(self,alias,course,message):
         import re
         if not isinstance(alias,str) or not 1<=len(alias.strip())<=80:raise CapabilityError('课程简称1至80字。')

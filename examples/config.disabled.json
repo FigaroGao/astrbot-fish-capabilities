@@ -13,6 +13,7 @@
   "media_hourly_limit": 6,
   "tts_enabled": false,
   "tts_key_env": "DASHSCOPE_API_KEY",
+  "tts_provider": "sambert",
   "tts_model": "sambert-zhiyue-v1",
   "tts_monthly_chars": 3000,
   "weather_default_city": "香港",

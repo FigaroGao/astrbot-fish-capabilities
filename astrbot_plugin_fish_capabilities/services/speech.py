@@ -55,7 +55,7 @@ class Speech:
 
     async def prepare(self, text: str, model: str) -> dict:
         text=plain_speech(text,max_chars=self.max_chars)
-        if model not in SAMBERT_MODELS:
+        if model not in SAMBERT_MODELS and model!='vocu':
             raise CapabilityError('这个适配器仅支持已核对的 Sambert 模型；ASR 不能合成语音，Qwen 3.1 另走已验证的供应商适配。')
         if self.backend is None: raise CapabilityError('尚未配置语音凭据或适配器。')
         # This is a local cap, not an authoritative balance query for the account.

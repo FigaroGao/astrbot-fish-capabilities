@@ -34,8 +34,19 @@ def compact_tool(content):
 
 def slim(rows,old=False):
     result=copy.deepcopy(rows)
-    for row in result:
-        if old:row.pop('reasoning_content',None)
+    user_indices=[i for i,r in enumerate(result) if r.get('role')=='user']
+    active_start=user_indices[-1] if user_indices else len(result)
+    # A completed assistant answer closes image use. Keep only the current
+    # unfinished user/tool chain, never a fixed number of completed image turns.
+    unfinished=bool(result) and (result[-1].get('role')!='assistant' or bool(result[-1].get('tool_calls')))
+    media_start=active_start if unfinished else len(result)
+    for index,row in enumerate(result):
+        completed=index<active_start
+        if old or completed:row.pop('reasoning_content',None)
+        if completed and isinstance(row.get('content'),list):
+            row['content']=[p for p in row['content'] if not isinstance(p,dict) or p.get('type') not in ('think','thinking','reasoning')]
+        if not old and index<media_start and isinstance(row.get('content'),list):
+            row['content']=[{'type':'text','text':'[该轮图片/音频已用完，不随历史重传；依据已有文字描述，需要细看时重新读取]'} if isinstance(p,dict) and p.get('type') in ('image_url','image','input_audio','audio','video_url','video') else p for p in row['content']]
         if row.get('role')=='tool':row['content']=compact_tool(row.get('content'))
         if old and isinstance(row.get('content'),list):
             row['content']='\n'.join(str(x.get('text','')) if x.get('type')=='text' else '[历史图片/音频不重传；只保留已有文字解释，不猜测内容]' for x in row['content'] if isinstance(x,dict))

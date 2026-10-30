@@ -134,7 +134,7 @@ async def make_mentions(tmp_path):
     config={'enabled':True,'bili_enabled':True,'bili_activity_enabled':True,'bili_public_review_enabled':True,'bili_owner_uid':'7','bili_account_id':'42','bili_owner_at_enabled':True}
     backend=NS(messages=AsyncMock(return_value={'items':[]}))
     activity=NS(reader=reader,config=config,account=lambda:'42',identity=AsyncMock(),backend=backend,lock=asyncio.Lock())
-    comments=NS(post=AsyncMock(),reviewer=NS());gen=AsyncMock(return_value=json.dumps({'comment':'好看','evidence_ids':[BV+':s0']}))
+    comments=NS(post=AsyncMock(),reviewer=NS(),status=lambda:{'paused':False});gen=AsyncMock(return_value=json.dumps({'comment':'好看','evidence_ids':[BV+':s0']}))
     timeline=ActivityTimeline(tmp_path/'timeline.db')
     mentions=OwnerMentions(activity,comments,gen,timeline,clock=lambda:1000)
     mentions.resolve=AsyncMock(return_value=BV)
@@ -142,7 +142,7 @@ async def make_mentions(tmp_path):
 
 
 def notice(owner=7,recipient=42,stamp=1000,kind='reply',business=1):
-    return {'id':123,'at_time':stamp,'user':{'mid':owner},'item':{'subject_id':456,'type':kind,'business_id':business,'at_details':[{'mid':recipient}]}}
+    return {'id':123,'at_time':stamp,'user':{'mid':owner},'item':{'subject_id':456,'source_id':789,'type':kind,'business_id':business,'at_details':[{'mid':recipient}]}}
 
 @pytest.mark.parametrize('value',[notice(owner=8),notice(recipient=99),notice(stamp=1),notice(kind='dynamic'),notice(business=2)])
 async def test_mentions_reject_third_parties_old_and_wrong_targets(tmp_path,value):

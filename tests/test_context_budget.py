@@ -23,14 +23,14 @@ async def test_summary_failure_never_discards_chat(tmp_path):
  result,stats=await b.prepare('scope',rows)
  assert result==rows and stats['outcome']=='summary_failed'
 
-async def test_old_images_not_in_summary_recent_images_retained(tmp_path):
+async def test_completed_images_not_retransmitted(tmp_path):
  calls=[]
  async def generate(prompt):calls.append(prompt);return '仅已有文字事实'
  rows=history(20)
  rows[0]['content']=[{'type':'image_url','image_url':{'url':'data:image/png;base64,SECRETOLDIMAGE'}}]
  rows[-2]['content']=[{'type':'image_url','image_url':{'url':'data:image/png;base64,RECENTIMAGE'}}]
  b=ContextBudget(tmp_path/'s.db',generate);result,_=await b.prepare('scope',rows)
- assert 'SECRETOLDIMAGE' not in ''.join(calls) and 'RECENTIMAGE' in json.dumps(result)
+ assert 'SECRETOLDIMAGE' not in ''.join(calls) and 'RECENTIMAGE' not in json.dumps(result)
 
 async def test_reset_conversation_does_not_reuse_old_summary(tmp_path):
  async def generate(prompt):return '旧会话摘要'

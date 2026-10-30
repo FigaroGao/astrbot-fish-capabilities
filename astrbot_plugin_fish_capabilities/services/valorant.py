@@ -78,7 +78,16 @@ class MvalHTTP:
             raise CapabilityError('官方服务请求未完成；可能是网络或接口变化，没有关闭证书校验或自动重试登录。') from e
 
     async def post(self,path,data,auth=None):
-        return await asyncio.to_thread(self.request,'https://'+HOST+path,data,auth)
+        # Retry only idempotent data reads on a confirmed transport timeout.
+        # Login exchange and identity validation are never replayed here.
+        safe=path.split('?',1)[0] in PATHS and path.startswith(('/go/agame/career/record/','/go/mlol_store/'))
+        for attempt in range(2 if safe else 1):
+            try:return await asyncio.to_thread(self.request,'https://'+HOST+path,data,auth)
+            except CapabilityError as exc:
+                cause=exc.__cause__
+                timeout=isinstance(cause,TimeoutError) or (isinstance(cause,urllib.error.URLError) and isinstance(cause.reason,TimeoutError))
+                if not safe or attempt or not timeout:raise
+                await asyncio.sleep(.5)
 
 
 def payload():
@@ -267,7 +276,11 @@ class ValorantRecords:
         for page in range(1,4):
             body=dict(payload(),game_role_id=role['game_role_id'],scene=role['scene'],page_no=page,page_size=10,_t=int(time.time()))
             if baton:body['baton']=baton
-            value=await self.http.post('/go/agame/career/record/list',body,credentials);requests+=1
+            try:value=await self.http.post('/go/agame/career/record/list',body,credentials);requests+=1
+            except CapabilityError:
+                cached=self.store.rows(account,needed)
+                if not cached:raise
+                return account,cached,{'list_requests':requests+1,'used_local_cache':True,'refresh_failed':True,'stale':True,'last_sync':state[0] if state else None,'note':'本次刷新失败，仅返回此前缓存，不代表刚结束的比赛已同步；不可称为最新或据此断言今天全部战绩。'}
             if value.get('result')!=0:raise CapabilityError('战绩列表未读取成功；本地已保存的对局没有删除，也未返回虚构数据。')
             data=value.get('data') or {};rows=data.get('battle_list') or data.get('list') or []
             if not isinstance(rows,list):raise CapabilityError('掌瓦战绩列表结构发生变化。')

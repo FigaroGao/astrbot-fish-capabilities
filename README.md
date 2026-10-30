@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
+最新：[10月30—31日视频场景选段、上下文费用、慢任务回应、Lecture课表与Vocu适配](docs/update-20261031.md)。桌面陪伴的聊天、独立记忆、动作回执、新界面与语音开关在独立仓库 [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate)，不混入本插件安装包。
+
 最新：[10月29日课程小本子、Canvas联查、战绩简版复盘与其他补修](docs/update-20261029.md)。包含本机绑定步骤、配置与实际验证边界。
 
 最新补修：[2026-10-28更新、配置与验证](docs/update-20261028.md)。包含观看与动态修复、睡眠边界、六种角色参考和评论表情语气；英文逐项完整翻译。

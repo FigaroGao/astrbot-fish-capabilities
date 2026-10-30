@@ -1,0 +1,9 @@
+{
+  "semester": "YOUR_SEMESTER",
+  "timezone": "Asia/Hong_Kong",
+  "confirmed_by_owner_on": "YYYY-MM-DD",
+  "teaching_week_dates": null,
+  "lectures": [
+    {"course": "CS1234", "name": "Example Course", "weekday": 1, "start": "19:00", "end": "20:50", "room": "YOUR_ROOM"}
+  ]
+}

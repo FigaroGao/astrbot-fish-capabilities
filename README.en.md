@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
+Latest: [October 30–31 scene-based video detail selection, context costs, slow-task acknowledgements, Lecture timetables and Vocu integration](docs/update-20261031.en.md). Desktop chat, isolated watch memory, action receipts, the new UI and the voice switch live in the separate [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate) repository and are not bundled into this plugin installer.
+
 Latest: [October 29 course notebook, Canvas integration, brief match review and other fixes](docs/update-20261029.en.md), including local binding, configuration and actual validation limits.
 
 Latest fixes: [2026-10-28 changes, configuration and validation](docs/update-20261028.en.md). Includes video/dynamic repairs, sleep boundaries, six character references and comment-emote style; every item is fully translated from Chinese.

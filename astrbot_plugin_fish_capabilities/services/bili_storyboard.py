@@ -13,7 +13,7 @@ from .bili_duty import parsed
 from .policy import CapabilityError
 from .bili_ad_reference import guidance
 
-VERSION = 9
+VERSION = 10
 
 
 def distinct(panels):
@@ -157,7 +157,7 @@ class Storyboard:
                 for c in character_cards:c['image_number']=len(paths)+c['reference_number']
                 paths+=references
                 character_note=('\n最后的参考图不是视频画面，不得把参考图里的角色说成实际出镜；仅对前面实际帧编号匹配。'
-                    '至少结合两项可见特征、置信度>=0.85才填characters，否则留空。不是识别人物账号，鲸鱼娘不自动是小鲸，GPT不自动是姐姐；不推断CP/亲属或私事。'
+                    '至少结合两项可见特征、置信度>=0.85才填characters，否则留空。匹配后自然称呼：DeepSeek鲸鱼娘叫大肥鱼，GPT白发龙娘叫GPT姐姐，Claude橙发持书形象叫克劳德姐姐。这是二创角色称呼，不证明具体账号、真实亲属或本次对话参与者。网上有很多大肥鱼形象，视频里的大肥鱼不是小鲸本人，不能把视频台词、经历或关系记成自己的；除非主人明确说明该作品是在描绘小鲸。不推断CP或私事。'
                     '二创可换装或变成Q版，参考服装和书本不是必要条件；只描述实际帧中看到的标记，没看见书不能从参考图补一本书。'
                     '可额外输出characters:[{"character_id":"目录ID","frame_ids":["实际帧ID"],"confidence":0.9,"evidence":"实际画面支持的特征，不引用参考图冒充画面证据"}]。'
                     '\n角色参考目录：'+json.dumps(character_cards,ensure_ascii=False))
@@ -193,6 +193,17 @@ class Storyboard:
             result=await self.read_pages(candidates,ads,plan_status,scan_status,character_context)
             result['character_matches']=characters;result['character_meme_context']=meme_context
             return result
+        # Preserve the entire existing gallery branch above. Ordinary videos
+        # now get a real scene overview and a bounded model-chosen zoom pass.
+        scene_fallback='not_configured'
+        if self.gallery and getattr(self.gallery,'ffmpeg',None):
+            from .bili_scene import SceneReader
+            try:
+                result=await asyncio.wait_for(SceneReader(self.gallery,self).read(packet,info,character_context),210)
+                result.update(preview_layout_version=VERSION,character_matches=characters,character_meme_context=meme_context)
+                return result
+            except asyncio.CancelledError:raise
+            except Exception:scene_fallback='scene_source_or_decode_unavailable'
         available=distinct([p for p in candidates if not excluded(p,ads)])
         # Refill from unseen candidates, keeping original requested budget plus
         # up to three useful replacement positions, never exceeding 27.
@@ -220,7 +231,7 @@ class Storyboard:
                 'preview_content_type':plan.get('type') if isinstance(plan.get('type'),str) and plan.get('type') in ('chat','slides','ordinary','uncertain') else 'uncertain',
                 'preview_plan_status':plan_status,'preview_ad_filter_status':'sampled_candidates_filtered' if ads else ('no_confident_ads' if plan_status=='ok' else 'unavailable'),
                 'preview_excluded_ads':ads,'preview_sampling_limitation':'稀疏预览；不能确认完整覆盖、全部静态图片或全部广告。',
-                'character_matches':characters,'character_meme_context':meme_context,
+                'character_matches':characters,'character_meme_context':meme_context,'scene_fallback':scene_fallback,
                 'full_video_watched':False,'full_video_downloaded':False,'audio_heard':False}
 
     async def read_pages(self,candidates,ads,plan_status,scan_status,character_context=''):

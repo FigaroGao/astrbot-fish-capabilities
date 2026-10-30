@@ -45,7 +45,18 @@ class CommentBackend:
         info = await asyncio.to_thread(verify_account,{k:str(getattr(credential,k,'') or '') for k in ('sessdata','bili_jct','dedeuserid','buvid3')})
         return str(info['mid'])
 
-    async def send(self, video_id, text, mention=None, meme=None):
+    async def reply_location(self,video_id,target):
+        from bilibili_api import comment
+        info=await self.backend.info(video_id)
+        for page in (1,2):
+            data=await comment.get_comments(oid=int(info['aid']),type_=comment.CommentResourceType.VIDEO,order=comment.OrderType.TIME,page_index=page,credential=self.backend.credential())
+            for root in data.get('replies') or []:
+                for row in [root]+list(root.get('replies') or []):
+                    if str(row.get('rpid'))==str(target['id']) and str((row.get('member') or {}).get('mid'))==str(target['author']):
+                        return {'root':str(root['rpid']),'parent':str(row['rpid'])}
+        raise CapabilityError('未在当前可核验评论页找到主人的原评论，未猜测回复位置。')
+
+    async def send(self, video_id, text, mention=None, meme=None,reply_to=None):
         from bilibili_api import comment
         credential = self.backend.credential()
         info = await self.backend.info(video_id)
@@ -67,6 +78,7 @@ class CommentBackend:
                 at_name_to_mid=json.dumps({mention['name']:int(mention['uid'])},ensure_ascii=False)).result
         else:
             options={'pic':pictures} if pictures else {}
+            if reply_to:options.update(await self.reply_location(video_id,reply_to));options={k:int(v) if k in ('root','parent') else v for k,v in options.items()}
             result = await comment.send_comment(text=text, oid=aid,
                 type_=comment.CommentResourceType.VIDEO, credential=credential,**options)
         reply_id = str(result.get('rpid') or result.get('rpid_str') or (result.get('reply') or {}).get('rpid') or '')
@@ -132,7 +144,7 @@ class BiliComments:
             'owner_mention_enabled':bool(self.settings.get('bili_owner_mention_enabled',False)),'owner_bound':bool(self.settings.get('bili_owner_uid')),
             'instruction': '不自动解除暂停；由主人在本地核对账号、验证与回执后处理。'}
 
-    async def post(self, reading_id, text, evidence_ids, mention_owner=False,meme_id='',meme_sha256=''):
+    async def post(self, reading_id, text, evidence_ids, mention_owner=False,meme_id='',meme_sha256='',reply_to=None):
         original_text=text
         if not self.settings.get('bili_comment_enabled', False):
             raise CapabilityError('B站评论尚未启用；搜索、阅读与推荐可独立使用。')
@@ -169,6 +181,10 @@ class BiliComments:
             raise CapabilityError('不能基于未读过的内容发表评论。')
         video_id = packet['bvid']
         key = hashlib.sha256((account + ':' + video_id).encode()).hexdigest()
+        if reply_to is not None:
+            if mention_owner or meme_id or not isinstance(reply_to,dict) or not str(reply_to.get('id','')).isdigit() or str(reply_to.get('author'))!=str(self.settings.get('bili_owner_uid')):raise CapabilityError('视频回复只允许核验过的主人评论。')
+            await self.backend.reply_location(video_id,reply_to)
+            key=hashlib.sha256((account+':'+video_id+':reply:'+str(reply_to['id'])).encode()).hexdigest()
         try:
             identity = await asyncio.wait_for(self.backend.identity(), 15)
         except Exception:
@@ -190,7 +206,8 @@ class BiliComments:
             if image:
                 payload.update(meme_id=meme_id,meme_sha256=image.sha256)
                 public.update(_image_path=str(image.path),image_description=image.description,image_text=image.image_text)
-            await self.reviewer.gate('root',payload,text,public)
+            if reply_to:payload['reply_to']=reply_to;public['reply_target']='verified_owner_comment'
+            await self.reviewer.gate('reply' if reply_to else 'root',payload,text,public)
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('SELECT 1 FROM bili_comment_pause WHERE account=?', (account,)).fetchone():
@@ -210,6 +227,7 @@ class BiliComments:
             if image:
                 self.media.library.bytes_for(image)
                 request=self.backend.send(video_id,text,mention=mention,meme=image)
+            elif reply_to:request=self.backend.send(video_id,text,reply_to=reply_to)
             else:request=self.backend.send(video_id,text,mention=mention) if mention else self.backend.send(video_id,text)
             result = await asyncio.wait_for(request,35 if image else 20)
             reply_id = str(result.get('reply_id') or '')

@@ -91,8 +91,17 @@ def collect(directory):
             continue
         if len(pages)>=MAX_PAGES:overflow=True;break
         pages.append({'id':f'g{index}','time':index*.5,'last_seen':index*.5,'image':image})
+    if overflow:
+        # Typing/cursor animations can exhaust the page budget in the opening.
+        # Keep the bounded budget but cover the entire decoded timeline.
+        indices=sorted({round(i*(len(files)-1)/(MAX_PAGES-1)) for i in range(MAX_PAGES)})
+        pages=[]
+        for index in indices:
+            with Image.open(files[index]) as source:image=source.convert('RGB')
+            pages.append({'id':f'g{index}','time':index*.5,'last_seen':index*.5,'image':image})
     return pages,{'source':'real_video_2fps','sample_interval_seconds':.5,'sampled_frames':len(files),
                   'unique_pages':len(pages),'page_limit_reached':overflow,
+                  'selection_method':'whole_timeline_budget_samples' if overflow else 'distinct_pages',
                   'scan_status':'page_limit_reached' if overflow else 'timeline_sampled',
                   'limitation':'每0.5秒取样，短暂闪图可能遗漏；页面判重有压缩容差，不证明源视频逐帧全读。'}
 

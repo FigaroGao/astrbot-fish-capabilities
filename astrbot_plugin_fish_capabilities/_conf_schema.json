@@ -69,6 +69,15 @@
     "description": "存放 DashScope Key 的环境变量名（此处不要填写 Key）",
     "default": "DASHSCOPE_API_KEY"
   },
+  "tts_provider": {
+    "type": "string",
+    "description": "语音供应商；Vocu密钥、音色与语速由本机绑定工具保存，不填进聊天或公开配置",
+    "default": "sambert",
+    "options": [
+      "sambert",
+      "vocu"
+    ]
+  },
   "tts_model": {
     "type": "string",
     "description": "Sambert 音色；Qwen 3.1 还未接入此适配器",

@@ -15,6 +15,7 @@ config.local.json
 
 *.jsonl
 *.credentials.json
+*.private.json
 *login-pending*.json
 *.zip
 *.png
