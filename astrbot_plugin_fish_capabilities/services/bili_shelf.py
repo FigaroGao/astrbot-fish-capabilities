@@ -44,6 +44,8 @@ class PublicShelf:
         owner=uid(self.settings.get('bili_owner_uid',''));start=(page-1)*limit
         result={'kind':kind,'scope':'仅主人公开清单，不代表小鲸自己的兴趣','saved_to_video_memory':False,'page':page,
             'instruction':'这是主人明确要求私聊查看的公开清单，只是翻书架。不要用它作为小鲸的推荐种子、口味证据、视频记忆或长期记忆；不带到群或公开评论。不返回点赞或收藏时间。只列出不代表看过，超10分钟视频仍不能深读，私密/未公开数据不碰。'}
+        if self.settings.get('bili_owner_shelf_autonomous_enabled',False):
+            result['instruction']='主人已授权随时查看其公开点赞收藏，并可作为私人选片线索。收藏不等于赞同，不冒充自己的兴趣；不推断敏感属性，不把书架或主人关系带到群或公开评论。只列出不等于看过，私密夹不读取。实际另读的视频按原阅读凭据处理。'
         if kind=='likes':
             rows=await asyncio.wait_for(self.backend.likes(owner),20)
             return dict(result,videos=compact(rows[start:start+limit],limit),available_count=len(rows),complete_history=False)

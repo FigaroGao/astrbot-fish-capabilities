@@ -13,16 +13,16 @@ from astrbot_plugin_fish_capabilities.services.companionship import scene_hint
 async def test_self_directed_can_read_more_than_three_and_stop(tmp_path):
     r=BiliReader(tmp_path/'b.db',BiliFake());r.browse=AsyncMock(return_value={'videos':[{'bvid':'BV'+str(i).zfill(10)} for i in range(6)]})
     r.read=AsyncMock(side_effect=lambda bv,**kw:dict(bvid=bv,title=bv))
-    g=AsyncMock(return_value=json.dumps({'bvids':['BV'+str(i).zfill(10) for i in range(5)],'browse_more':False}))
+    g=AsyncMock(side_effect=[json.dumps({'bvids':['BV'+str(i).zfill(10) for i in range(5)]})]+[json.dumps({'continue':True})]*4+[json.dumps({'continue':False})])
     duty=BiliDuty(r,types.SimpleNamespace(),{'bili_scroll_unlimited_enabled':True},g,AsyncMock())
     packets,reason=await duty.self_directed('')
-    assert len(packets)==5 and r.read.await_count==5 and g.await_count==1
+    assert len(packets)==5 and r.read.await_count==5 and g.await_count==6
 
 
 async def test_self_directed_can_continue_new_batch_without_duplicate_reads(tmp_path):
     r=BiliReader(tmp_path/'b.db',BiliFake());r.browse=AsyncMock(side_effect=[{'videos':[{'bvid':'BV0000000001'}]},{'videos':[{'bvid':'BV0000000001'},{'bvid':'BV0000000002'}]}])
     r.read=AsyncMock(side_effect=lambda bv,**kw:dict(bvid=bv,title=bv))
-    g=AsyncMock(side_effect=[json.dumps({'bvids':['BV0000000001'],'browse_more':True}),json.dumps({'bvids':['BV0000000002'],'browse_more':False})])
+    g=AsyncMock(side_effect=[json.dumps({'bvids':['BV0000000001']}),json.dumps({'continue':True}),json.dumps({'bvids':['BV0000000002']}),json.dumps({'continue':False})])
     duty=BiliDuty(r,types.SimpleNamespace(),{},g,AsyncMock())
     packets,_=await duty.self_directed('');assert [p['bvid'] for p in packets]==['BV0000000001','BV0000000002']
     assert r.read.await_count==2

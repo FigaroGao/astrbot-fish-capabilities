@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
+最新：[11月2日自主活动、私人小本子、公开书架与离线梗库](docs/autonomy-20261102.md)，以及[识图高峰时段路由](docs/vision-peak-routing.md)。自主活动采用完成后10分钟冷却与11:00至次日04:00窗口；睡眠时仍能正常聊天。新能力默认关闭，英文说明逐项完整翻译。
+
 最新：[10月30—31日视频场景选段、上下文费用、慢任务回应、Lecture课表与Vocu适配](docs/update-20261031.md)。桌面陪伴的聊天、独立记忆、动作回执、新界面与语音开关在独立仓库 [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate)，不混入本插件安装包。
 
 最新：[10月29日课程小本子、Canvas联查、战绩简版复盘与其他补修](docs/update-20261029.md)。包含本机绑定步骤、配置与实际验证边界。

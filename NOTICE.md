@@ -45,3 +45,9 @@ Character cards retain source-specific attribution and terms, including 上善�
 Codex重置公告来自第三方codex.markets，不代表OpenAI或个人账户额度。信件、配置、身份、记忆与真机私有报告不上传。
 
 Codex reset announcements come from third-party codex.markets and do not represent OpenAI or personal account quota. Letters, configuration, identities, memories, and private device evidence are excluded.
+
+## 2026-11-02 离线词库参考 / Offline dictionary reference
+
+离线查梗参考 [thawline/dsh-memewiki](https://github.com/thawline/dsh-memewiki) 的只读 SQLite 检索思路，Python 适配自行实现，未复制或执行 DSH Node 插件。上游版本 ffbc4ceae61bbb117994c0c9271b6452c96c2455 的 NOTICE 说明数据来自 cnmeme.wiki，原 AstrBot 插件归功于 in1t1a1。本仓库不分发数据库；本机安装时保留上游 NOTICE/LICENSE。代码许可不代表词库全部内容或图片的再分发许可。
+
+Offline meme lookup references the read-only SQLite approach in [thawline/dsh-memewiki](https://github.com/thawline/dsh-memewiki). The Python adapter is independently implemented; the DSH Node plugin was neither copied nor executed. The NOTICE at upstream revision ffbc4ceae61bbb117994c0c9271b6452c96c2455 attributes the data to cnmeme.wiki and credits in1t1a1 for the original AstrBot plugin. This repository does not distribute the database; local installations retain upstream NOTICE/LICENSE. The code license does not grant redistribution rights to all corpus contents or images.

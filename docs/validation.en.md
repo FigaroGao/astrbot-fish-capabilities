@@ -62,3 +62,10 @@ Publication testing sent no actual Bilibili root/nested/image comments, dynamics
 No real configuration, account bindings, subscriptions, cookies/tokens, match records, conversations, memories, pending drafts, letters, databases, image libraries or logs are published. AGPL attribution is retained, and only public knowledge data is included. New capabilities are disabled in the sharing configuration. AstrBot4.29.1 is the reference version; other versions still require checks of internal pipelines and OneBot integration.
 
 The owner-role timing fix was additionally checked on the device with real framework events and the real waking-stage entry, using an inert sender. All nine assertions passed without real QQ sends. This is a pipeline simulation, not a claim that the user has confirmed the command on the phone.
+
+
+## November 2, 2026: autonomous activities and vision routing
+
+The entire test suite was rerun in the sharing directory; see the [autonomous activity guide](autonomy-20261102.en.md) for the result. Coverage includes completion-relative cooldown, rest hours, bounded action chains, concurrency and cancellation, daily query allowances, source-grounded notes/revisions/private access, meme lookup, match baseline deduplication, and migration of an existing timetable. Vision schedule regressions are also published; see [vision routing](vision-peak-routing.en.md).
+
+The tablet probe checked actual modules, TextPart, the 6,668-entry corpus, three results from a real public search, actual private activity context, and a notification-free match baseline, with QQ online. Publication testing did not send QQ/Bilibili messages or deliberately disconnect QQ. Natural autonomous conversation and operation across calendar days still require observation. Only reusable code is published; letters, subjective profiles, the raw corpus, and configuration are excluded.

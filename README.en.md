@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
+Latest: [November 2 autonomous activities, private notebook, public shelf, and offline meme dictionary](docs/autonomy-20261102.en.md), plus [peak-hour vision routing](docs/vision-peak-routing.en.md). Autonomous activities use a ten-minute cooldown after completion and an 11:00–04:00 Hong Kong activity window; normal chat remains available during rest. New capabilities default to off, and the English documentation is a complete item-by-item translation.
+
 Latest: [October 30–31 scene-based video detail selection, context costs, slow-task acknowledgements, Lecture timetables and Vocu integration](docs/update-20261031.en.md). Desktop chat, isolated watch memory, action receipts, the new UI and the voice switch live in the separate [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate) repository and are not bundled into this plugin installer.
 
 Latest: [October 29 course notebook, Canvas integration, brief match review and other fixes](docs/update-20261029.en.md), including local binding, configuration and actual validation limits.

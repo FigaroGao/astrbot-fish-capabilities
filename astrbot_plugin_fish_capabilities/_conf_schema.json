@@ -593,5 +593,40 @@
     "type": "bool",
     "description": "主人私聊只读查询城大Canvas；先在本机fish-canvas-login输入Token，不在聊天中提供。",
     "default": false
+  },
+  "autonomy_enabled": {
+    "type": "bool",
+    "description": "自主活动控制器：活动完成后至少10分钟才再次选择，可连续最多3件相关活动。",
+    "default": false
+  },
+  "owner_notes_enabled": {
+    "type": "bool",
+    "description": "仅主人私聊的有依据知识纠错与可更正主观印象本，不用于群或公开评论。",
+    "default": false
+  },
+  "bili_owner_shelf_autonomous_enabled": {
+    "type": "bool",
+    "description": "主人持续授权查看自己的公开点赞收藏作私人选片线索，私密夹仍不读取。",
+    "default": false
+  },
+  "meme_wiki_enabled": {
+    "type": "bool",
+    "description": "使用本地离线梗词典按需查词、单条临时注入，不硬猜。",
+    "default": false
+  },
+  "private_recent_conversation_seconds": {
+    "type": "int",
+    "description": "主动私聊避开最近正常交谈的秒数。",
+    "default": 900
+  },
+  "vision_peak_routing_enabled": {
+    "type": "bool",
+    "description": "仅识图按北京时间切换：周一至周五9—12及14—18点千问，其余原识图模型；周末及已知假期不算高峰。",
+    "default": false
+  },
+  "vision_qwen_key_provider_id": {
+    "type": "string",
+    "description": "复用本机已配置阿里云向量供应商的Key与官方区域接口，不在此填写Key。",
+    "default": "aliyun_memory_embedding"
   }
 }
