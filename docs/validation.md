@@ -116,3 +116,12 @@ English: The tool now distinguishes keyword misses, rate-limited attempts that d
 - 两个源文件已备份部署，配置原样恢复；临时实机探针确认长来源选对片段、QQ/OneBot在线，原日程保留，探针卸载。没有真实外发、额外模型调用或NapCat重启。
 
 English: Four failures were reproduced before fixing unspaced Chinese clue matching, long-source chunk selection, common-prefix collisions, and archive metadata consistency. The affected suite passed 41 tests, with another 19 memory-provenance/public-isolation regressions passing; ten test cases were added. This is targeted validation, not a newly run full suite. Two source files were deployed with backups and unchanged configuration. A temporary synthetic runtime probe confirmed correct long-source selection, online QQ/OneBot status, and retained schedules, then was removed. No real outgoing messages, added model calls, or NapCat restart occurred.
+
+
+### 2026-11-06 冷档并发和部分失败恢复 / Recall concurrency and partial-failure recovery
+
+- 修前复现跨实例同时通过冷却、首条摘要读取失败遮蔽后续来源、服务不可用仍返回no_match。修为BEGIN IMMEDIATE保护本地检查与计数；逐条隔离失败，保留取消传播；无证据的服务失败返回lookup_unavailable。
+- 新增7项Mock/SQLite回归；包括8实例竞争只计一次、取消不退还已用查询预算、来源超时仍能检查下一条。相关67项全部通过，既有audioop警告仍在。本轮未重跑无变化的完整测试集。
+- 两处源码经SHA基线检查、配置与SQLite快照备份后部署；实机临时合成资料验证atomic_cooldown及source_failure_recovers通过，QQ/OneBot在线，原14个任务保留，探针卸载。没有真实QQ/B站测试外发、付费模型调用或NapCat重启。
+
+English: Reproduced cross-instance cooldown bypass, an early record failure hiding later sources, and unavailable lookup being mislabeled no_match. A local BEGIN IMMEDIATE transaction now protects checks and accounting. Per-record failures are isolated, cancellation propagates, and unavailable lookup without evidence returns lookup_unavailable. Seven new mock/SQLite cases include eight competing instances consuming one slot, cancellation preserving an already used query budget, and continuation after source timeout. All 67 related tests passed; the existing audioop warning remains, and unchanged full-suite tests were not rerun. Two source files were deployed after SHA checks and configuration/database backups. Temporary synthetic runtime probes confirmed atomic cooldown and recovery, online QQ/OneBot status, and all 14 retained tasks, then were removed. No real outgoing test messages, paid model calls, or NapCat restart occurred.

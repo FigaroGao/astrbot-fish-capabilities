@@ -162,6 +162,8 @@ class ColdMemory:
         terms=[t for t in re.split(r'\s+',query.strip()) if t][:5]
         now=self.clock();digest=hashlib.sha256(query.strip().encode()).hexdigest()
         with self.db() as db:
+            # Reserve before reading limits, across instances/processes.
+            db.execute('BEGIN IMMEDIATE')
             last=db.execute('SELECT MAX(stamp) FROM recalls WHERE scope=? AND persona=?',(scope,persona)).fetchone()[0]
             if last is not None and now-last<300:
                 return self.blocked('cooldown',last+300)

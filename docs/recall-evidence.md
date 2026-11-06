@@ -11,6 +11,7 @@
 | `cooldown` / `same_cue_recently_read` / `daily_limit` | 本次没有检索；等待 Unix 秒 `retry_at`，不可换词绕过 |
 | `found_via_summary` | 通过同范围 LivingMemory 摘要的来源指针找到冷档片段 |
 | `summary_only` | 命中摘要，但原文仍未确认 |
+| `lookup_unavailable` | 摘要检索失败或不完整且无可返回证据，不能判断有无记录 |
 
 直接搜索未命中时，最多检索三个 LivingMemory 条目及关联来源，最终最多返回两段冷档原文。复用既有记忆服务，不新建向量库，不每轮自动查询。摘要查询可能使用既有 Embedding 服务；本次测试均用 Mock，没有付费评测。
 
@@ -29,6 +30,7 @@
 | `cooldown` / `same_cue_recently_read` / `daily_limit` | No lookup was performed; wait until Unix-seconds `retry_at`, without changing clues to evade limits |
 | `found_via_summary` | A scoped LivingMemory summary source pointer led to an archived excerpt |
 | `summary_only` | A summary matched, but its original remains unverified |
+| `lookup_unavailable` | Summary lookup failed or was incomplete, with no returnable evidence; record existence is undetermined |
 
 After a direct miss, the bridge checks at most three LivingMemory records and their linked sources, returning at most two archived excerpts. It reuses the memory service, creates no new vector database, and does not query automatically on every turn. Summary retrieval may use the existing embedding service; all evaluations for this change use mocks, with no paid evaluation calls.
 
@@ -46,3 +48,10 @@ Cold-archive文件的时间、角色、会话、人格、片段编号、来源�
 Source messages align with the archive's 1,200-character chunk boundaries. At most the first 9,600 characters per source are considered, selecting up to two chunks by keywords or adjacent Chinese character-pair overlap. This local ranking locates candidates; it is not semantic or factual validation. Full stored-source chunks require a complete text match; shorter evidence pointers require their entire literal text to be contained. A common prefix alone cannot establish a match. Extremely long sources beyond the bounded window, or paraphrases with no lexical overlap, may still return only an unverified summary.
 
 Archive-file timestamps, roles, scopes, personas, chunk numbers, sources, dates, and text are checked against the existing index. Inconsistent files are not returned as verified excerpts. This checks file/index consistency, not the truth of events outside the database.
+
+
+## 并发与失败恢复 / Concurrency and failure recovery
+
+冷档频率检查与本次查询记录在同一SQLite写事务中完成，避免多个实例先同时读取旧计数再各自通过。事务只覆盖本地检索，不跨越Embedding或其他异步等待。摘要查询取消后，已执行的冷档查询仍计入原预算，不以取消绕过冷却。一条摘要或来源读取失败只将结果标为不完整，并继续检查本次已经取得的其他候选；不会重新发起搜索。全部查询失败时返回 `lookup_unavailable`，不伪装成 `no_match`。
+
+The cold-archive frequency check and query record run in one SQLite write transaction, preventing separate instances from reading stale counters and both passing. The transaction covers local lookup only, never embedding or other asynchronous waits. Cancelling summary retrieval does not refund an already performed cold query or bypass its cooldown. A failed summary/source read marks the result partial and allows checking other candidates already returned by this search; it does not start another search. Failure without returnable evidence produces `lookup_unavailable`, rather than `no_match`.

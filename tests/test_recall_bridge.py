@@ -134,3 +134,78 @@ def test_source_ranking_is_bounded_and_not_semantic_proof():
     out=source_windows(text,'豆瓣酱放多')
     assert 1<=len(out)<=2 and all('豆瓣酱' in chunk for chunk in out)
     assert not source_windows('完全不同的话','豆瓣酱放多')
+
+
+@pytest.mark.parametrize('failure',[ValueError('bad metadata'),TimeoutError('source unavailable')])
+async def test_one_failed_record_does_not_hide_later_source(tmp_path,failure):
+    cold,_=archive(tmp_path);cold.capture(S,'p','user','今天豆瓣酱倒多了，整盘咸了','fixture');e=engine()
+    e.search_memories.return_value=[NS(doc_id=6),NS(doc_id=7)]
+    row=e.get_memory_record.return_value
+    e.get_memory_record.side_effect=[failure,row]
+    out=await summary_fallback(cold,e,S,'p','豆瓣酱放多',cold.recall(S,'p','豆瓣酱放多'))
+    assert out['state']=='found_via_summary' and out['summary_lookup']=='unavailable_or_partial'
+    assert out['excerpts'][0]['original_text_verified']
+
+async def test_unavailable_lookup_state_never_says_no_match(tmp_path):
+    cold,_=archive(tmp_path);e=engine();e.search_memories.side_effect=TimeoutError()
+    out=await summary_fallback(cold,e,S,'p','豆瓣酱',cold.recall(S,'p','豆瓣酱'))
+    assert out['state']=='lookup_unavailable' and out['existence_conclusion']=='undetermined'
+
+
+def test_concurrent_instances_share_atomic_cooldown(tmp_path):
+    from contextlib import contextmanager
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    from astrbot_plugin_fish_capabilities.services.cold_memory import ColdMemory
+    first,clock=archive(tmp_path);second=ColdMemory(first.root,clock=lambda:clock[0])
+    read_barrier=threading.Barrier(2)
+    # Force the old unprotected read/check interleaving. A transaction that
+    # obtains the write reservation before reading needs no injected barrier.
+    for cold in (first,second):
+        original=cold.db
+        @contextmanager
+        def raced_db(original=original):
+            with original() as conn:
+                class Proxy:
+                    def execute(self,sql,args=()):
+                        cursor=conn.execute(sql,args)
+                        if sql.startswith('SELECT MAX(stamp) FROM recalls WHERE scope=? AND persona=?') and 'query=' not in sql and not conn.in_transaction:
+                            read_barrier.wait(timeout=3)
+                        return cursor
+                yield Proxy()
+        cold.db=raced_db
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        jobs=[pool.submit(c.recall,S,'p',q) for c,q in ((first,'并发线索一'),(second,'并发线索二'))]
+        states=sorted(job.result(timeout=8)['state'] for job in jobs)
+    assert states==['cooldown','no_match']
+
+
+async def test_cancelled_summary_keeps_original_query_budget(tmp_path):
+    import asyncio
+    cold,_=archive(tmp_path);e=engine();e.search_memories.side_effect=asyncio.CancelledError()
+    result=cold.recall(S,'p','第一线索')
+    with pytest.raises(asyncio.CancelledError):await summary_fallback(cold,e,S,'p','第一线索',result)
+    out=cold.recall(S,'p','另一线索')
+    assert out['state']=='cooldown' and not out['lookup_performed']
+
+async def test_source_timeout_does_not_hide_next_record(tmp_path):
+    cold,_=archive(tmp_path);cold.capture(S,'p','user','今天豆瓣酱倒多了，整盘咸了','fixture');e=engine()
+    sources=e.get_memory_source.return_value
+    e.search_memories.return_value=[NS(doc_id=6),NS(doc_id=7)]
+    e.get_memory_source.side_effect=[TimeoutError(),sources]
+    out=await summary_fallback(cold,e,S,'p','豆瓣酱放多',cold.recall(S,'p','豆瓣酱放多'))
+    assert out['state']=='found_via_summary' and out['summary_lookup']=='unavailable_or_partial'
+    assert not out['summary_hits'][0]['linked_original_found'] and out['summary_hits'][1]['linked_original_found']
+
+def test_many_concurrent_recallers_only_consume_one_slot(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from astrbot_plugin_fish_capabilities.services.cold_memory import ColdMemory
+    first,clock=archive(tmp_path)
+    clients=[ColdMemory(first.root,clock=lambda:clock[0]) for _ in range(8)]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        jobs=[pool.submit(c.recall,S,'p',f'并发线索{i}') for i,c in enumerate(clients)]
+        states=[job.result(timeout=10)['state'] for job in jobs]
+    assert states.count('no_match')==1 and states.count('cooldown')==7
+    with first.db() as db:assert db.execute('SELECT COUNT(*) FROM recalls').fetchone()[0]==1
+    clock[0]+=301
+    assert first.recall(S,'p','后续新线索')['state']=='no_match'
