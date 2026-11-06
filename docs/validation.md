@@ -107,3 +107,12 @@
 - 详见[双语检索说明](recall-evidence.md)。历史摘要没有来源记录时仍可能只能返回未核实摘要，不能声称所有旧记录均能找回。
 
 English: The tool now distinguishes keyword misses, rate-limited attempts that did not run, and summary matches without verified originals. Rate limits return retry_at. Scoped LivingMemory source pointers bridge summaries to checked cold-archive excerpts; summary dates never stand in for original timestamps. Candidates trigger the existing private-context quarantine. Existing query budgets remain unchanged, and no vector database is added. All 908 tests passed with no skips, including 12 new mock regressions; the pre-existing audioop deprecation warning remains. The three changed source files were deployed with rollback backups, and a temporary synthetic runtime probe passed while QQ and OneBot remained online and scheduled tasks were retained. No real-history or paid-embedding evaluation, test messages, public posts, or NapCat restart was performed. Historical summaries without source links may remain unverified. See the [bilingual guide](recall-evidence.md).
+
+
+### 2026-11-06 来源片段边界补修 / Source-chunk boundary follow-up
+
+- 四种先失败后通过的复现：无空格中文近似线索漏查、长来源错误返回首段、相同240字前缀错误关联、存档元数据被改变仍通过文本校验。修复来源片段排序/全文核对及文件索引元数据一致性检查。
+- 本轮相关41项通过，另19项记忆来源/公开隔离回归通过；新增10种测试用例。不重复运行未变化全量，不将它们声称为新的全量结果。取消传播与来源窗口限制也有覆盖。
+- 两个源文件已备份部署，配置原样恢复；临时实机探针确认长来源选对片段、QQ/OneBot在线，原日程保留，探针卸载。没有真实外发、额外模型调用或NapCat重启。
+
+English: Four failures were reproduced before fixing unspaced Chinese clue matching, long-source chunk selection, common-prefix collisions, and archive metadata consistency. The affected suite passed 41 tests, with another 19 memory-provenance/public-isolation regressions passing; ten test cases were added. This is targeted validation, not a newly run full suite. Two source files were deployed with backups and unchanged configuration. A temporary synthetic runtime probe confirmed correct long-source selection, online QQ/OneBot status, and retained schedules, then was removed. No real outgoing messages, added model calls, or NapCat restart occurred.

@@ -91,3 +91,46 @@ def test_same_cue_and_daily_limit_expose_retry_time(tmp_path):
     out=cold.recall(S,'p','第十三次')
     assert out['state']=='daily_limit'
     assert out['retry_at']==datetime.fromisoformat('2026-10-28T00:00:00+08:00').timestamp()
+
+
+async def test_unspaced_paraphrase_uses_linked_source(tmp_path):
+    cold,_=archive(tmp_path);cold.capture(S,'p','user','今天豆瓣酱倒多了，整盘咸了','fixture')
+    out=await summary_fallback(cold,engine(),S,'p','豆瓣酱放多',cold.recall(S,'p','豆瓣酱放多'))
+    assert out['state']=='found_via_summary'
+
+async def test_long_source_selects_relevant_chunk_not_first_prefix(tmp_path):
+    cold,_=archive(tmp_path);text='无关内容'*300+'今天豆瓣酱倒多了，整盘咸了'
+    cold.capture(S,'p','user',text,'fixture');e=engine();e.get_memory_source.return_value[0]['content']=text
+    out=await summary_fallback(cold,e,S,'p','豆瓣酱 放多了',cold.recall(S,'p','豆瓣酱 放多了'))
+    assert out['state']=='found_via_summary' and '豆瓣酱' in out['excerpts'][0]['text']
+
+async def test_prefix_collision_cannot_verify_different_source(tmp_path):
+    cold,_=archive(tmp_path);prefix='相同开头'*60
+    cold.capture(S,'p','user',prefix+'豆瓣酱倒多了，但不是所找来源','fixture')
+    e=engine();e.get_memory_source.return_value[0]['content']=prefix+'豆瓣酱倒多了，所找的是另一段原话'
+    out=await summary_fallback(cold,e,S,'p','豆瓣酱 放多了',cold.recall(S,'p','豆瓣酱 放多了'))
+    assert out['state']=='summary_only' and not out['excerpts']
+
+@pytest.mark.parametrize('field,value',[('at',1),('role','assistant'),('scope','other:FriendMessage:2'),('persona','other'),('time_quality','import_snapshot')])
+def test_archive_time_and_speaker_tampering_rejected(tmp_path,field,value):
+    import json
+    from astrbot_plugin_fish_capabilities.services.policy import CapabilityError
+    cold,_=archive(tmp_path);cold.capture(S,'p','user','完整原话内容','fixture')
+    with cold.db() as db:row=db.execute('SELECT * FROM chunks').fetchone()
+    path=cold.root/row['file'];packet=json.loads(path.read_text(encoding='utf-8'));packet[field]=value
+    path.chmod(0o600);path.write_text(json.dumps(packet),encoding='utf-8')
+    with pytest.raises(CapabilityError):cold.excerpt(row)
+
+
+async def test_cancelled_lookup_propagates_without_claiming_absence(tmp_path):
+    import asyncio
+    cold,_=archive(tmp_path);e=engine();e.search_memories.side_effect=asyncio.CancelledError()
+    with pytest.raises(asyncio.CancelledError):
+        await summary_fallback(cold,e,S,'p','豆瓣酱',cold.recall(S,'p','豆瓣酱'))
+
+def test_source_ranking_is_bounded_and_not_semantic_proof():
+    from astrbot_plugin_fish_capabilities.services.recall_bridge import source_windows
+    text='无关内容'*300+'豆瓣酱倒多了'+'其他内容'*300+'豆瓣酱用多了'
+    out=source_windows(text,'豆瓣酱放多')
+    assert 1<=len(out)<=2 and all('豆瓣酱' in chunk for chunk in out)
+    assert not source_windows('完全不同的话','豆瓣酱放多')

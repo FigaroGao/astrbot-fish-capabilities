@@ -150,7 +150,8 @@ class ColdMemory:
         if target.is_symlink() or not target.resolve().is_relative_to(self.root.resolve()):
             raise CapabilityError('原文存档路径不可核验。')
         value=json.loads(target.read_text(encoding='utf-8'))
-        if value.get('id')!=row['id'] or hashlib.sha256(str(value.get('text','')).encode()).hexdigest()!=row['sha256']:
+        fields={'id':'id','scope':'scope','persona':'persona','role':'role','day':'day','at':'stamp','time_quality':'time_quality','part':'part','source':'source','text':'text'}
+        if any(value.get(key)!=row[column] for key,column in fields.items()) or hashlib.sha256(str(value.get('text','')).encode()).hexdigest()!=row['sha256']:
             raise CapabilityError('原文校验失败，未使用该片段。')
         return dict({k:value[k] for k in ('id','day','at','time_quality','role','text','part')},original_text_verified=True,date_verified=value['time_quality']=='message_time',summary_equivalence_verified=False)
 

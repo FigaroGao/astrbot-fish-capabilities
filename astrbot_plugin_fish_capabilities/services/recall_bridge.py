@@ -1,6 +1,19 @@
 """Use scoped summary/source links as an index, never dates as proof."""
-import asyncio,json
+import asyncio,json,re
 from .cold_memory import redact,RULE
+
+
+def source_windows(text,query):
+    """Rank bounded source chunks locally; lexical overlap is not fact proof."""
+    terms=query.split()[:5]
+    grams={word[i:i+2] for word in re.findall(r'[\u4e00-\u9fff]+',query) for i in range(len(word)-1)}
+    windows=[]
+    for offset in range(0,min(len(text),9600),1200):
+        chunk=text[offset:offset+1200]
+        exact=sum(len(term) for term in terms if term in chunk)
+        score=exact*10+sum(gram in chunk for gram in grams)
+        if score:windows.append((score,offset,chunk))
+    return [chunk for _,_,chunk in sorted(windows,key=lambda item:(-item[0],item[1]))[:2]]
 
 
 async def summary_fallback(cold,engine,scope,persona,query,result,limit=2):
@@ -35,25 +48,28 @@ async def summary_fallback(cold,engine,scope,persona,query,result,limit=2):
                     pointers.append((source['excerpt'],'user','summary_evidence_pointer'))
             for text,role,basis in pointers[:38]:
                 text=redact(text)
-                if not any(term in text for term in query.split()[:5]):continue
-                if len(text.strip())<4:continue
-                # Verify exact content against the immutable archive, within
-                # this same scope/persona and speaker. No summary date window.
-                quote=text[:240]
-                escaped=quote.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
-                with cold.db() as db:
-                    rows=db.execute("SELECT * FROM chunks WHERE scope=? AND persona=? AND role=? AND text LIKE ? ESCAPE '\\' ORDER BY stamp DESC LIMIT 2",(scope,persona,role,'%'+escaped+'%')).fetchall()
-                for archived in rows:
-                    excerpt=cold.excerpt(archived)
-                    if any(x['id']==excerpt['id'] for x in out['excerpts']):continue
-                    out['excerpts'].append(excerpt);summary['linked_original_found']=True
+                for quote in source_windows(text,query):
+                    if len(quote.strip())<4:continue
+                    # Stored message chunks must match in full. Evidence-only
+                    # excerpts are shorter pointers and require a literal match.
+                    escaped=quote.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')
+                    condition='text=?' if basis=='stored_source' else "text LIKE ? ESCAPE '\\'"
+                    needle=quote if basis=='stored_source' else '%'+escaped+'%'
+                    with cold.db() as db:
+                        rows=db.execute('SELECT * FROM chunks WHERE scope=? AND persona=? AND role=? AND '+condition+' ORDER BY stamp DESC LIMIT 2',(scope,persona,role,needle)).fetchall()
+                    for archived in rows:
+                        excerpt=cold.excerpt(archived)
+                        if any(x['id']==excerpt['id'] for x in out['excerpts']):continue
+                        out['excerpts'].append(excerpt);summary['linked_original_found']=True
+                        if len(out['excerpts'])>=limit:break
+                    if basis=='stored_source' and len(out['source_candidates'])<2:
+                        out['source_candidates'].append({'memory_id':ident,'role':role,'text':quote[:1000],
+                            'basis':basis,'original_text_verified':False,'date_verified':False,
+                            'summary_equivalence_verified':False})
                     if len(out['excerpts'])>=limit:break
-                if basis=='stored_source' and len(out['source_candidates'])<2:
-                    out['source_candidates'].append({'memory_id':ident,'role':role,'text':text[:1000],
-                        'basis':basis,'original_text_verified':False,'date_verified':False,
-                        'summary_equivalence_verified':False})
                 if len(out['excerpts'])>=limit:break
             if len(out['excerpts'])>=limit:break
+
     except asyncio.CancelledError:raise
     except Exception:
         out['summary_lookup']='unavailable_or_partial'
