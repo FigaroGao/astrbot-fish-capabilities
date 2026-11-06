@@ -175,6 +175,11 @@ class Timetable:
             if current!=(1,revision):state='cancelled';return
             if self.gate is not None and action in ('bili_scroll','private_initiative','dynamic_thought'):
                 verdict=await self.gate(action)
+                # Another instance can pause, delete or revise the task while
+                # the asynchronous gate runs. Its verdict grants no lease to
+                # the obsolete revision, including permission to defer it.
+                with self.db() as db:current=db.execute('SELECT enabled,revision FROM tasks WHERE id=?',(ident,)).fetchone()
+                if current!=(1,revision):state='cancelled';return
                 decision=verdict.get('decision') if isinstance(verdict,dict) else None
                 if decision not in ('run','skip','defer'):raise CapabilityError('活动判断结果无效。')
                 if decision=='skip':state='intent_skipped';return
