@@ -152,7 +152,7 @@ class ColdMemory:
         value=json.loads(target.read_text(encoding='utf-8'))
         if value.get('id')!=row['id'] or hashlib.sha256(str(value.get('text','')).encode()).hexdigest()!=row['sha256']:
             raise CapabilityError('原文校验失败，未使用该片段。')
-        return {k:value[k] for k in ('id','day','at','time_quality','role','text','part')}
+        return dict({k:value[k] for k in ('id','day','at','time_quality','role','text','part')},original_text_verified=True,date_verified=value['time_quality']=='message_time',summary_equivalence_verified=False)
 
     def recall(self,scope,persona,query,limit=2):
         bounded_int(limit,1,2,'回忆片段数')
@@ -161,13 +161,17 @@ class ColdMemory:
         terms=[t for t in re.split(r'\s+',query.strip()) if t][:5]
         now=self.clock();digest=hashlib.sha256(query.strip().encode()).hexdigest()
         with self.db() as db:
-            if db.execute('SELECT 1 FROM recalls WHERE scope=? AND persona=? AND stamp>?',(scope,persona,now-300)).fetchone():
-                return {'excerpts':[],'state':'cooldown','instruction':'刚查过原文，先用已有片段接话，不要每条消息都翻冷档。'}
-            if db.execute('SELECT 1 FROM recalls WHERE scope=? AND persona=? AND query=? AND stamp>?',(scope,persona,digest,now-3600)).fetchone():
-                return {'excerpts':[],'state':'same_cue_recently_read','instruction':'同一线索一小时内不重复展开。'}
+            last=db.execute('SELECT MAX(stamp) FROM recalls WHERE scope=? AND persona=?',(scope,persona)).fetchone()[0]
+            if last is not None and now-last<300:
+                return self.blocked('cooldown',last+300)
+            same=db.execute('SELECT MAX(stamp) FROM recalls WHERE scope=? AND persona=? AND query=?',(scope,persona,digest)).fetchone()[0]
+            if same is not None and now-same<3600:
+                return self.blocked('same_cue_recently_read',same+3600)
             start=datetime.fromtimestamp(now,local_zone(self.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
             if db.execute('SELECT COUNT(*) FROM recalls WHERE scope=? AND persona=? AND stamp>=?',(scope,persona,start)).fetchone()[0]>=12:
-                return {'excerpts':[],'state':'daily_limit','instruction':'今日原文回忆已达12次，正常聊天不受影响。'}
+                from datetime import timedelta
+                next_day=datetime.fromtimestamp(now,local_zone(self.config)).replace(hour=0,minute=0,second=0,microsecond=0)+timedelta(days=1)
+                return self.blocked('daily_limit',next_day.timestamp())
             clauses=' AND '.join("text LIKE ? ESCAPE '\\'" for _ in terms)
             like=lambda t:'%'+t.replace('\\','\\\\').replace('%','\\%').replace('_','\\_')+'%'
             rows=db.execute('SELECT * FROM chunks WHERE scope=? AND persona=? AND '+clauses+' ORDER BY stamp DESC,id LIMIT ?',
@@ -175,7 +179,11 @@ class ColdMemory:
             excerpts=[self.excerpt(row) for row in rows]
             db.execute('INSERT INTO recalls VALUES(?,?,?,?)',(now,scope,persona,digest))
             db.execute('DELETE FROM recalls WHERE stamp<?',(now-2*86400,))
-        return {'excerpts':excerpts,'state':'found' if excerpts else 'no_match','instruction':RULE}
+        return {'excerpts':excerpts,'state':'found' if excerpts else 'no_match','lookup_performed':True,'original_text_verified':bool(excerpts),'existence_conclusion':'matching_archive_found' if excerpts else 'no_match_in_this_query','instruction':RULE+' 未匹配只说明本次线索未命中，不证明以前没说过。'}
+
+    @staticmethod
+    def blocked(state,retry_at):
+        return {'state':state,'excerpts':[],'lookup_performed':False,'original_text_verified':False,'existence_conclusion':'undetermined','retry_at':retry_at,'instruction':'本次因频率限制没有检索，不能判断有无记录，不是no_match。等retry_at后再查，不轮换关键词绕过限制。'}
 
     def diaries(self,scope,persona,limit=3):
         bounded_int(limit,1,3,'日记条数')

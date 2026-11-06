@@ -833,12 +833,12 @@ class FishCapabilities(Star):
         except Exception:return
         await self.capture_cold_user(event)
         from astrbot.core.agent.message import TextPart
-        hint='[主人私聊原文回忆]已有本机冷档，涉及以前具体说法、摘要冲突或被具体线索唤起时，可用fish_recall按关键词找最多两段原话；平常不必每轮读取。diaries查看自己的夜间回顾，correct_diary凭主人当前明确更正修改。'+COLD_RULE+'夜间日记不是原始思维链，不自动写成普通长期事实。实际发给云端模型的只有选中的片段。'
+        hint='[主人私聊原文回忆]已有本机冷档，涉及以前具体说法、摘要冲突或被具体线索唤起时，可用fish_recall按关键词找最多两段原话；平常不必每轮读取。cooldown等限流表示本次未查，按retry_at等待；no_match只说明本次线索未命中；summary_only表示摘要命中而原文未确认，不得按摘要日期猜原话。diaries查看自己的夜间回顾，correct_diary凭主人当前明确更正修改。'+COLD_RULE+'夜间日记不是原始思维链，不自动写成普通长期事实。实际发给云端模型的只有选中的片段。'
         req.extra_user_content_parts.append(TextPart(text=hint).mark_as_temp())
 
     @filter.llm_tool(name='fish_recall')
     async def cold_recall_tool(self,event: AstrMessageEvent,operation: str='search',query: str='',limit: int=2,diary_id: int=0,version: int=0,content: str='',evidence: str=''):
-        '''仅主人私聊，具体线索触发时找回少量历史原话，不每轮翻冷档，不用于群或公开内容。原话是当时说法，当前明确更正优先。日记属于可更正的私有回顾。
+        '''仅主人私聊，具体线索触发时找回少量历史原话，不每轮翻冷档，不用于群或公开内容。原话是当时说法，当前明确更正优先。日记属于可更正的私有回顾。限流不等于没有记录，按retry_at等待；摘要只作索引，原文、说话人和时间分别核验。
 
         Args:
             operation(string): search/diaries/correct_diary。
@@ -852,11 +852,21 @@ class FishCapabilities(Star):
         async def work():
             self.enabled('cold_archive',event,owner=True)
             scope,persona,cid=await self.cold_scope(event)
-            if operation=='search':result=self.cold_memory.recall(scope,persona,query,limit)
+            if operation=='search':
+                result=self.cold_memory.recall(scope,persona,query,limit)
+                if result.get('state')=='no_match':
+                    try:
+                        engine,mscope,mpersona=await self.memory_scope(event)
+                        if (mscope,mpersona)==(scope,persona):
+                            from .services.recall_bridge import summary_fallback
+                            result=await summary_fallback(self.cold_memory,engine,scope,persona,query,result,limit)
+                        else:result['summary_lookup']='scope_not_available'
+                    except CapabilityError:result['summary_lookup']='unavailable'
+
             elif operation=='diaries':result=self.cold_memory.diaries(scope,persona,min(limit,3))
             elif operation=='correct_diary':result=await self.cold_memory.correct_diary(scope,persona,diary_id,version,content,evidence,event.get_message_str(),self.memory_correction_review)
             else:raise CapabilityError('原文回忆操作不支持。')
-            if result.get('excerpts') or result.get('diaries') or result.get('corrected'):
+            if result.get('excerpts') or result.get('diaries') or result.get('corrected') or result.get('summary_hits') or result.get('source_candidates'):
                 self.cold_memory.quarantine(scope,cid)
                 self.public_review.set_private_archive_blocked(True)
                 event.set_extra('fish_cold_private_context',True)

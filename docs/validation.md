@@ -96,3 +96,14 @@
 
 
 发布副本独立完整回归：789项通过，1条既有audioop弃用警告。与维护副本结果不相加；本次没有连接平板。
+
+
+## 2026-11-06 原文回忆与摘要来源桥接 / Recall evidence bridge
+
+- 区分真正关键词未命中、限流未查询、摘要命中但原文未确认；限流返回 retry_at。摘要只作索引，沿 LivingMemory 同人格同会话来源查询冷档，不根据摘要日期拼接原话。
+- 返回候选也启用已有私有上下文隔离，保持原查询预算，不新增向量数据库。校验文件完整性不等于验证摘要语义或事件日期。
+- 全量908项通过，0跳过；新增12项Mock回归涵盖来源桥接、跨范围/人格/说话人隔离、冷却、日预算、损坏档案、服务失败与公开上下文隔离。既有audioop弃用警告仍在。
+- 实机已加载三处源码改动，临时合成档案验证通过，QQ及OneBot在线，原任务保留；未使用真实历史查询或付费Embedding做评测，无QQ/B站测试外发。存在可回滚源码/配置/数据库备份；没有重启NapCat。
+- 详见[双语检索说明](recall-evidence.md)。历史摘要没有来源记录时仍可能只能返回未核实摘要，不能声称所有旧记录均能找回。
+
+English: The tool now distinguishes keyword misses, rate-limited attempts that did not run, and summary matches without verified originals. Rate limits return retry_at. Scoped LivingMemory source pointers bridge summaries to checked cold-archive excerpts; summary dates never stand in for original timestamps. Candidates trigger the existing private-context quarantine. Existing query budgets remain unchanged, and no vector database is added. All 908 tests passed with no skips, including 12 new mock regressions; the pre-existing audioop deprecation warning remains. The three changed source files were deployed with rollback backups, and a temporary synthetic runtime probe passed while QQ and OneBot remained online and scheduled tasks were retained. No real-history or paid-embedding evaluation, test messages, public posts, or NapCat restart was performed. Historical summaries without source links may remain unverified. See the [bilingual guide](recall-evidence.md).
