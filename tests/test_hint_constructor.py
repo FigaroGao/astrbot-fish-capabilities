@@ -43,3 +43,14 @@ async def test_cold_hint_uses_real_pydantic_constructor_and_stays_private(plugin
     other=types.SimpleNamespace(extra_user_content_parts=[])
     await plugin.cold_memory_hints(Event(private=False),other)
     assert other.extra_user_content_parts==[]
+
+async def test_private_chat_only_loads_relevant_tool_hints(plugin,text_parts):
+    plugin.config.update(timetable_enabled=True,timeline_enabled=True,memory_edit_enabled=True,canvas_enabled=True)
+    for message,expected in [('今天笑死我了',None),('明早提醒我带伞','fish_tasks'),('看看学校作业','fish_course_context')]:
+        event=Event();event.get_message_str=lambda:message
+        req=types.SimpleNamespace(extra_user_content_parts=[])
+        await plugin.unified_capability_hints(event,req)
+        text=' '.join(p.text for p in req.extra_user_content_parts)
+        assert 'fish_memory_edit' not in text
+        assert ('fish_tasks' in text)==(expected=='fish_tasks')
+        assert ('fish_course_context' in text)==(expected=='fish_course_context')
