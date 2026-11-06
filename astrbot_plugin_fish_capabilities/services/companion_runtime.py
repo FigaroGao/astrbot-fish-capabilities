@@ -52,6 +52,7 @@ class CompanionRuntime:
             scope=str(self.cap.config.get('bili_private_session',''))
             duty.feedback_source=lambda:[{k:r[k] for k in ('bvid','vote')} for r in self.learning.feedback_hints(scope)]
             duty.on_reflection=self.video_insight
+            duty.on_study=self.video_study
         if self.cap.config.get('companion_dashboard_enabled',False) and self.cap.context:
             from .companion_page import CompanionPage
             self.page=CompanionPage(self.cap,self)
@@ -117,6 +118,22 @@ class CompanionRuntime:
             [{'id':r['id'],'kind':r['kind'],'scene':r['topic'],'text':r['text'],'observed_at':r['stamp'],
               'source_kind':r['source'].get('kind')} for r in rows],ensure_ascii=False)
         return hint[:1800],[r['id'] for r in rows]
+
+    def video_study(self,packet,output):
+        if not self.cap.config.get('owner_notes_enabled'):return
+        scope=str(self.cap.config.get('bili_private_session',''))
+        ids=output.get('reflection_evidence_ids')
+        if not scope or not isinstance(ids,list):return
+        evidence=[{'kind':e.get('kind'),'quote':str(e.get('text',''))[:200]} for e in packet.get('evidence',[]) if e.get('evidence_id') in ids and e.get('text')][:3]
+        if not evidence:return
+        question=output.get('study_question')
+        question=question.strip() if isinstance(question,str) else ''
+        reflection=output.get('reflection')
+        if not question and not isinstance(reflection,str):return
+        try:
+            return self.cap.owner_notebook.study_save(scope,question or packet.get('title'),question or reflection,
+                {'type':'video','bvid':packet.get('bvid'),'reading_id':packet.get('reading_id'),'evidence':evidence},'question' if question else 'noted')
+        except CapabilityError:return
 
     def video_insight(self,packet,reflection,evidence_ids):
         if not self.cap.config.get('learning_enabled',False):return None
