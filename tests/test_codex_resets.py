@@ -28,7 +28,7 @@ async def test_status_conversion_cache_and_no_personal_claim(tmp_path):
     http=Transport();t=[NOW];service=CodexResets(tmp_path/'state.db',http,lambda:t[0])
     a=await service.status();await service.status()
     assert len(http.calls)==1 and a['sync_fresh']
-    assert a['latest_reset']['announced_at_hk']=='2026-10-26T15:00:00+08:00'
+    assert a['latest_reset']['announced_at_local']=='2026-10-26T15:00:00+08:00'
     assert not a['personal_account_checked'] and not a['official_openai_service']
     assert a['next_reset_prediction'] is None
     assert http.calls[0][1]=={'codex.markets'} and 'lang=zh-Hans' in http.calls[0][0]

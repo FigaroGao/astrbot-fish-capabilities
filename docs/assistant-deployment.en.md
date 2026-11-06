@@ -10,7 +10,7 @@ Device: [OS, CPU architecture, memory, existing Termux/Ubuntu/Python].
 Read the repository README, docs/getting-started.en.md, docs/release-0.7.0.en.md,
 docs/privacy.en.md and validation guide, then inspect my actual environment and versions.
 Back up existing configuration first; avoid overwriting an online QQ setup or starting a second NapCat.
-Stage one: QQ text chat using NapCat+AstrBot only. Stage two: install only the main plugin and test Hong Kong weather.
+Stage one: QQ text chat using NapCat+AstrBot only. Stage two: install only the main plugin and test configured-city weather.
 Then configure authorization scopes individually before timetable, Bilibili, cloud memory and optional speech recognition.
 Label every command as native Termux, Ubuntu or computer terminal and use actual paths.
 Do not copy author identities, private configuration or memories, or install the repository root as one plugin.

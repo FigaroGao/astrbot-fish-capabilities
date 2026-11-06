@@ -16,8 +16,8 @@
   "tts_provider": "sambert",
   "tts_model": "sambert-zhiyue-v1",
   "tts_monthly_chars": 3000,
-  "weather_default_city": "香港",
-  "weather_default_country": "HK",
+  "weather_default_city": "",
+  "weather_default_country": "",
   "owner_only_commands_enabled": false,
   "command_platform_ids": [],
   "intent_enabled": false,
@@ -126,5 +126,6 @@
   "meme_wiki_enabled": false,
   "private_recent_conversation_seconds": 900,
   "vision_peak_routing_enabled": false,
-  "vision_qwen_key_provider_id": "aliyun_memory_embedding"
+  "vision_qwen_key_provider_id": "aliyun_memory_embedding",
+  "local_timezone": "UTC+08:00"
 }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .local_time import local_zone, zone_name
 import asyncio
 import re
 import secrets
@@ -48,7 +49,8 @@ class SambertBackend:
 
 class Speech:
     def __init__(self, directory: Path, ledger: Ledger, backend=None, *, monthly_chars: int = 3000,
-                 max_chars: int = 180):
+                 max_chars: int = 180, config=None):
+        self.config=config if config is not None else {}
         self.directory=directory; self.ledger=ledger; self.backend=backend
         self.monthly_chars=monthly_chars; self.max_chars=max_chars
         self.lock=asyncio.Lock()
@@ -59,7 +61,7 @@ class Speech:
             raise CapabilityError('这个适配器仅支持已核对的 Sambert 模型；ASR 不能合成语音，Qwen 3.1 另走已验证的供应商适配。')
         if self.backend is None: raise CapabilityError('尚未配置语音凭据或适配器。')
         # This is a local cap, not an authoritative balance query for the account.
-        month=datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m')
+        month=datetime.now(local_zone(self.config)).strftime('%Y-%m')
         async with self.lock:
             self.ledger.charge_tts(model,len(text),month,self.monthly_chars)
             # Keep the reservation on uncertain network failures: the remote call may

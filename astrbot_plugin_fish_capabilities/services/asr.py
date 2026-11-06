@@ -1,4 +1,5 @@
 """Cloud ASR pool with scoped deduplication and conservative local reservations."""
+from .local_time import local_zone, zone_name
 import asyncio
 import audioop
 from contextlib import contextmanager
@@ -18,7 +19,6 @@ import wave
 from .policy import CapabilityError
 
 MODELS={'paraformer-realtime-v2':16000,'paraformer-v2':16000,'paraformer-realtime-8k-v2':8000,'paraformer-8k-v2':8000}
-HK=timezone(timedelta(hours=8))
 
 
 class ASRRejected(Exception):
@@ -139,7 +139,7 @@ class ASRPool:
         finally:db.close()
 
     def status(self):
-        month=datetime.fromtimestamp(self.clock(),HK).strftime('%Y-%m')
+        month=datetime.fromtimestamp(self.clock(),local_zone(self.config)).strftime('%Y-%m')
         with self.db() as db:
             rows=db.execute('SELECT model,SUM(seconds) FROM asr_requests WHERE month=? GROUP BY model',(month,)).fetchall()
         return {'month':month,'reserved_seconds':dict(rows),'monthly_local_cap_per_model':int(self.config.get('asr_monthly_seconds',35000)),
@@ -149,7 +149,7 @@ class ASRPool:
         source=Path(source)
         if not source.is_file() or source.stat().st_size>20_000_000:raise CapabilityError('语音文件不可用或超过20MB。')
         digest=hashlib.sha256(source.read_bytes()).hexdigest()
-        month=datetime.fromtimestamp(self.clock(),HK).strftime('%Y-%m')
+        month=datetime.fromtimestamp(self.clock(),local_zone(self.config)).strftime('%Y-%m')
         models=self.config.get('asr_models',['paraformer-realtime-v2','paraformer-v2','paraformer-realtime-8k-v2','paraformer-8k-v2'])
         if not isinstance(models,list) or not models or any(m not in MODELS for m in models):raise CapabilityError('语音识别模型池配置不正确。')
         async with self.lock:

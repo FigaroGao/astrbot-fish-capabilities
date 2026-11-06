@@ -1,4 +1,5 @@
 """Private-context-aware drafts, independent review, exact-draft owner approval."""
+from .local_time import local_zone, zone_name
 import hashlib
 import json
 import re
@@ -121,7 +122,7 @@ class PublicReview:
     async def notices(self):
         from datetime import datetime,timezone,timedelta
         now=self.clock()
-        if not 9<=datetime.fromtimestamp(now,timezone(timedelta(hours=8))).hour<23:return
+        if not 9<=datetime.fromtimestamp(now,local_zone(self.config)).hour<23:return
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('SELECT 1 FROM bili_public_review WHERE notified>? AND account=?',(now-3600,str(self.config.get('bili_account_id','')))).fetchone():return

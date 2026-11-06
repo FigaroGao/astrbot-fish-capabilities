@@ -2,6 +2,7 @@
 
 Untrusted comments never enter the ordinary chat agent, memory or tool chain.
 """
+from .local_time import local_zone, zone_name
 from .brain import AttentionDeferred
 import asyncio
 import hashlib
@@ -298,7 +299,7 @@ class ReplyInbox:
         if self.review:
             await self.review.notices();return
         account, now = self.account(), self.clock()
-        if not 9<=datetime.fromtimestamp(now,timezone(timedelta(hours=8))).hour<23:return
+        if not 9<=datetime.fromtimestamp(now,local_zone(self.config)).hour<23:return
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             if db.execute('SELECT 1 FROM bili_reply_notices WHERE account=? AND stamp>?',(account,now-3600)).fetchone():return

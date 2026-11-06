@@ -1,4 +1,5 @@
 """Glue for existing chat, video, library and dashboard services."""
+from .local_time import local_zone, zone_name
 import asyncio
 import base64
 import hashlib
@@ -125,7 +126,7 @@ class CompanionRuntime:
     def usage(self):
         from datetime import datetime
         from zoneinfo import ZoneInfo
-        since=datetime.now(ZoneInfo('Asia/Hong_Kong')).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        since=datetime.now(local_zone(self.cap.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
         return usage_report(self.cap.root/'context-metrics.jsonl',since=since)
 
     def initiative_state(self):

@@ -40,7 +40,7 @@ async def test_dynamic_midnight_no_longer_fires_and_clock_is_current(tmp_path):
     hk=timezone(timedelta(hours=8));t[0]=datetime(2026,10,28,0,tzinfo=hk).timestamp();c['at']=t[0]
     assert (await a.think())['state']=='dynamic_quiet_hours';g.assert_not_called()
     t[0]=datetime(2026,10,28,22,tzinfo=hk).timestamp();c['at']=t[0]
-    await a.think();assert g.await_count==1 and '22:00' in g.call_args.args[0]['current_hong_kong_time']
+    await a.think();assert g.await_count==1 and '22:00' in g.call_args.args[0]['current_local_time']
 
 
 async def test_dynamic_old_night_context_is_not_reused_in_daytime(tmp_path):

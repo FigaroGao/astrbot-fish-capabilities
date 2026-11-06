@@ -42,7 +42,7 @@ One temporary diagnostic plugin produced an ERROR because its uninstall name did
 
 ## Unchanged behavior
 
-Nightly reflection remains at 05:00 Hong Kong time. Bilibili comments remain capped at 20 per rolling 24 hours with zero interval. Owner identity, core persona, private/group memory isolation, QQ recovery, and public-review policy were not changed.
+Nightly reflection remains at 05:00 configured local time. Bilibili comments remain capped at 20 per rolling 24 hours with zero interval. Owner identity, core persona, private/group memory isolation, QQ recovery, and public-review policy were not changed.
 
 ## Local regression and backups
 

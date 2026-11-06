@@ -102,7 +102,7 @@ If Ubuntu has no uv, use that Python environment's own pip for the same dependen
 
 ## 6. Configure and verify individually
 
-Initially fill only your own `owners` and `command_platform_ids` in the plugin, and add the owner as a core administrator. A UMO is the framework's complete session identifier, not merely a group number; obtain it from actual local events/configuration. Enable `enabled` and `weather_enabled` and ask for Hong Kong weather privately. Enable further capabilities only after a successful tool result.
+Initially fill only your own `owners` and `command_platform_ids` in the plugin, and add the owner as a core administrator. A UMO is the framework's complete session identifier, not merely a group number; obtain it from actual local events/configuration. Enable `enabled` and `weather_enabled` and ask for configured-city weather privately. Enable further capabilities only after a successful tool result.
 
 | Capability | Additional requirements |
 | --- | --- |
@@ -131,7 +131,7 @@ For unattended recovery, read the [recovery guide](recovery.en.md), adjust actua
 | WebUI works but QQ does not reply | QQ online state, reverse WS, token, AstrBot platform, model API and wake rules; three accessible WebUIs do not establish the message chain works |
 | Architecture/build errors | Linux wheels accidentally installed in native Termux, Python 3.12/ARM64 compatibility; retain the actual exception |
 | Tool unavailable | Master and individual switches, owner plus administrator, platform ID, session scopes, model tool access and plugin-load logs |
-| Task did not run | Actual task ID from the list, Hong Kong time, switches and execution receipts; missed times are not replayed in bulk |
+| Task did not run | Actual task ID from the list, configured local time, switches and execution receipts; missed times are not replayed in bulk |
 | Memory identifies the wrong owner | Do not copy another person's prompts or database; inspect provenance and scope using the [privacy guide](privacy.en.md) |
 | QR scanned but verify fails | Continue the existing pending-verification flow using the local login tool and check account ownership; do not disclose cookies or start parallel QR flows repeatedly |
 
@@ -139,4 +139,4 @@ Test text, weather, authorized group scopes, a period under screen lock and netw
 
 ## 9. Optional: private archives and mailbox connection
 
-After text chat is stable, follow the [0.7.1 guide](cold-memory.en.md) for archives, recollection and nightly diaries. Keep computer ADB heartbeat settings outside the repository. The initial nightly time is 05:00 Hong Kong; update existing timetable tasks rather than duplicating them. Missing heartbeat or recent chat causes a skip, not necessarily a fault. This does not automatically wake Codex.
+After text chat is stable, follow the [0.7.1 guide](cold-memory.en.md) for archives, recollection and nightly diaries. Keep computer ADB heartbeat settings outside the repository. The initial nightly time is 05:00 local; update existing timetable tasks rather than duplicating them. Missing heartbeat or recent chat causes a skip, not necessarily a fault. This does not automatically wake Codex.

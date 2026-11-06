@@ -10,7 +10,7 @@
 先读取仓库 README、docs/getting-started.md、docs/release-0.7.0.md、
 docs/privacy.md 和验证说明，再检查我的实际环境与版本。
 先备份已有配置，避免覆盖正在运行的QQ或启动第二份NapCat。
-第一阶段只做NapCat+AstrBot的QQ文字聊天；第二阶段只装主插件并测试香港天气；
+第一阶段只做NapCat+AstrBot的QQ文字聊天；第二阶段只装主插件并测试默认城市天气；
 后续逐项配置授权范围，再处理时间表、B站、云端记忆及可选语音识别。
 明确标注每条命令在原生Termux、Ubuntu还是电脑终端执行，使用实际路径。
 不要复制作者身份、私人配置或记忆；不要把仓库根目录当单个插件安装。

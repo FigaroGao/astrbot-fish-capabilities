@@ -1,5 +1,7 @@
 # 小鲸 · AstrBot 大肥鱼能力扩展
 
+城市、学校与时区均由使用者配置，见[通用部署设置](docs/generic-settings.md)。公开包不含个人学校域名或默认天气城市。
+
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
 **0.9.0** · 让QQ、B站和自主活动共用一套主脑。可部署在兼容的ARM64安卓平板或电脑上，模型使用云端API；DSH、Codex等辅助部署和维护，日常运行不需要它们持续连接。
@@ -64,10 +66,10 @@ flowchart LR
 | [fish-memory](docs/capabilities.md#fish-memory) | 记忆与时间线 | 长期记忆适配、冷档、纠错、活动索引 | [指南](docs/memory.md) | [源码](astrbot_plugin_fish_capabilities/services/memory_editor.py) |
 | [fish-bili](docs/capabilities.md#fish-bili) | B站 | 选片、视频理解、话题、评论与动态 | [指南](docs/bili-social.md) | [源码](astrbot_plugin_fish_capabilities/services/bilibili.py) |
 | [fish-val](docs/capabilities.md#fish-val) | 掌瓦 | 微信绑定、战绩、增量记录与每日商店 | [指南](docs/new-capabilities.md) | [源码](astrbot_plugin_fish_capabilities/services/valorant.py) |
-| [fish-canvas](docs/capabilities.md#fish-canvas) | 课程与Canvas | CityU课程、作业、公告与个人进度 | [指南](docs/update-20261029.md) | [源码](astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-canvas](docs/capabilities.md#fish-canvas) | 课程与Canvas | 学校课程、作业、公告与个人进度 | [指南](docs/update-20261029.md) | [源码](astrbot_plugin_fish_capabilities/services/course_context.py) |
 | [fish-tasks](docs/capabilities.md#fish-tasks) | 统一时间表 | 自然语言提醒、定时刷站与维护任务 | [指南](docs/release-0.7.0.md) | [源码](astrbot_plugin_fish_capabilities/services/timetable.py) |
 | [fish-meme](docs/capabilities.md#fish-meme) | 表情与语气 | 分类图库、发送机会、表达参考与诊断 | [指南](docs/memes.md) | [源码](astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
-| [fish-weather](docs/capabilities.md#fish-weather) | 天气等日常工具 | 香港天气、授权群记录等确定性查询 | [指南](docs/getting-started.md) | [源码](astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-weather](docs/capabilities.md#fish-weather) | 天气等日常工具 | 默认城市天气、授权群记录等确定性查询 | [指南](docs/getting-started.md) | [源码](astrbot_plugin_fish_capabilities/services/weather.py) |
 | [fish-speech](docs/capabilities.md#fish-speech) | 语音 | 语音识别与可选TTS适配 | [指南](docs/update-20261031.md) | [源码](astrbot_plugin_fish_capabilities/services/asr.py) |
 | [fish-mail](docs/capabilities.md#fish-mail) | 信箱 | 本地留言、回信、已读与连接状态 | [指南](docs/cold-memory.md) | [源码](astrbot_plugin_fish_capabilities/services/sister_mail.py) |
 | [fish-recovery](docs/capabilities.md#fish-recovery) | QQ恢复 | 独立恢复器、有限重登与人工验证停止 | [指南](docs/recovery.md) | [源码](recovery/) |

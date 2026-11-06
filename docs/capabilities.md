@@ -13,10 +13,10 @@ fish-val、fish-bili等是功能导航名，不是独立插件包。多数能力
 | [fish-memory](#fish-memory) | 记忆与时间线 | 长期记忆适配、冷档、纠错、活动索引 | [指南](memory.md) | [源码](../astrbot_plugin_fish_capabilities/services/memory_editor.py) |
 | [fish-bili](#fish-bili) | B站 | 选片、视频理解、话题、评论与动态 | [指南](bili-social.md) | [源码](../astrbot_plugin_fish_capabilities/services/bilibili.py) |
 | [fish-val](#fish-val) | 掌瓦 | 微信绑定、战绩、增量记录与每日商店 | [指南](new-capabilities.md) | [源码](../astrbot_plugin_fish_capabilities/services/valorant.py) |
-| [fish-canvas](#fish-canvas) | 课程与Canvas | CityU课程、作业、公告与个人进度 | [指南](update-20261029.md) | [源码](../astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-canvas](#fish-canvas) | 课程与Canvas | 学校课程、作业、公告与个人进度 | [指南](update-20261029.md) | [源码](../astrbot_plugin_fish_capabilities/services/course_context.py) |
 | [fish-tasks](#fish-tasks) | 统一时间表 | 自然语言提醒、定时刷站与维护任务 | [指南](release-0.7.0.md) | [源码](../astrbot_plugin_fish_capabilities/services/timetable.py) |
 | [fish-meme](#fish-meme) | 表情与语气 | 分类图库、发送机会、表达参考与诊断 | [指南](memes.md) | [源码](../astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
-| [fish-weather](#fish-weather) | 天气等日常工具 | 香港天气、授权群记录等确定性查询 | [指南](getting-started.md) | [源码](../astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-weather](#fish-weather) | 天气等日常工具 | 默认城市天气、授权群记录等确定性查询 | [指南](getting-started.md) | [源码](../astrbot_plugin_fish_capabilities/services/weather.py) |
 | [fish-speech](#fish-speech) | 语音 | 语音识别与可选TTS适配 | [指南](update-20261031.md) | [源码](../astrbot_plugin_fish_capabilities/services/asr.py) |
 | [fish-mail](#fish-mail) | 信箱 | 本地留言、回信、已读与连接状态 | [指南](cold-memory.md) | [源码](../astrbot_plugin_fish_capabilities/services/sister_mail.py) |
 | [fish-recovery](#fish-recovery) | QQ恢复 | 独立恢复器、有限重登与人工验证停止 | [指南](recovery.md) | [源码](../recovery/) |
@@ -69,7 +69,7 @@ fish-val、fish-bili等是功能导航名，不是独立插件包。多数能力
 
 ## fish-canvas · 课程与Canvas
 
-CityU课程、作业、公告与个人进度。
+学校课程、作业、公告与个人进度。
 
 [下载来源](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [主插件](../astrbot_plugin_fish_capabilities/) → [配置与使用](update-20261029.md)
 
@@ -95,7 +95,7 @@ CityU课程、作业、公告与个人进度。
 
 ## fish-weather · 天气等日常工具
 
-香港天气、授权群记录等确定性查询。
+默认城市天气、授权群记录等确定性查询。
 
 [下载来源](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [主插件](../astrbot_plugin_fish_capabilities/) → [配置与使用](getting-started.md)
 

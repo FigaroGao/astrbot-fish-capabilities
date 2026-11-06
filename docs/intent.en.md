@@ -8,7 +8,7 @@ The bridge observes incoming group messages, wraps the original `_process_messag
 
 Ordinary messages wait for 20 seconds of quiet, with at most 60 seconds of continuous activity, using the latest 20 bounded group messages. Intent decisions time out after 12 seconds and fail silently, at least 30 seconds apart. They receive no private memory, image URLs, or tools. The original main model generates approved replies.
 
-Spontaneous replies default to 180 seconds after the last reply, 6 rounds/hour and 20/day, with Hong Kong day boundaries. Direct mentions, replies to the bot, and recognized explicit meme requests take the direct path. Busy-time ordinary messages merge; direct requests retain only the latest entry point while older messages remain in the bounded snapshot. Bubbles do not count as new rounds.
+Spontaneous replies default to 180 seconds after the last reply, 6 rounds/hour and 20/day, with local day boundaries. Direct mentions, replies to the bot, and recognized explicit meme requests take the direct path. Busy-time ordinary messages merge; direct requests retain only the latest entry point while older messages remain in the bounded snapshot. Bubbles do not count as new rounds.
 
 Disable AstrBot built-in spontaneous replies and GCP independent proactive topics to avoid multiple controllers. When intent_enabled is true, original 5%/8% fallback probabilities do not participate. Set intent_provider_id to an available compatible provider.
 

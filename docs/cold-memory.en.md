@@ -2,7 +2,7 @@
 
 [中文](cold-memory.md)
 
-This release extends 0.7.0 with an owner-private text archive, cue-based recollection, editable diaries and passive computer/tablet connection status. Original-device chats, diaries, letters, databases, device serials and startup configuration are excluded. The reference tablet's existing nightly task has been changed through the unified timetable to **05:00 Hong Kong time daily**.
+This release extends 0.7.0 with an owner-private text archive, cue-based recollection, editable diaries and passive computer/tablet connection status. Original-device chats, diaries, letters, databases, device serials and startup configuration are excluded. The reference tablet's existing nightly task has been changed through the unified timetable to **05:00 configured local time daily**.
 
 ## 1. Upgrade and enablement
 
@@ -51,13 +51,13 @@ This route connects a computer to a tablet over ADB. If AstrBot itself runs on t
 
 Only text from the bound owner's private chat is captured, with the current persona resolved using framework session override, conversation and default-persona precedence. User messages, generated model text and background text handed to transport have separate provenance; generation is not a QQ delivery receipt. Voice contributes existing transcripts only, not audio originals; image originals are excluded. Tool returns, hidden reasoning, QQ login directories and account-interface records are not imported.
 
-Data stays under the private plugin directory `cold-memory/`, organized by Hong Kong date. Text is split into chunks of at most 1,200 characters, checked using SHA256 and appended without replacing originals. Content permissions are 0400, index 0600 and directories 0700. The index supports explicit keyword lookup, is not registered as ordinary vector memory and does not load the full archive every turn. Recognized keys, passwords, cookies and authorization URLs are filtered before storage; automatic filtering cannot identify every secret format, so credentials should still not be sent as ordinary chat.
+Data stays under the private plugin directory `cold-memory/`, organized by local date. Text is split into chunks of at most 1,200 characters, checked using SHA256 and appended without replacing originals. Content permissions are 0400, index 0600 and directories 0700. The index supports explicit keyword lookup, is not registered as ordinary vector memory and does not load the full archive every turn. Recognized keys, passwords, cookies and authorization URLs are filtered before storage; automatic filtering cannot identify every secret format, so credentials should still not be sent as ordinary chat.
 
 On the reference device, 24 text messages still present in the database were saved into 25 chunks at that time. **Already-lost history was not recovered, and other installations do not automatically import history.** Old records lacking individual timestamps use `import_snapshot`: the directory date is the import date, not when those words were spoken. Records whose persona was resolved at import also retain that limitation. This release does not provide a one-click importer for arbitrary databases, avoiding incorrect session and identity binding.
 
 ## 5. Cue-based recollection and diary correction
 
-The owner can privately ask “Find my earlier words about this” or “This summary seems different from what I said.” The model uses `fish_recall(operation="search", query="specific keywords", limit=2)` to retrieve one or two excerpts. Each is at most 1,200 characters, with five minutes between queries, no repetition of a cue within one hour and at most twelve queries per Hong Kong day. Search itself needs no cloud embedding, but **the selected excerpts enter the current cloud-model request**; this is not a guarantee that nothing leaves the device.
+The owner can privately ask “Find my earlier words about this” or “This summary seems different from what I said.” The model uses `fish_recall(operation="search", query="specific keywords", limit=2)` to retrieve one or two excerpts. Each is at most 1,200 characters, with five minutes between queries, no repetition of a cue within one hour and at most twelve queries per local day. Search itself needs no cloud embedding, but **the selected excerpts enter the current cloud-model request**; this is not a guarantee that nothing leaves the device.
 
 `operation="diaries"` returns at most three private diaries. `correct_diary` requires an actual ID, version, complete replacement text up to 600 characters and at least four characters quoted from the owner's current explicit correction. An independent model reviews the evidence, then an audit is retained and the version updated. Original archive text is unchanged.
 
@@ -65,9 +65,9 @@ Originals establish what was said then; current explicit corrections and reliabl
 
 ## 6. Nightly recollection at 05:00
 
-On first enablement, the unified timetable registers `memory_dream` with default cron `0 5 * * *`, timezone Asia/Hong_Kong. The reference tablet's existing 03:30 task was updated directly to 05:00 without creating a duplicate. **Upgrades do not overwrite migrated tasks**. Earlier preview installations should list the timetable privately and update the existing nightly task rather than creating another.
+On first enablement, the unified timetable registers `memory_dream` with default cron `0 5 * * *`, timezone Etc/GMT-8. The reference tablet's existing 03:30 task was updated directly to 05:00 without creating a duplicate. **Upgrades do not overwrite migrated tasks**. Earlier preview installations should list the timetable privately and update the existing nightly task rather than creating another.
 
-Execution is limited to 03:00–08:00 Hong Kong time, a valid computer heartbeat and no realtime owner chat in the preceding thirty minutes. Recent chat or no old material causes a skip. These are night/quiet conditions, not a determination that a person is actually asleep.
+Execution is limited to 03:00–08:00 configured local time, a valid computer heartbeat and no realtime owner chat in the preceding thirty minutes. Recent chat or no old material causes a skip. These are night/quiet conditions, not a determination that a person is actually asleep.
 
 At most one model attempt occurs per night, selecting at most three unused old excerpts and producing a diary up to 600 characters with a 500-token model output cap. Sources require actual excerpt IDs and short quotations checked verbatim. Timeout, cancellation, invalid format or mismatched sources do not trigger repeated attempts; reloading does not clear the night's reservation. It does not wake the computer, display popups or send QQ messages. `fish_tasks` can pause, update, resume or cancel it, with the night gate still applying after time changes.
 

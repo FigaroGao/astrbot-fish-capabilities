@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "fish-capabilities-draft"
 version = "0.9.0"
 requires-python = ">=3.11"
-dependencies = ["audioop-lts; python_version >= '3.13'"]
+dependencies = ["audioop-lts; python_version >= '3.13'", "tzdata>=2024.1"]
 
 [project.optional-dependencies]
 bilibili = ["bilibili-api-python==17.4.1", "aiohttp>=3.9,<4", "Pillow>=10,<12", "qrcode>=7.4,<9"]

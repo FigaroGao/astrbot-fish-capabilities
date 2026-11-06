@@ -3,6 +3,8 @@ import asyncio
 import base64
 import json
 import re
+from datetime import datetime
+from .local_time import local_zone, zone_name
 from .capability_registry import catalog
 from .observability import replay
 from .policy import CapabilityError
@@ -49,6 +51,7 @@ class CompanionPage:
             request=current_request()
             scope=self.scope(query_values(request).get('scope',''))
             return {'status':'ok','data':{'scope':scope,'scopes':self.scopes(),
+                'local_time':datetime.now(local_zone(self.cap.config)).isoformat(),'local_timezone':zone_name(self.cap.config),
                 'notes':self.runtime.learning.list(scope,limit=100),'feedback':self.runtime.learning.feedback_hints(scope),
                 'recall_traces':self.runtime.learning.traces(scope),'videos':self.runtime.shelf(),
                 'timeline':self.cap.timeline.search('',20),'usage':self.runtime.usage(),

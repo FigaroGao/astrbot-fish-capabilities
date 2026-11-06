@@ -12,11 +12,11 @@ from test_astrbot_binding import plugin, Event
 from test_bili_activity import make
 
 CONFIG = {'initiative_start_hour':10,'initiative_end_hour':3,'initiative_interval_minutes':30,'background_poll_seconds':600}
-HK = timezone(timedelta(hours=8))
+LOCAL_ZONE = timezone(timedelta(hours=8))
 
 
 def stamp(hour, minute=0, day=25):
-    return datetime(2026,10,day,hour,minute,tzinfo=HK).timestamp()
+    return datetime(2026,10,day,hour,minute,tzinfo=LOCAL_ZONE).timestamp()
 
 
 @pytest.mark.parametrize('hour,minute,allowed',[(9,59,False),(10,0,True),(23,59,True),(0,0,True),(2,59,True),(3,0,False)])

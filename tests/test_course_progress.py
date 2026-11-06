@@ -32,7 +32,7 @@ async def test_private_owner_authorization_and_current_speech(plugin):
 def test_confirmed_schedule_weekday_alias_and_missing(tmp_path):
     p=CourseProgress(tmp_path/'c.db')
     assert not p.schedule()['confirmed']
-    data={'semester':'fixture','timezone':'Asia/Hong_Kong','confirmed_by_owner_on':'2026-10-29','lectures':[{'course':'CS1234','name':'生成式AI／GAI','weekday':1,'start':'20:00','end':'21:50','room':'fixture'},{'course':'CS5678','name':'可解释AI／XAI','weekday':3,'start':'19:00','end':'20:50','room':'fixture'}]}
+    data={'semester':'fixture','timezone':'Etc/GMT-8','confirmed_by_owner_on':'2026-10-29','lectures':[{'course':'CS1234','name':'生成式AI／GAI','weekday':1,'start':'20:00','end':'21:50','room':'fixture'},{'course':'CS5678','name':'可解释AI／XAI','weekday':3,'start':'19:00','end':'20:50','room':'fixture'}]}
     p.path.with_name('owner-lecture-schedule.private.json').write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
     assert len(p.schedule()['lectures'])==2
     assert p.schedule('周三几点上课')['lectures'][0]['course']=='CS5678'

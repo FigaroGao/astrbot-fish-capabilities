@@ -30,7 +30,7 @@ class Event:
     ('/help',False,False,True),('/unknown',False,False,True),('  /reset',False,True,True),
     ('#new',False,False,True),('!reset',False,False,True),('／help',False,False,True),
     ('help',True,False,True),('help',False,True,True),('help',False,False,False),
-    ('香港天气如何',False,True,False),('为什么 /help 不可用',True,False,False),
+    ('默认城市天气如何',False,True,False),('为什么 /help 不可用',True,False,False),
     ('https://example.com',False,False,False)])
 def test_owner_only_command_detection(text,private,mention,blocked):
     gate=CommandGate(['owner'],['qq-fish'])
@@ -53,6 +53,6 @@ async def test_gate_precedes_parsing_and_is_reversible():
     assert calls==[]
     await Stage().process(Event('/help',owner=True))
     assert calls==['/help']
-    await Stage().process(Event('香港天气如何'))
-    assert calls[-1]=='香港天气如何'
+    await Stage().process(Event('默认城市天气如何'))
+    assert calls[-1]=='默认城市天气如何'
     uninstall();assert Stage.process is original

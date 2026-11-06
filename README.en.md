@@ -1,5 +1,7 @@
 # Xiaojing · AstrBot Fish Capabilities
 
+Configure your own city, school and timezone: see [generic deployment settings](docs/generic-settings.en.md). The public package includes no personal school hostname or default weather city.
+
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
 **0.9.0** · Shared Brain Core for QQ, Bilibili and autonomous companionship. Deploy on a compatible ARM64 Android tablet or computer; model APIs can run in the cloud. Coding assistants are deployment/maintenance aids and do not need to stay connected for normal operation.
@@ -64,10 +66,10 @@ flowchart LR
 | [fish-memory](docs/capabilities.en.md#fish-memory) | Memory and timeline | Long-term integration, archives, corrections and activity indexes | [Guide](docs/memory.en.md) | [Source](astrbot_plugin_fish_capabilities/services/memory_editor.py) |
 | [fish-bili](docs/capabilities.en.md#fish-bili) | Bilibili | Selection, video understanding, topics, comments and dynamics | [Guide](docs/bili-social.en.md) | [Source](astrbot_plugin_fish_capabilities/services/bilibili.py) |
 | [fish-val](docs/capabilities.en.md#fish-val) | Mainland VALORANT | WeChat binding, records, incremental sync and daily shop | [Guide](docs/new-capabilities.en.md) | [Source](astrbot_plugin_fish_capabilities/services/valorant.py) |
-| [fish-canvas](docs/capabilities.en.md#fish-canvas) | Courses and Canvas | CityU courses, assignments, announcements and personal progress | [Guide](docs/update-20261029.en.md) | [Source](astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-canvas](docs/capabilities.en.md#fish-canvas) | Courses and Canvas | School courses, assignments, announcements and personal progress | [Guide](docs/update-20261029.en.md) | [Source](astrbot_plugin_fish_capabilities/services/course_context.py) |
 | [fish-tasks](docs/capabilities.en.md#fish-tasks) | Unified schedule | Natural-language reminders, browsing and maintenance schedules | [Guide](docs/release-0.7.0.en.md) | [Source](astrbot_plugin_fish_capabilities/services/timetable.py) |
 | [fish-meme](docs/capabilities.en.md#fish-meme) | Memes and expression | Categorized library, sending opportunities, style references and diagnostics | [Guide](docs/memes.en.md) | [Source](astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
-| [fish-weather](docs/capabilities.en.md#fish-weather) | Weather and daily tools | Hong Kong weather and authorized group-record queries | [Guide](docs/getting-started.en.md) | [Source](astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-weather](docs/capabilities.en.md#fish-weather) | Weather and daily tools | configured-city weather and authorized group-record queries | [Guide](docs/getting-started.en.md) | [Source](astrbot_plugin_fish_capabilities/services/weather.py) |
 | [fish-speech](docs/capabilities.en.md#fish-speech) | Speech | Speech recognition and optional TTS adapters | [Guide](docs/update-20261031.en.md) | [Source](astrbot_plugin_fish_capabilities/services/asr.py) |
 | [fish-mail](docs/capabilities.en.md#fish-mail) | Mailbox | Local letters, replies, read receipts and connection status | [Guide](docs/cold-memory.en.md) | [Source](astrbot_plugin_fish_capabilities/services/sister_mail.py) |
 | [fish-recovery](docs/capabilities.en.md#fish-recovery) | QQ recovery | Separate recovery manager, bounded relogin and verification stop | [Guide](docs/recovery.en.md) | [Source](recovery/) |

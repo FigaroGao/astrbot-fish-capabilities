@@ -1,4 +1,5 @@
 """Read-only activity center, selected-live watch and reviewed daily text posts."""
+from .local_time import local_zone, zone_name
 from .brain import AttentionDeferred
 import asyncio
 import hashlib
@@ -11,7 +12,6 @@ from .bili_social import uid
 from .policy import CapabilityError
 from .timing import activity_timing, poll_interval, poll_delay
 
-HK=timezone(timedelta(hours=8))
 
 
 class ActivityBackend:
@@ -140,13 +140,13 @@ class BiliActivity:
         async with self.lock:
             await self.identity()
             await self.review.gate('dynamic',{'source':source},text,{'purpose':'小鲸自己的普通碎碎念；不是向公众披露主人私事'})
-            account,now=self.account(),self.clock();day=datetime.fromtimestamp(now,HK).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+            account,now=self.account(),self.clock();day=datetime.fromtimestamp(now,local_zone(self.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
             key=hashlib.sha256((account+':'+text).encode()).hexdigest()
             with self.reader.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 if db.execute("SELECT 1 FROM bili_dynamic_posts WHERE account=? AND state IN ('pending','uncertain')",(account,)).fetchone():raise CapabilityError('已有动态发送结果不确定，暂停，不补发。')
                 if db.execute('SELECT 1 FROM bili_dynamic_posts WHERE id=?',(key,)).fetchone():raise CapabilityError('这条动态已尝试，不重复。')
-                if db.execute('SELECT 1 FROM bili_dynamic_posts WHERE account=? AND stamp>=?',(account,day)).fetchone():raise CapabilityError('香港时间今天已经尝试过一条动态。')
+                if db.execute('SELECT 1 FROM bili_dynamic_posts WHERE account=? AND stamp>=?',(account,day)).fetchone():raise CapabilityError('配置时区今天已经尝试过一条动态。')
                 db.execute('INSERT INTO bili_dynamic_posts VALUES(?,?,?,?,?,?)',(key,account,now,'pending','',text))
             try:
                 receipt=await asyncio.wait_for(self.backend.post(text),25)
@@ -193,7 +193,7 @@ class BiliActivity:
             if last is not None and now-last<timing['interval_seconds']:return {'state':'already_thought'}
             db.execute('INSERT INTO bili_dynamic_thoughts VALUES(?,?,?,?,?)',(self.account(),slot,now,activity,'reserved'))
         try:
-            result=await self.generate(dict(context,current_hong_kong_time=local.isoformat(),posting_is_optional=True))
+            result=await self.generate(dict(context,current_local_time=local.isoformat(),posting_is_optional=True))
             if not isinstance(result,dict) or result.get('post') is not True:return {'state':'chose_silence'}
             text=result.get('text')
             if not isinstance(text,str) or not 1<=len(text.strip())<=180:raise CapabilityError('动态草稿长度不合适。')

@@ -1,6 +1,6 @@
 {
   "semester": "YOUR_SEMESTER",
-  "timezone": "Asia/Hong_Kong",
+  "timezone": "Etc/GMT-8",
   "confirmed_by_owner_on": "YYYY-MM-DD",
   "teaching_week_dates": null,
   "lectures": [

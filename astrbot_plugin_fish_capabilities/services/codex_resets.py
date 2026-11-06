@@ -9,6 +9,7 @@ import time
 import urllib.parse
 
 from .http import PublicJSON
+from .local_time import local_zone
 from .policy import CapabilityError
 
 HOST='codex.markets'
@@ -24,7 +25,7 @@ def timestamp(value):
     except (ValueError,OverflowError):return None
 
 
-def announcement(row):
+def announcement(row,config=None):
     if not isinstance(row,dict):raise CapabilityError('重置公告格式不可用。')
     ident=row.get('id');stamp=timestamp(row.get('announced_at'))
     if not isinstance(ident,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,96}',ident) or stamp is None:
@@ -36,13 +37,14 @@ def announcement(row):
     if not valid_url:url=''
     kind=row.get('reset_type')
     return {'id':ident,'reset_type':kind if kind in ('regular','banked','both') else 'unknown',
-            'announced_at':row['announced_at'],'announced_at_hk':datetime.fromtimestamp(stamp,timezone(timedelta(hours=8))).isoformat(),
+            'announced_at':row['announced_at'],'announced_at_local':datetime.fromtimestamp(stamp,local_zone(config)).isoformat(),
             'text':str(row.get('text') or '')[:2000],'translated':row.get('translated') is True,
             'source':{'type':str(source.get('type','unknown'))[:40],'url':url}}
 
 
 class CodexResets:
-    def __init__(self,path,transport=None,clock=time.time):
+    def __init__(self,path,transport=None,clock=time.time,config=None):
+        self.config=config if config is not None else {}
         self.path=path;self.http=transport or PublicJSON(max_bytes=200_000,timeout=12);self.clock=clock
         self.lock=asyncio.Lock();self.poll_lock=asyncio.Lock()
         with self.db() as db:
@@ -96,7 +98,7 @@ class CodexResets:
     async def status(self):
         raw,cached,failed,fetched=await self.fetch('/status');data=raw.get('data')
         if not isinstance(data,dict):raise CapabilityError('重置状态格式不可用。')
-        latest=announcement(data['latest_reset']) if data.get('latest_reset') else None
+        latest=announcement(data['latest_reset'],self.config) if data.get('latest_reset') else None
         return dict(self.metadata(raw,cached,failed,fetched),latest_reset=latest,
                     stats=data.get('stats') if isinstance(data.get('stats'),dict) else {},
                     scheduled_reset_present=bool(data.get('scheduled_reset')),
@@ -111,13 +113,13 @@ class CodexResets:
         if not isinstance(raw.get('data'),list):raise CapabilityError('重置历史格式不可用。')
         pagination=raw.get('pagination') or {};pagination=pagination if isinstance(pagination,dict) else {}
         nxt=pagination.get('next_cursor')
-        return dict(self.metadata(raw,cached,failed,fetched),announcements=[announcement(r) for r in raw['data'][:limit]],
+        return dict(self.metadata(raw,cached,failed,fetched),announcements=[announcement(r,self.config) for r in raw['data'][:limit]],
                     has_more=pagination.get('has_more') is True,next_cursor=nxt if isinstance(nxt,str) and len(nxt)<=500 else None)
 
     async def detail(self,ident):
         if not isinstance(ident,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,96}',ident):raise CapabilityError('请使用查询结果中的公告ID。')
         raw,cached,failed,fetched=await self.fetch('/'+ident)
-        row=announcement(raw.get('data'))
+        row=announcement(raw.get('data'),self.config)
         if row['id']!=ident:raise CapabilityError('公告编号不匹配。')
         return dict(self.metadata(raw,cached,failed,fetched),announcement=row)
 
@@ -144,7 +146,7 @@ class CodexResets:
                 if db.execute('SELECT 1 FROM notices WHERE id=?',(latest['id'],)).fetchone():return {'state':'already_claimed','sent':False}
                 db.execute("INSERT INTO notices VALUES(?,?,'reserved')",(latest['id'],now))
             label={'regular':'额度重置','banked':'备用重置额度补发','both':'额度重置及备用额度补发'}.get(latest['reset_type'],'重置相关消息')
-            message=f"刚查到一条Codex{label}的公开公告，公告时间是香港时间{latest['announced_at_hk']}。\n来源是codex.markets；还没有核对你的个人账号是否到账。"
+            message=f"刚查到一条Codex{label}的公开公告，公告时间是配置时区{latest['announced_at_local']}。\n来源是codex.markets；还没有核对你的个人账号是否到账。"
             if latest['source']['url']:message+='\n原公告：'+latest['source']['url']
             try:await deliver(message)
             except BaseException:

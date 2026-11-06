@@ -6,7 +6,9 @@ from datetime import datetime
 from types import SimpleNamespace as NS
 from unittest.mock import AsyncMock
 import pytest
-from astrbot_plugin_fish_capabilities.services.timetable import Timetable,HK
+from astrbot_plugin_fish_capabilities.services.timetable import Timetable
+from astrbot_plugin_fish_capabilities.services.local_time import local_zone
+LOCAL_ZONE=local_zone()
 from astrbot_plugin_fish_capabilities.services.activity_timeline import ActivityTimeline
 from astrbot_plugin_fish_capabilities.services.memory_editor import MemoryEditor
 from astrbot_plugin_fish_capabilities.services.policy import CapabilityError

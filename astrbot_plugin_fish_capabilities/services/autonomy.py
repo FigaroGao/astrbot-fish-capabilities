@@ -1,4 +1,5 @@
 """Completion-relative, durable serial activity loop. Never arbitrary agent code."""
+from .local_time import local_zone, zone_name
 import asyncio,json,sqlite3,time
 from contextlib import contextmanager
 from datetime import datetime,timedelta,timezone
@@ -22,7 +23,7 @@ class Autonomy:
             with db:yield db
         finally:db.close()
     def awake(self):
-        local=datetime.fromtimestamp(self.clock(),timezone(timedelta(hours=8)))
+        local=datetime.fromtimestamp(self.clock(),local_zone(self.config))
         start=int(self.config.get('initiative_start_hour',11));end=int(self.config.get('initiative_end_hour',4))
         return (start<=local.hour<end) if start<end else (local.hour>=start or local.hour<end)
     def status(self):
@@ -32,7 +33,7 @@ class Autonomy:
                 'recent':[dict(id=i,start=a,end=b,state=s,steps=json.loads(t)) for i,a,b,s,t in rows],
                 'instruction':'定时仅唤起选择，不代表一定活动或发言。完成后至少10分钟才下次判断；睡眠时不主动，主人消息照常回应。'}
     def daily_once(self,action):
-        day=datetime.fromtimestamp(self.clock(),timezone(timedelta(hours=8))).date().isoformat()
+        day=datetime.fromtimestamp(self.clock(),local_zone(self.config)).date().isoformat()
         with self.db() as db:
             try:db.execute('INSERT INTO daily VALUES(?,?,?)',(day,action,self.clock()));return True
             except sqlite3.IntegrityError:return False
@@ -67,7 +68,7 @@ class Autonomy:
                     if getattr(self,'brain',None) and not self.brain.available():
                         outcome='yielded_to_owner';break
                     prompt=('你是小鲸，现在醒来有一次自由活动机会，不是任务清单。允许安静，不为用满预算行动。每次选一项，最多连续3件有关联的事；做完的结果会给你再决定。'
-                        '动作quiet安静、bili逛B站、shelf看主人公开点赞收藏、recall按线索回忆、note写带依据的私人笔记、chat闲聊、question提问、learn查公开常识、weather香港天气、shop每日商店、matches同步新对局、meme查梗、review_notes翻自己的笔记。'
+                        '动作quiet安静、bili逛B站、shelf看主人公开点赞收藏、recall按线索回忆、note写带依据的私人笔记、chat闲聊、question提问、learn查公开常识、weather默认城市天气、shop每日商店、matches同步新对局、meme查梗、review_notes翻自己的笔记。'
                         'weather/shop每天至多一次；不要编造查询结果。聊天/提问尊重睡眠忙碌，不要求报备或索取回应。发现他打游戏可以俏皮，不能监视口吻、内疚施压或每局播报。'
                         '视频可以成为话题：先有自己的倾向，再自然问他玩没玩过或怎么看，别考人；不必介绍视频，但问起来源要诚实。'
                         'learn只查公开常识，不把主人的私事、账号、原话放进搜索词。shelf是公开兴趣线索，不等于赞同、不替代自己的兴趣。'

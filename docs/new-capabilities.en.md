@@ -12,7 +12,7 @@ After local QR login and account verification through tools/bili_login.py,enable
 
 fish_bili_followings returns up to6 own followings. fish_bili_up_videos reads recent public uploads by exact UID. Configure bili_owner_uid locally to default an empty UID to the owner. Verify ownership of the actual profile,not just a nickname. Candidates include uploader,duration,publication time,and available views; statistics do not establish quality,reposting,or clipping. Videos over10 minutes are not deeply read.
 
-Scheduling remains the configured Hong Kong12:30 and20:30 slots. Changing candidate sources adds no jobs. The model considers its existing interests and need not read the whole homepage; it may choose/share nothing. No automatic playback,likes,coins,or favorites are sent.
+Scheduling remains the configured local12:30 and20:30 slots. Changing candidate sources adds no jobs. The model considers its existing interests and need not read the whole homepage; it may choose/share nothing. No automatic playback,likes,coins,or favorites are sent.
 
 ## The owner's public shelf
 

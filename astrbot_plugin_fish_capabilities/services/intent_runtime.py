@@ -6,6 +6,7 @@ No second incoming-message listener and no independent QQ sender.
 """
 from __future__ import annotations
 
+from .local_time import local_zone, zone_name
 import asyncio
 import json
 import time
@@ -98,7 +99,7 @@ class IntentRuntime:
         if self.direct(event):self.latest_direct[scope]=self.revisions[scope]
 
     def eligible(self,scope,now):
-        day=datetime.fromtimestamp(now,timezone(timedelta(hours=8))).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        day=datetime.fromtimestamp(now,local_zone(self.cap.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
         with self.cap.ledger.connect() as db:
             last=db.execute('SELECT MAX(stamp) FROM intent_turns WHERE scope=?',(scope,)).fetchone()[0]
             hourly,daily=db.execute('SELECT COALESCE(SUM(stamp>?),0),COALESCE(SUM(stamp>=?),0) FROM intent_turns WHERE scope=? AND spontaneous=1', (now-3600,day,scope)).fetchone()

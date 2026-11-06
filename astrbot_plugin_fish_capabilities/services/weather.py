@@ -14,10 +14,10 @@ class Weather:
         self.http=transport or PublicJSON(); self.ttl=ttl
         self.cache=OrderedDict(); self.lock=asyncio.Lock()
 
-    async def get(self, city: str, *, country: str = 'CN', days: int = 3,
+    async def get(self, city: str, *, country: str = '', days: int = 3,
                   location_id: int | None = None) -> dict:
         bounded_int(days,1,3,'预报天数')
-        if not isinstance(city,str) or not 2<=len(city.strip())<=60 or not country.isalpha() or len(country)!=2:
+        if not isinstance(city,str) or not 2<=len(city.strip())<=60 or not isinstance(country,str) or (country and (not country.isalpha() or len(country)!=2)):
             raise CapabilityError('请提供具体城市；不会根据 IP 猜测所在地。')
         key=(city.strip(),country.upper(),days,location_id)
         async with self.lock:
@@ -25,14 +25,11 @@ class Weather:
             if cached and time.time()-cached[0]<self.ttl:
                 self.cache.move_to_end(key)
                 return dict(cached[1],cached=True)
-            if city.strip().casefold().replace(' ','') in {'香港','香港特别行政区','香港特別行政區','hongkong','hk'}:
-                # Explicitly chosen by the owner, not inferred from IP/location.
-                candidates=[{'id':1819729,'name':'香港','admin1':'香港特别行政区','country':'中国香港',
-                             'latitude':22.3193,'longitude':114.1694}]
-            else:
-                params=urllib.parse.urlencode({'name':city.strip(),'count':5,'language':'zh','format':'json','countryCode':country.upper()})
-                result=await self.http.get('https://geocoding-api.open-meteo.com/v1/search?'+params,{'geocoding-api.open-meteo.com'})
-                candidates=result.get('results',[])
+            values={'name':city.strip(),'count':5,'language':'zh','format':'json'}
+            if country:values['countryCode']=country.upper()
+            params=urllib.parse.urlencode(values)
+            result=await self.http.get('https://geocoding-api.open-meteo.com/v1/search?'+params,{'geocoding-api.open-meteo.com'})
+            candidates=result.get('results',[])
             if location_id is not None:
                 candidates=[x for x in candidates if x.get('id')==location_id]
             if not candidates: raise CapabilityError('没有找到这个城市，请补充省份或使用更明确的城市名。')

@@ -6,7 +6,7 @@ This release collects actual source changes after 0.6.0. Back up the plugin, con
 
 ## Unified timetable
 
-Enable `enabled` and `timetable_enabled`, bind the owner, administrator and platform, then request the timetable in owner-private chat. `fish_tasks` creates, updates, pauses, resumes or cancels tasks; modifications require an actual task ID returned by the list operation. The timezone is Hong Kong. Five-field cron and `at:ISO timestamp` are supported; arbitrary code is not executed.
+Enable `enabled` and `timetable_enabled`, bind the owner, administrator and platform, then request the timetable in owner-private chat. `fish_tasks` creates, updates, pauses, resumes or cancels tasks; modifications require an actual task ID returned by the list operation. The timezone is local. Five-field cron and `at:ISO timestamp` are supported; arbitrary code is not executed.
 
 | Reusable action | Purpose |
 | --- | --- |
@@ -17,7 +17,7 @@ Enable `enabled` and `timetable_enabled`, bind the owner, administrator and plat
 | bili_replies / owner_mentions | New replies to the bot's comments and owner mention notices |
 | live_watch / balance / review_notices | Selected streamer alerts, quiet balance sampling and pending-review questions |
 
-Examples: “Tell me Hong Kong weather and my daily shop at 10:30 every day,” “Remind me to submit homework tomorrow at 15:00,” or “Pause afternoon browsing.” The model should call the tool and report its successful receipt; saying “remembered” does not establish creation. Include a date and +08:00 in one-off timestamps instead of storing ambiguous words such as “tomorrow.”
+Examples: “Tell me configured-city weather and my daily shop at 10:30 every day,” “Remind me to submit homework tomorrow at 15:00,” or “Pause afternoon browsing.” The model should call the tool and report its successful receipt; saying “remembered” does not establish creation. Include a date and +08:00 in one-off timestamps instead of storing ambiguous words such as “tomorrow.”
 
 Scheduling reuses AstrBot's native scheduler, but tasks reside in this plugin's SQLite database and are not equivalent to native future_task rows. It replaces the old polling loops. Initial migration seeds tasks once; later configuration changes do not overwrite manual edits or recreate canceled tasks. The reference device browses at 12:30, 16:30 and 20:30; checks private initiative/status posts every 30 minutes from 10:00 until 03:00 the next day; and checks replies, streams, balance and similar tasks every ten minutes. These are not automatically enabled for every new installation. Configure and enable the desired capabilities, list tasks and adjust them individually.
 
@@ -49,6 +49,6 @@ Enable `asr_enabled` and point `asr_embedding_provider_id` at an existing local 
 
 Install `dashscope` in AstrBot's environment and provide FFmpeg and QQ voice decoding. Only direct voice messages from the owner privately or authorized groups are handled, limited to 180 seconds and a 20 MB source, converted into mono PCM WAV. Nested or multiple voice messages are outside this entry point. Recognition then continues through the existing quiet/intent flow rather than creating another chatbot. Disable duplicate native STT to avoid double billing.
 
-Local reservations allow 35,000 seconds per model per Hong Kong calendar month. This is this program's counter, not actual cloud balance or proof that free allocations add together. Enable free-quota-only protection yourself in the console. Model switching occurs only on local exhaustion or explicit free-quota rejection; unknown outcomes do not trigger repeated attempts across models. Scoped caches last 24 hours; the realtime SDK runs in a hard-timeout subprocess, while file routes use official temporary upload and bounded polling. TTS and console switches are not enabled.
+Local reservations allow 35,000 seconds per model per configured local calendar month. This is this program's counter, not actual cloud balance or proof that free allocations add together. Enable free-quota-only protection yourself in the console. Model switching occurs only on local exhaustion or explicit free-quota rejection; unknown outcomes do not trigger repeated attempts across models. Scoped caches last 24 hours; the realtime SDK runs in a hard-timeout subprocess, while file routes use official temporary upload and bounded polling. TTS and console switches are not enabled.
 
 `companionship_enabled` appends concrete, natural companionship guidance to reduce stock phrases, summaries and mechanical questions without replacing the main persona. Conservative private initiative defaults remain two messages daily and 10,800 seconds apart. Explicitly set `private_initiative_daily_limit=0` and `private_initiative_cooldown_seconds=0` to remove those two limits; half-hour decisions and busy-state avoidance remain. `intent_self_pause_enabled` lets intent decisions or a tool reuse the current group's 120-second quiet state without affecting private chat.

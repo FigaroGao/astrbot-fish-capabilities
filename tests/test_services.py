@@ -159,11 +159,11 @@ async def test_weather_ambiguous_requires_choice():
     assert (await weather.get('杭州',location_id=2))['location']['admin1']=='其他'
 
 
-async def test_hong_kong_explicit_default_does_not_geolocate():
-    http=WeatherHTTP();result=await Weather(http).get('香港',country='HK')
-    assert result['location']['name']=='香港'
-    assert len(http.calls)==1 and 'latitude=22.3193' in http.calls[0]
-    assert 'longitude=114.1694' in http.calls[0]
+async def test_explicit_city_uses_geocoding_not_ip():
+    http=WeatherHTTP();result=await Weather(http).get('杭州')
+    assert result['location']['name']=='杭州'
+    assert len(http.calls)==2 and 'geocoding' in http.calls[0]
+    assert 'latitude=30.2' in http.calls[1]
 
 
 @pytest.mark.parametrize('url',['http://api.open-meteo.com/x','https://127.0.0.1/x',

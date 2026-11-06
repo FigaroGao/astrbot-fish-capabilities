@@ -1,4 +1,4 @@
-"""Independent UTC+8 vision schedule; no global chat/provider mutation."""
+"""Independent provider UTC+08:00 pricing schedule; no global chat/provider mutation."""
 from datetime import datetime,timedelta,timezone
 from pathlib import Path
 from types import SimpleNamespace

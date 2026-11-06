@@ -1,4 +1,5 @@
 """Bounded on-device Bilibili jobs; model input is public material only."""
+from .local_time import local_zone, zone_name
 import asyncio
 from datetime import datetime, timezone, timedelta
 import json
@@ -7,7 +8,6 @@ import time
 import random
 from .character_atlas import compact_matches
 
-HK = timezone(timedelta(hours=8))
 
 def parsed(text):
     value = str(text).strip()
@@ -179,7 +179,7 @@ class BiliDuty:
 
     async def run(self):
         while True:
-            now = datetime.fromtimestamp(self.clock(),HK)
+            now = datetime.fromtimestamp(self.clock(),local_zone(self.config))
             configured = self.config.get('bili_schedule_times',['20:30'])
             times = list(dict.fromkeys(x for x in configured if isinstance(x,str) and re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d',x)))[:12]
             if now.strftime('%H:%M') in times:

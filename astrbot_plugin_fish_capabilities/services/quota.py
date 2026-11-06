@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .local_time import local_zone, zone_name
 import asyncio
 import json
 import time
@@ -13,28 +14,29 @@ from .policy import CapabilityError
 
 
 class Quota:
-    def __init__(self, config_path: Path, transport=None, *, state_path=None, stats_path=None, clock=time.time):
+    def __init__(self, config_path: Path, transport=None, *, state_path=None, stats_path=None, clock=time.time, config=None):
+        self.config=config if config is not None else {}
         self.path=config_path;self.transport=transport or self.fetch
         self.cached=None;self.lock=asyncio.Lock()
         self.state_path=state_path;self.stats_path=stats_path;self.clock=clock
 
     def usage(self, now):
-        tz=timezone(timedelta(hours=8))
+        tz=local_zone(self.config)
         day=datetime.fromtimestamp(now,tz).replace(hour=0,minute=0,second=0,microsecond=0)
-        result={'date':day.date().isoformat(),'timezone':'Asia/Hong_Kong',
+        result={'date':day.date().isoformat(),'timezone':zone_name(self.config),
                 'scope':'本 AstrBot 已记录的 DeepSeek 请求汇总；可能不含插件直接调用，不包含聊天内容',
                 'status':'unavailable'}
         if not self.stats_path or not self.stats_path.exists():return result
         try:
             with sqlite3.connect(self.stats_path.as_uri()+'?mode=ro',uri=True) as db:
                 row=db.execute('SELECT COUNT(*),COALESCE(SUM(token_input_other),0),COALESCE(SUM(token_input_cached),0),COALESCE(SUM(token_output),0) FROM provider_stats WHERE provider_id LIKE ? AND start_time>=? AND start_time<?',
-                    ('deepseek/%',day.timestamp(),min(now,day.timestamp()+86400))).fetchone()
+                    ('deepseek/%',day.timestamp(),min(now,(day+timedelta(days=1)).timestamp()))).fetchone()
             result.update(status='recorded',requests=row[0],input_uncached=row[1],input_cached=row[2],output=row[3],total_tokens=sum(row[1:]))
         except sqlite3.Error:pass
         return result
 
     def track(self, rows, now):
-        day=datetime.fromtimestamp(now,timezone(timedelta(hours=8))).date().isoformat()
+        day=datetime.fromtimestamp(now,local_zone(self.config)).date().isoformat()
         if not self.state_path:return {'status':'not_recording'}
         try:
             amounts={r['currency']:str(Decimal(r['total_balance'])) for r in rows}
@@ -49,7 +51,7 @@ class Quota:
             self.state_path.parent.mkdir(parents=True,exist_ok=True)
             temporary=self.state_path.with_suffix('.tmp');temporary.write_text(json.dumps(state));temporary.chmod(0o600);temporary.replace(self.state_path)
             return {'status':'balance_increased_unreliable' if record['increased'] else 'partial_day_net_change',
-                    'date':day,'timezone':'Asia/Hong_Kong','from':record['first_at'],'to':now,
+                    'date':day,'timezone':zone_name(self.config),'from':record['first_at'],'to':now,
                     'net_balance_decrease':[{'currency':c,'amount':str(Decimal(v)-Decimal(amounts.get(c,v)))} for c,v in record['opening'].items()],
                     'instruction':'仅今日首个采样至当前的账户余额净减少，不是官方今日账单，也不能归因给本机器人。今日首次采样前未知；采样间充值、赠额到期或其他程序消费会影响结果；不同币种不相加。检测到余额增加时不要把净减少当花费。'}
         except (ValueError,KeyError,TypeError,InvalidOperation,OSError):

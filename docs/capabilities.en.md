@@ -13,10 +13,10 @@ Names such as fish-val and fish-bili are navigation labels, not separate plugin 
 | [fish-memory](#fish-memory) | Memory and timeline | Long-term integration, archives, corrections and activity indexes | [Guide](memory.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/memory_editor.py) |
 | [fish-bili](#fish-bili) | Bilibili | Selection, video understanding, topics, comments and dynamics | [Guide](bili-social.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/bilibili.py) |
 | [fish-val](#fish-val) | Mainland VALORANT | WeChat binding, records, incremental sync and daily shop | [Guide](new-capabilities.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/valorant.py) |
-| [fish-canvas](#fish-canvas) | Courses and Canvas | CityU courses, assignments, announcements and personal progress | [Guide](update-20261029.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-canvas](#fish-canvas) | Courses and Canvas | School courses, assignments, announcements and personal progress | [Guide](update-20261029.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/course_context.py) |
 | [fish-tasks](#fish-tasks) | Unified schedule | Natural-language reminders, browsing and maintenance schedules | [Guide](release-0.7.0.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/timetable.py) |
 | [fish-meme](#fish-meme) | Memes and expression | Categorized library, sending opportunities, style references and diagnostics | [Guide](memes.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
-| [fish-weather](#fish-weather) | Weather and daily tools | Hong Kong weather and authorized group-record queries | [Guide](getting-started.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-weather](#fish-weather) | Weather and daily tools | configured-city weather and authorized group-record queries | [Guide](getting-started.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/weather.py) |
 | [fish-speech](#fish-speech) | Speech | Speech recognition and optional TTS adapters | [Guide](update-20261031.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/asr.py) |
 | [fish-mail](#fish-mail) | Mailbox | Local letters, replies, read receipts and connection status | [Guide](cold-memory.en.md) | [Source](../astrbot_plugin_fish_capabilities/services/sister_mail.py) |
 | [fish-recovery](#fish-recovery) | QQ recovery | Separate recovery manager, bounded relogin and verification stop | [Guide](recovery.en.md) | [Source](../recovery/) |
@@ -69,7 +69,7 @@ WeChat binding, records, incremental sync and daily shop.
 
 ## fish-canvas · Courses and Canvas
 
-CityU courses, assignments, announcements and personal progress.
+School courses, assignments, announcements and personal progress.
 
 [Download](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [Main plugin](../astrbot_plugin_fish_capabilities/) → [Setup guide](update-20261029.en.md)
 
@@ -95,7 +95,7 @@ Categorized library, sending opportunities, style references and diagnostics.
 
 ## fish-weather · Weather and daily tools
 
-Hong Kong weather and authorized group-record queries.
+configured-city weather and authorized group-record queries.
 
 [Download](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [Main plugin](../astrbot_plugin_fish_capabilities/) → [Setup guide](getting-started.en.md)
 

@@ -1,8 +1,8 @@
-"""Shared Hong Kong activity windows and inexpensive maintenance timing."""
+"""Shared local activity windows and inexpensive maintenance timing."""
+from .local_time import local_zone, zone_name
 from datetime import datetime, timedelta, timezone
 import time
 
-HK = timezone(timedelta(hours=8))
 
 
 def activity_timing(config, stamp):
@@ -12,7 +12,7 @@ def activity_timing(config, stamp):
     minutes = int(config.get('initiative_interval_minutes', 60))
     if not (0 <= start <= 23 and 0 <= end <= 23 and 1 <= minutes <= 1440):
         raise ValueError('Invalid activity schedule')
-    local = datetime.fromtimestamp(stamp, HK)
+    local = datetime.fromtimestamp(stamp, local_zone(config))
     allowed = (start <= local.hour < end) if start < end else (local.hour >= start or local.hour < end)
     if start == end:
         allowed = True
@@ -20,7 +20,7 @@ def activity_timing(config, stamp):
     slot = local.strftime('%Y-%m-%d ') + str(bucket)
     return {'local': local, 'allowed': allowed, 'slot': slot,
             'interval_seconds': minutes * 60,
-            'description': f'香港{start:02d}:00至'+('次日' if start > end else '')+f'{end:02d}:00，每{minutes}分钟最多判断一次'}
+            'description': f'{zone_name(config)} {start:02d}:00至'+('次日' if start > end else '')+f'{end:02d}:00，每{minutes}分钟最多判断一次'}
 
 
 def poll_interval(config):

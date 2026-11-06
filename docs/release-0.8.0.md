@@ -65,10 +65,10 @@
 
 `codex_resets_enabled`和`fish_codex_resets`提供主人私聊status/history/detail；固定HTTPS接口来自[codex.markets](https://codex.markets/docs/api)，不是OpenAI官方或个人额度。history限1–50条，详情可用已有中文翻译，不触发翻译模型。SQLite缓存15分钟及失败冷却。
 
-统一时间表`codex_resets`动作可设`*/15 * * * *`，首次静默基线，只提醒时间更新的新ID；同步须live、新鲜≤1小时、非stale且无错误。旧回填、未来异常忽略；发送前持久化预留，回执不明不自动重发，不保证exactly-once。分享包不携带参考任务库，不自动替陌生部署创建任务。参考平板已建一条香港时区任务，无旧公告/测试QQ通知。
+统一时间表`codex_resets`动作可设`*/15 * * * *`，首次静默基线，只提醒时间更新的新ID；同步须live、新鲜≤1小时、非stale且无错误。旧回填、未来异常忽略；发送前持久化预留，回执不明不自动重发，不保证exactly-once。分享包不携带参考任务库，不自动替陌生部署创建任务。参考平板已建一条配置时区任务，无旧公告/测试QQ通知。
 
 ## 升级、隐私及来源
 
-先备份源码与本机配置；在同一Python环境安装依赖，逐项合并schema开关，空闲时重载能力插件，不需要重启NapCat。角色图需另行授权准备，网页登录态、主人ID、人格、信箱、记忆、任务数据库及测试报告不上传。已有日程不会被分享示例覆盖，参考夜间回顾仍香港05:00。具体证据与HTTP412限制见[部署记录](deployment-20261027.md)。
+先备份源码与本机配置；在同一Python环境安装依赖，逐项合并schema开关，空闲时重载能力插件，不需要重启NapCat。角色图需另行授权准备，网页登录态、主人ID、人格、信箱、记忆、任务数据库及测试报告不上传。已有日程不会被分享示例覆盖，参考夜间回顾仍本地05:00。具体证据与HTTP412限制见[部署记录](deployment-20261027.md)。
 
 来源思路还包括[RememberYou](https://github.com/menglimi/astrbot_plugin_remember_you)、[WaveMemory](https://github.com/vivy1024/astrbot_plugin_wave_memory)、[Heartflow](https://github.com/advent259141/Astrbot_plugin_Heartflow)、[Aurabot](https://github.com/accomplish07zrh-eng/dsh-aurabot-qq)、[bili-humanism](https://github.com/InariNGT-Ofiicial/dsh-bili-humanism)、[Meme Manager](https://github.com/anka-afk/astrbot_plugin_meme_manager)、[Mnemon](https://github.com/omdsh-dev/dsh-mnemon)、[bili-pod](https://github.com/nullifyi/dsh-bili-pod)、[dsh-fish-tone](https://github.com/MX3a48c5/dsh-fish-tone)。新增服务独立实现，LivingMemory定制沿用上游许可；参考不表示代码或框架可直接互装。图像来源条件见资料卡，不由本项目AGPL覆盖。

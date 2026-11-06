@@ -1,3 +1,10 @@
+## 2026-11-06: Generic public package
+
+- Personal region/school references have been removed from current main-branch documentation, source, test fixtures and examples. Weather has no built-in personal city or coordinates; Canvas reads its locally bound origin; `local_timezone` configures the timezone. See [generic settings](generic-settings.en.md). Older Git commits were not rewritten.
+- Added 24 regressions covering settings, timezones/daylight saving, daily budgets, Canvas binding origins and token-output isolation, and empty-city queries making no network requests. The full `python -X utf8 -m pytest -q -rs tests` run reported **811 passed, 2 skipped**. Those two FFmpeg tests were skipped because its path was unset; both passed after selecting the existing local executable. The supplementary affected-test run passed all 33 tests; overlapping tests are not added to the full-suite total.
+- Tests use synthetic data, temporary directories and mocks, with no QQ/Bilibili test messages, real Canvas tokens or paid model calls. Local warnings were the existing audioop deprecation and the test framework's loop-scope configuration notice. Current-file keyword scanning and documentation-link checks passed.
+- This is a GitHub public-package update. No tablet connection or deployment occurred, personal settings/schedules/memories were not overwritten, and NapCat was not restarted.
+
 ## 2026-10-27: 0.8.0 integration
 
 Public 0.8.0 package verification: 588 passed, 0 skipped, including a real ffmpeg synthetic test and disabled/unbound shared-default checks; one existing audioop deprecation warning. New relative documentation links and known private-identity/key-pattern checks passed.

@@ -98,13 +98,13 @@
   },
   "weather_default_city": {
     "type": "string",
-    "description": "未指定地点时的默认城市",
-    "default": "香港"
+    "description": "默认城市，首次使用自行填写；空值时需要用户指定城市，不从IP推断",
+    "default": ""
   },
   "weather_default_country": {
     "type": "string",
-    "description": "默认城市的国家/地区代码",
-    "default": "HK"
+    "description": "可选两字母国家/地区代码；空值不按国家过滤，同名地点必须确认",
+    "default": ""
   },
   "owner_only_commands_enabled": {
     "type": "bool",
@@ -143,7 +143,7 @@
   },
   "intent_daily_limit": {
     "type": "int",
-    "description": "每群主动接话每日最多轮数，按香港时间，不含明确点名",
+    "description": "每群主动接话每日最多轮数，按配置时区，不含明确点名",
     "default": 20
   },
   "intent_timeout_seconds": {
@@ -173,12 +173,12 @@
   },
   "bili_schedule_enabled": {
     "type": "bool",
-    "description": "香港时间定时自主浏览，使用独立公开资料上下文，不读取私人记忆",
+    "description": "配置时区定时自主浏览，使用独立公开资料上下文，不读取私人记忆",
     "default": false
   },
   "bili_schedule_times": {
     "type": "list",
-    "description": "香港时间HH:MM；统一时间表启用时仅作首次迁移种子，之后通过fish_tasks修改实际任务；旧模式最多12个时间点。",
+    "description": "配置时区HH:MM；统一时间表启用时仅作首次迁移种子，之后通过fish_tasks修改实际任务；旧模式最多12个时间点。",
     "default": [
       "20:30"
     ]
@@ -385,7 +385,7 @@
   },
   "bili_dynamic_post_enabled": {
     "type": "bool",
-    "description": "普通文字动态发送，必须独立审核，香港每天最多尝试1条，结果不确定不重发",
+    "description": "普通文字动态发送，必须独立审核，本地每天最多尝试1条，结果不确定不重发",
     "default": false
   },
   "bili_dynamic_auto_enabled": {
@@ -400,12 +400,12 @@
   },
   "initiative_start_hour": {
     "type": "int",
-    "description": "主动私聊与自主动态允许开始的香港时间小时",
+    "description": "主动私聊与自主动态允许开始的配置时区小时",
     "default": 10
   },
   "initiative_end_hour": {
     "type": "int",
-    "description": "主动私聊与自主动态允许结束的香港时间小时；小于开始时间表示跨午夜，结束小时不包含",
+    "description": "主动私聊与自主动态允许结束的配置时区小时；小于开始时间表示跨午夜，结束小时不包含",
     "default": 3
   },
   "initiative_interval_minutes": {
@@ -425,7 +425,7 @@
   },
   "private_initiative_daily_limit": {
     "type": "int",
-    "description": "私聊主动发送的香港日历日上限，0不限制；不影响半小时判断和忙碌避让",
+    "description": "私聊主动发送的本地日历日上限，0不限制；不影响半小时判断和忙碌避让",
     "default": 2
   },
   "private_initiative_cooldown_seconds": {
@@ -496,7 +496,7 @@
   "memory_dream_enabled": {
     "type": "bool",
     "default": false,
-    "description": "统一时间表中的夜间私有回顾，默认香港03:30、电脑连接且近期无主人聊天才运行，每晚最多尝试一次，不发消息。"
+    "description": "统一时间表中的夜间私有回顾，默认本地03:30、电脑连接且近期无主人聊天才运行，每晚最多尝试一次，不发消息。"
   },
   "learning_enabled": {
     "type": "bool",
@@ -581,7 +581,7 @@
   },
   "bili_dynamic_daytime_enabled": {
     "type": "bool",
-    "description": "碎碎念限香港10–23点，自然日内分散机会，不在零点抢空预算；旧夜间语境过期。",
+    "description": "碎碎念限本地10–23点，自然日内分散机会，不在零点抢空预算；旧夜间语境过期。",
     "default": false
   },
   "bili_dynamic_reply_enabled": {
@@ -626,7 +626,12 @@
   },
   "canvas_enabled": {
     "type": "bool",
-    "description": "主人私聊只读查询城大Canvas；先在本机fish-canvas-login输入Token，不在聊天中提供。",
+    "description": "主人私聊只读查询学校Canvas；先在本机fish-canvas-login输入Token，不在聊天中提供。",
     "default": false
+  },
+  "local_timezone": {
+    "type": "string",
+    "description": "统一调度、活动窗口与本地日界；IANA名称或UTC±HH:MM。修改前检查已有任务，避免重复/错时执行。默认UTC+08:00。",
+    "default": "UTC+08:00"
   }
 }
