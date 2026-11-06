@@ -678,5 +678,10 @@
     "type": "string",
     "default": "",
     "description": "自动表达整理模型，留空复用bili_provider_id；不训练权重，不使用图像/工具。"
+  },
+  "private_photo_wait_seconds": {
+    "type": "int",
+    "default": 0,
+    "description": "主人私聊单发普通图片时等后续文字的秒数，0关闭，最多20秒；QQ标记的表情照常处理。"
   }
 }

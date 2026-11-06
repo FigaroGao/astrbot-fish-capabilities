@@ -136,5 +136,6 @@
   "self_regulation_enabled": false,
   "style_learning_enabled": false,
   "style_learning_daily_limit": 4,
-  "style_learning_provider_id": ""
+  "style_learning_provider_id": "",
+  "private_photo_wait_seconds": 0
 }

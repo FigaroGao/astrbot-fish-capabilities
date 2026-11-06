@@ -91,6 +91,8 @@ class FishCapabilities(Star):
         self.sister_mail=SisterMail(self.root/'sister-mail.sqlite3')
         from .services.self_regulation import SelfRegulation
         self.self_regulation=SelfRegulation(self.root/'self-regulation.private.sqlite3',config)
+        from .services.photo_caption import PhotoCaption
+        self.photo_caption=PhotoCaption()
         self.cold_memory=ColdMemory(self.root/'cold-memory',config=config)
         self.context_budget=ContextBudget(self.root/'context-summaries.sqlite3',self.summary_generate,coordination=context)
         self.timeline=ActivityTimeline(self.root/'activity-timeline.sqlite3')
@@ -807,6 +809,16 @@ class FishCapabilities(Star):
         if not persona or persona=='[%None]':raise CapabilityError('当前人格尚无法核验，原文暂不读取。')
         return scope,str(persona),str(cid)
 
+    @filter.event_message_type(filter.EventMessageType.ALL,priority=1200)
+    async def wait_for_photo_caption(self,event: AstrMessageEvent):
+        seconds=self.config.get('private_photo_wait_seconds',0)
+        if not (self.config.get('enabled') and seconds and event.is_private_chat()
+                and event.unified_msg_origin==self.config.get('bili_private_session')
+                and str(event.get_sender_id()) in list(map(str,self.config.get('owners',[])))
+                and str(event.get_platform_id()) in self.config.get('command_platform_ids',[])):
+            return
+        await self.photo_caption.observe(event,min(20,max(0,float(seconds))))
+
     @filter.event_message_type(filter.EventMessageType.ALL,priority=1100)
     async def capture_cold_user(self,event: AstrMessageEvent):
         if not self.config.get('enabled',False) or not self.config.get('cold_archive_enabled',False):return
@@ -1241,6 +1253,7 @@ class FishCapabilities(Star):
                 pass
 
     async def terminate(self):
+        self.photo_caption.close()
         self.companion.stop()
         if self.timetable:
             self.timetable.stop()
