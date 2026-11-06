@@ -117,3 +117,13 @@ class OwnerNotebook:
             if row[2]=='provisional' and (now-row[3]<7*86400 or not re.search(r'版本|最新|目前|当前|赛季|赛事|价格|今年|本周',row[0]+row[4])):return None
             db.execute('UPDATE study SET retry=? WHERE id=?',(now+86400,ident))
         return row
+
+    def correction_links(self,scope):
+        with self.db() as db:
+            study=db.execute("""SELECT v.body,s.body,s.updated FROM study_versions v JOIN study s ON s.id=v.id
+                WHERE s.scope=? AND s.state='corrected' AND v.state!='question' ORDER BY s.updated DESC LIMIT 300""",(scope,)).fetchall()
+            notes=db.execute("""WITH RECURSIVE chain(prev,final,stamp) AS (
+                SELECT previous,content,stamp FROM notes WHERE kind='correction' AND active=1 AND previous IS NOT NULL
+                UNION SELECT n.previous,c.final,c.stamp FROM notes n JOIN chain c ON n.id=c.prev WHERE n.previous IS NOT NULL)
+                SELECT n.content,c.final,c.stamp FROM notes n JOIN chain c ON n.id=c.prev ORDER BY c.stamp DESC LIMIT 300""").fetchall()
+        return [(old,new,stamp,'私人笔记') for old,new,stamp in study+notes]

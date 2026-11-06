@@ -78,3 +78,16 @@ class MemoryEditor:
                 raise
             with sqlite3.connect(self.path) as db:db.execute('UPDATE edits SET new_id=?,state=? WHERE id=?',(new_id,state,audit))
             return {'corrected':True,'old_id':ident,'new_id':new_id,'audit_id':audit,'indices_rebuilt':True}
+
+    def correction_links(self,scope,persona):
+        """Follow successful replacement IDs to the newest known version."""
+        with sqlite3.connect(self.path) as db:
+            rows=db.execute("SELECT old_id,new_id,before,after,stamp FROM edits WHERE scope=? AND persona=? AND state='completed' ORDER BY id DESC LIMIT 300",(scope,persona)).fetchall()
+        latest={}
+        links=[]
+        for old,new,before,after,stamp in rows:
+            final,at=latest.get(new,(after,stamp))
+            latest[old]=(final,at)
+            old_text=json.loads(before)['record'].get('text','')
+            links.append((old_text,final,at,'LivingMemory'))
+        return links
