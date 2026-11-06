@@ -85,3 +85,14 @@ class ToneDiagnostics:
             rows=db.execute('SELECT id,stamp,report FROM reports WHERE scope=? ORDER BY id DESC LIMIT ?',(scope,max(1,min(20,limit)))).fetchall()
         return {'records':[{'id':i,'at':stamp,**json.loads(raw)} for i,stamp,raw in rows],
                 'instruction':'仅本会话生成草稿的规则记录，不是送达回执；不保存原文，不自动改字。觉得哪句别扭，可到表达与观察保存具体建议。'}
+
+    def guidance(self,scope,context=''):
+        scene=scene_for(context)
+        if scene in ('steps','data','compare','explain'):return ''
+        rows=[r for r in self.recent(scope,5)['records'] if r['at']>=self.clock()-86400 and r['scene'] in ('chat','empathy','public')]
+        counts={code:sum(code in row.get('opening_codes',[]) for row in rows) for code in RULES}
+        repeated=[code for code,count in counts.items() if count>=2]
+        if not repeated:return ''
+        questions=[RULES[code][2] for code in repeated[:3]]
+        return ('[本会话近期表达提醒，非事实或强制禁词]\n'+ ' '.join(questions)+
+                '本轮先接对方的具体内容，不复用同一个开场框架；合适的认可、称呼和认真解释仍可保留。不要照着提醒逐项汇报，也不为换说法编造经历或加入口头禅。')

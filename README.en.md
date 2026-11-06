@@ -2,6 +2,8 @@
 
 [中文](README.md) | [English — full translation](README.en.md)
 
+Latest: [Brain Core integration and incremental fixes (November 6, 2026)](docs/brain-core.en.md). Covers cross-channel attention, explicit group requests, video-topic receipts, source and summary attribution, cancellation recovery, and expression-reference recall. Source and tests are synchronized; the tablet is disconnected, so this publication performs no new deployment.
+
 Latest: [November 2 autonomous activities, private notebook, public shelf, and offline meme dictionary](docs/autonomy-20261102.en.md), plus [peak-hour vision routing](docs/vision-peak-routing.en.md). Autonomous activities use a ten-minute cooldown after completion and an 11:00–04:00 Hong Kong activity window; normal chat remains available during rest. New capabilities default to off, and the English documentation is a complete item-by-item translation.
 
 Latest: [October 30–31 scene-based video detail selection, context costs, slow-task acknowledgements, Lecture timetables and Vocu integration](docs/update-20261031.en.md). Desktop chat, isolated watch memory, action receipts, the new UI and the voice switch live in the separate [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate) repository and are not bundled into this plugin installer.
@@ -10,7 +12,7 @@ Latest: [October 29 course notebook, Canvas integration, brief match review and 
 
 Latest fixes: [2026-10-28 changes, configuration and validation](docs/update-20261028.en.md). Includes video/dynamic repairs, sleep boundaries, six character references and comment-emote style; every item is fully translated from Chinese.
 
-Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.8.0 · 2026-10-27**.
+Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.9.0 · 2026-11-06**.
 
 
 Version 0.8.0 adds twenty companionship/management improvements, read-only tone diagnostics, batched group conversation, private meme opportunities, selective video/page reading/character references, comment media candidates, and public Codex announcements. See the [complete update and migration guide](docs/release-0.8.0.en.md) and [actual deployment and untested limits](docs/deployment-20261027.en.md). All shared feature switches remain disabled by default.

@@ -2,6 +2,7 @@
 
 Untrusted comments never enter the ordinary chat agent, memory or tool chain.
 """
+from .brain import AttentionDeferred
 import asyncio
 import hashlib
 import json
@@ -168,7 +169,10 @@ class ReplyInbox:
                             text = str((item.get('content') or {}).get('message',''))[:501]
                             with self.reader.connect() as db:
                                 result = db.execute('INSERT OR IGNORE INTO bili_reply_inbox VALUES(?,?,?,?,?,?,?,?,?,?,?)',(account,target,root,aid,video,author,text,now,'new','',''))
-                            if not result.rowcount:continue
+                            if not result.rowcount:
+                                with self.reader.connect() as db:
+                                    retry=db.execute("UPDATE bili_reply_inbox SET state='new' WHERE account=? AND id=? AND state='deferred'",(account,target))
+                                if not retry.rowcount:continue
                             count+=1
                             with self.reader.connect() as db:
                                 started=db.execute('SELECT stamp FROM bili_reply_started WHERE account=?',(account,)).fetchone()[0]
@@ -195,6 +199,7 @@ class ReplyInbox:
                             if not reason and action=='ignore':self.mark(target,'ignored');continue
                             if not reason and action=='reply' and isinstance(choice,str) and (choice in REPLIES or self.review):
                                 try:await self._reply(target,choice,str(decision.get('meme_id') or '') if self.review else '')
+                                except AttentionDeferred:self.mark(target,'deferred','主脑暂缓，尚未调用发送接口')
                                 except Exception:self.mark(target,'ignored' if autonomous else 'ask_owner','自主跳过未完成回复，不自动重试' if autonomous else '回复未完成，等待主人检查')
                             else:
                                 if autonomous:
@@ -271,11 +276,17 @@ class ReplyInbox:
             receipt = await asyncio.wait_for(request,35 if image else 20)
             if not isinstance(receipt,str) or not receipt.isdigit() or int(receipt)<=0:
                 raise CapabilityError('缺少有效回复回执。')
-        except Exception:
+        except AttentionDeferred:
+            with self.reader.connect() as db:
+                db.execute('DELETE FROM bili_comments WHERE key=? AND state="pending"',(key,))
+                db.execute("UPDATE bili_reply_inbox SET state='deferred' WHERE account=? AND id=?",(account,target))
+            raise
+        except (Exception,asyncio.CancelledError) as exc:
             with self.reader.connect() as db:
                 db.execute("UPDATE bili_comments SET state='uncertain' WHERE key=?",(key,))
                 db.execute("UPDATE bili_reply_inbox SET state='uncertain',reason='发送结果不确定，不自动重试' WHERE account=? AND id=?",(account,target))
                 db.execute('INSERT OR REPLACE INTO bili_comment_pause VALUES(?,?)',(account,'楼中楼回复结果不确定，需要主人核对'))
+            if isinstance(exc,asyncio.CancelledError):raise
             raise CapabilityError('回复结果不确定，已暂停公开评论，不补发。') from None
         with self.reader.connect() as db:
             db.execute("UPDATE bili_comments SET state='submitted',reply_id=? WHERE key=?",(receipt,key))

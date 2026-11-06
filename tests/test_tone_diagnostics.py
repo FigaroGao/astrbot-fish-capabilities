@@ -47,6 +47,18 @@ def test_reports_are_scoped_deduplicated_and_never_store_originals(tmp_path):
     clock[0]+=15*86400;store.record('private','今天挺开心的')
     assert len(store.recent('private')['records'])==1
 
+def test_repeat_feedback_is_local_fresh_and_protects_technical_answers(tmp_path):
+    clock=[1000];store=ToneDiagnostics(tmp_path/'tone.db',lambda:clock[0])
+    store.record('private','这一点我认。内容甲','刚回家');clock[0]+=10
+    assert not store.guidance('private','今天开心')
+    store.record('private','这一点我认。内容乙','刚回家')
+    hint=store.guidance('private','今天开心')
+    assert hint and '内容甲' not in hint and '内容乙' not in hint
+    assert not store.guidance('group','今天开心')
+    assert not store.guidance('private','列出安装步骤')
+    assert not store.guidance('private','战绩数据是多少')
+    clock[0]+=86401;assert not store.guidance('private','今天开心')
+
 
 @pytest.mark.parametrize('value',[None,[],{},''])
 def test_bad_manual_inputs_fail_without_text_processing(value):

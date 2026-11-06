@@ -153,11 +153,11 @@ class Storyboard:
         character_cards=[];character_note=''
         if self.characters:
             try:
-                character_cards,references=await asyncio.to_thread(self.characters.bundle)
+                character_cards,references=await asyncio.to_thread(self.characters.bundle,str(packet.get("title", ""))+" "+str(packet.get("description", "")))
                 for c in character_cards:c['image_number']=len(paths)+c['reference_number']
                 paths+=references
                 character_note=('\n最后的参考图不是视频画面，不得把参考图里的角色说成实际出镜；仅对前面实际帧编号匹配。'
-                    '至少结合两项可见特征、置信度>=0.85才填characters，否则留空。匹配后自然称呼：DeepSeek鲸鱼娘叫大肥鱼，GPT白发龙娘叫GPT姐姐，Claude橙发持书形象叫克劳德姐姐。这是二创角色称呼，不证明具体账号、真实亲属或本次对话参与者。网上有很多大肥鱼形象，视频里的大肥鱼不是小鲸本人，不能把视频台词、经历或关系记成自己的；除非主人明确说明该作品是在描绘小鲸。不推断CP或私事。'
+                    '至少结合两项可见特征、置信度>=0.85才填characters，否则留空。匹配后使用本次启用角色卡的name称呼，不固定写死角色名单。这是二创角色称呼，不证明具体账号、真实亲属或本次对话参与者。网上有很多大肥鱼形象，视频里的大肥鱼不是小鲸本人，不能把视频台词、经历或关系记成自己的；除非主人明确说明该作品是在描绘小鲸。不推断CP或私事。'
                     '二创可换装或变成Q版，参考服装和书本不是必要条件；只描述实际帧中看到的标记，没看见书不能从参考图补一本书。'
                     '可额外输出characters:[{"character_id":"目录ID","frame_ids":["实际帧ID"],"confidence":0.9,"evidence":"实际画面支持的特征，不引用参考图冒充画面证据"}]。'
                     '\n角色参考目录：'+json.dumps(character_cards,ensure_ascii=False))

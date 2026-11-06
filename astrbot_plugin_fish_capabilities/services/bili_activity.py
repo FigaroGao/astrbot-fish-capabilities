@@ -1,4 +1,5 @@
 """Read-only activity center, selected-live watch and reviewed daily text posts."""
+from .brain import AttentionDeferred
 import asyncio
 import hashlib
 import json
@@ -150,8 +151,12 @@ class BiliActivity:
             try:
                 receipt=await asyncio.wait_for(self.backend.post(text),25)
                 if not isinstance(receipt,str) or not receipt.isdigit() or int(receipt)<=0:raise CapabilityError('缺少明确动态回执。')
-            except Exception:
+            except AttentionDeferred:
+                with self.reader.connect() as db:db.execute('DELETE FROM bili_dynamic_posts WHERE id=? AND state="pending"',(key,))
+                raise
+            except (Exception,asyncio.CancelledError) as exc:
                 with self.reader.connect() as db:db.execute("UPDATE bili_dynamic_posts SET state='uncertain' WHERE id=?",(key,))
+                if isinstance(exc,asyncio.CancelledError):raise
                 await self.review.pending('dynamic',{'source':source},'','我刚尝试发动态，但平台没有给我明确回执。我先停住，免得重复发；你有空时帮我确认一下好吗？',{})
                 await self.review.notices()
                 raise CapabilityError('发送结果不确定，已停止，不自动重试。') from None

@@ -3,6 +3,7 @@
 No DMs, no third-party task execution, no tools in drafting. Every write is
 identity-checked, independently reviewed, quota-shared, and reserved first.
 """
+from .brain import AttentionDeferred
 import asyncio
 import hashlib
 import json
@@ -131,11 +132,16 @@ class DynamicReplies:
                                 db.execute('INSERT INTO bili_comments VALUES(?,?,?,?,?,?,?)',(key,account,'',now,'pending','',hashlib.sha256(text.encode()).hexdigest()))
                                 db.execute("UPDATE dynamic_reply_items SET state='sending' WHERE account=? AND id=?",(account,target['id']))
                             try:receipt=ident(await asyncio.wait_for(self.backend.send(resource,target['root'],target['id'],text),25))
-                            except asyncio.CancelledError:raise
-                            except Exception:
+                            except AttentionDeferred:
+                                with self.reader.connect() as db:
+                                    db.execute('DELETE FROM bili_comments WHERE key=? AND state="pending"',(key,))
+                                    db.execute("UPDATE dynamic_reply_items SET state='deferred' WHERE account=? AND id=?",(account,target['id']))
+                                raise
+                            except (Exception,asyncio.CancelledError) as exc:
                                 with self.reader.connect() as db:
                                     db.execute("UPDATE dynamic_reply_items SET state='uncertain' WHERE account=? AND id=?",(account,target['id']))
                                 # Shared pending comment freezes further public writes.
+                                if isinstance(exc,asyncio.CancelledError):raise
                                 raise CapabilityError('回复回执不明，停止且不重发。')
                             with self.reader.connect() as db:
                                 db.execute("UPDATE dynamic_reply_items SET state='submitted',receipt=? WHERE account=? AND id=?",(receipt,account,target['id']))

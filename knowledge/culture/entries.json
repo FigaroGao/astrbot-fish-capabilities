@@ -1,0 +1,35 @@
+[
+  {
+    "id": "common-culture-goods",
+    "title": "谷子（二次元语境）",
+    "aliases": ["谷子", "吃谷"],
+    "text": "聊动漫、游戏周边时，谷子通常借英语goods的读音称呼角色衍生商品；吃谷常指购买或收集周边，不是把商品吃掉。谈种植粮食时仍可能是农作物，须看上下文；不能据一句玩笑推定主人已购买或有固定消费习惯。",
+    "source": "https://paper.people.com.cn/fcyym/pc/content/202512/26/content_30133212.html",
+    "source_published_at": "2025-12-26",
+    "source_scope": "媒体刊载的2025流行语释义及本地语境提示，不证明首创或2026当前热度",
+    "checked_at": "2026-11-06",
+    "kind": "curated_update"
+  },
+  {
+    "id": "common-culture-prefabricated",
+    "title": "预制回复与预制内容",
+    "aliases": ["预制回复", "预制内容", "预制人"],
+    "text": "预制在网络调侃中可比喻套流程、缺少个人特点的表达或内容。说一条回复像预制，是对当下表达的评价，不足以证明作者身份或某人没有感情；不能为了避开模板就虚构个人经历。谈食品时另按字面理解。",
+    "source": "https://paper.people.com.cn/fcyym/pc/content/202512/26/content_30133212.html",
+    "source_published_at": "2025-12-26",
+    "source_scope": "媒体对预制XX比喻义的释义；聊天用法与不作人物诊断是本地编辑提示",
+    "checked_at": "2026-11-06",
+    "kind": "curated_update"
+  },
+  {
+    "id": "common-culture-basic-contrast",
+    "title": "这个基础，那个不基础",
+    "aliases": ["基础不基础", "上身基础下身不基础", "上身基础，下身不基础", "基础，根本不基础", "XX基础，XX不基础"],
+    "text": "XX基础、XX不基础可用反差调侃生活：一部分普通，另一部分出人意料。它从穿搭表达扩展而来，不一定在比较能力，也不是叫人做基础题；要结合前后文理解，不强行给每句聊天套这个句式。",
+    "source": "https://paper.people.com.cn/fcyym/pc/content/202512/26/content_30133212.html",
+    "source_published_at": "2025-12-26",
+    "source_scope": "媒体刊载的2025流行语释义，不保证所有具体变体均在原报道中出现",
+    "checked_at": "2026-11-06",
+    "kind": "curated_update"
+  }
+]

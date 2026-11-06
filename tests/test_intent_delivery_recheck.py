@@ -44,6 +44,25 @@ async def test_new_direct_request_cancels_old_unsent_draft_without_extra_judge(r
     assert await runtime.before_delivery(event) is False
     runtime.judge.assert_not_awaited()
 
+async def test_other_members_chatter_does_not_revoke_direct_image_request(runtime):
+    event=pending(runtime)
+    for i in range(30):
+        other=Event('别人的闲聊'+str(i));other.get_sender_id=lambda:'another-member'
+        runtime.observe(other)
+    runtime.judge.return_value=False
+    assert await runtime.before_delivery(event) is True
+    runtime.judge.assert_not_awaited()
+
+
+async def test_own_followup_is_not_forgotten_when_chatter_evicts_it(runtime):
+    event=pending(runtime)
+    runtime.observe(Event('已经解决了，不用回复'))
+    for i in range(30):
+        other=Event('其他人的消息'+str(i));other.get_sender_id=lambda:'other'
+        runtime.observe(other)
+    assert await runtime.before_delivery(event) is False
+    runtime.judge.assert_not_awaited()
+
 
 async def test_changed_ordinary_context_can_cancel_stale_reply(runtime):
     event=pending(runtime)

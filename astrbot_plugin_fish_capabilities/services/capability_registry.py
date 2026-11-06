@@ -44,6 +44,7 @@ TOOL_FEATURES['fish_group_observation']='group_learning'
 TOOL_FEATURES['fish_tone_diagnose']='tone_diagnostics'
 TOOL_FEATURES['fish_codex_resets']='codex_resets'
 TOOL_FEATURES['fish_owner_notebook']='owner_notes'
+TOOL_FEATURES['fish_attention']='companionship'
 TOOL_FEATURES['fish_meme_wiki']='knowledge'
 GROUP_FEATURES.add('group_learning')
 FEATURE_ACCESS = {feature:('authorized_group_or_owner_private' if feature in GROUP_FEATURES else 'owner_private')

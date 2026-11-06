@@ -1,5 +1,6 @@
 """Owner-authorized video comments with durable reservations; no retry on uncertainty."""
 from __future__ import annotations
+from .brain import AttentionDeferred
 import asyncio
 import hashlib
 import html
@@ -233,10 +234,14 @@ class BiliComments:
             reply_id = str(result.get('reply_id') or '')
             if not reply_id.isdigit() or int(reply_id) <= 0:
                 raise ValueError('missing_receipt')
-        except Exception:
+        except AttentionDeferred:
+            with self.reader.connect() as db:db.execute('DELETE FROM bili_comments WHERE key=? AND state="pending"',(key,))
+            raise
+        except (Exception,asyncio.CancelledError) as exc:
             with self.reader.connect() as db:
                 db.execute('UPDATE bili_comments SET state=? WHERE key=?', ('uncertain', key))
                 db.execute('INSERT OR REPLACE INTO bili_comment_pause VALUES(?,?)', (account, '发布失败或结果不确定；需人工检查，禁止自动补发'))
+            if isinstance(exc,asyncio.CancelledError):raise
             raise CapabilityError('评论发布失败或结果不确定，已暂停后续发布；请勿自动重试。') from None
         with self.reader.connect() as db:
             db.execute('UPDATE bili_comments SET state=?,reply_id=? WHERE key=?', ('submitted', reply_id, key))

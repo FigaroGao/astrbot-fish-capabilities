@@ -59,3 +59,26 @@ async def test_image_preread_success_adds_temporary_data_only(plugin,monkeypatch
 async def test_no_images_never_calls_qwen(plugin,monkeypatch):
  monkeypatch.setattr(route,'decision',lambda *a:(_ for _ in ()).throw(AssertionError('text must not route')))
  await plugin.peak_image_observation(Event(),SimpleNamespace(image_urls=[]))
+
+
+async def test_multi_image_observation_preserves_order_and_does_not_bind_speakers(plugin,monkeypatch):
+ import sys,types
+ from astrbot_plugin_fish_capabilities.services.attribution import IMAGE_OBSERVATION_RULES
+ plugin.context=SimpleNamespace(get_config=lambda:{})
+ monkeypatch.setattr(route,'decision',lambda *a:'qwen3.8-omni-flash')
+ class Part:
+  def __init__(self,*,text):self.text=text
+  def mark_as_temp(self):return self
+ monkeypatch.setitem(sys.modules,'astrbot.core.agent.message',types.SimpleNamespace(TextPart=Part))
+ calls=[]
+ async def observe(*args):
+  calls.append(args)
+  return SimpleNamespace(completion_text='图1：甲说“我在上课”；图2：乙引用甲的话，身份未知',usage=SimpleNamespace(input_other=1,input_cached=0,output=1))
+ monkeypatch.setattr(route,'qwen',observe)
+ event=Event();event.get_message_str=lambda:'看看这两张'
+ req=SimpleNamespace(image_urls=['first.png','second.png'])
+ await plugin.peak_image_observation(event,req)
+ assert len(calls)==1 and calls[0][4]==['first.png','second.png']
+ assert calls[0][3]==IMAGE_OBSERVATION_RULES and '不能认定' in calls[0][3]
+ assert '用户说明' in calls[0][3] and '分别编号' in calls[0][3]
+ assert '图1：甲说' in req.extra_user_content_parts[0].text

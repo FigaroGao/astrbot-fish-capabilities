@@ -4,6 +4,7 @@ import json
 import time
 from .bili_duty import parsed
 from .policy import CapabilityError
+from .brain import AttentionDeferred
 
 def reply_material(packet,notice):
     # Keep the actual invitation first; never slice a serialized JSON document.
@@ -65,8 +66,9 @@ class OwnerMentions:
                 if not isinstance(stamp,(int,float)) or stamp<max(activation-2,now-86400) or stamp>now+300:continue
                 with self.reader.connect() as db:
                     db.execute('BEGIN IMMEDIATE')
-                    if db.execute('SELECT 1 FROM owner_mentions WHERE account=? AND id=?',(account,ident)).fetchone():continue
-                    db.execute('INSERT INTO owner_mentions VALUES(?,?,?,?,?,?)',(account,ident,now,'reserved','',''))
+                    previous=db.execute('SELECT state FROM owner_mentions WHERE account=? AND id=?',(account,ident)).fetchone()
+                    if previous and previous[0]!='deferred':continue
+                    db.execute('INSERT OR REPLACE INTO owner_mentions VALUES(?,?,?,?,?,?)',(account,ident,now,'reserved','',''))
                 state,error,bv='failed','',''
                 try:
                     bv=await self.resolve(aid)
@@ -84,6 +86,7 @@ class OwnerMentions:
                         if not comment_id.isdigit():raise CapabilityError('提及通知没有原评论编号，未发布无关的新评论。')
                         await self.comments.post(packet['reading_id'],text,output.get('evidence_ids',[]),reply_to={'id':comment_id,'author':str(self.config['bili_owner_uid'])})
                         state='comment_attempted'
+                except AttentionDeferred:state='deferred'
                 except Exception as exc:error=type(exc).__name__
                 finally:
                     with self.reader.connect() as db:

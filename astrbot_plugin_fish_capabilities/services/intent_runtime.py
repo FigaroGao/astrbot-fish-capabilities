@@ -43,17 +43,18 @@ class IntentRuntime:
         self.cap=cap; self.clock=clock; self.sleep=sleep
         self.records=defaultdict(lambda:deque(maxlen=20))
         self.revisions=defaultdict(int); self.last_input={}; self.latest_direct={}
+        self.sender_revisions=defaultdict(dict)
         self.locks=defaultdict(asyncio.Lock); self.last_judge={}; self.closed=False
         self.active_tasks=set(); self.last_decisions={}
         # Context survives plugin hot reload. Keep the same synchronization
         # boundary while an older instance finishes its last segmented answer.
         if getattr(cap,'context',None) is not None:
             shared=getattr(cap.context,'_fish_intent_shared',None)
-            fields=('records','revisions','last_input','latest_direct','locks','last_judge','active_tasks','last_decisions')
+            fields=('records','revisions','last_input','latest_direct','sender_revisions','locks','last_judge','active_tasks','last_decisions')
             if shared is None:
                 setattr(cap.context,'_fish_intent_shared',{name:getattr(self,name) for name in fields})
             else:
-                for name in fields:setattr(self,name,shared[name])
+                for name in fields:setattr(self,name,shared.setdefault(name,getattr(self,name)))
         with cap.ledger.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS intent_turns(scope TEXT,stamp REAL,spontaneous INTEGER)')
             db.execute('CREATE INDEX IF NOT EXISTS intent_turn_scope ON intent_turns(scope,stamp)')
@@ -85,9 +86,13 @@ class IntentRuntime:
         if event.get_extra('fish_intent_observed'):return
         scope=event.unified_msg_origin
         self.revisions[scope]+=1; self.last_input[scope]=self.clock()
+        senders=self.sender_revisions[scope];sender=str(event.get_sender_id())
+        senders.pop(sender,None);senders[sender]=self.revisions[scope]
+        if len(senders)>256:senders.pop(next(iter(senders)))
         event.set_extra('fish_intent_observed',self.revisions[scope])
         _,_,targets=self.targets(event)
         self.records[scope].append({'role':'user','sender_id':str(event.get_sender_id()),
+            'revision':self.revisions[scope],
             'text':event.get_message_str()[:600], 'targets':targets,
             'has_image':any(p.__class__.__name__=='Image' for p in event.get_messages())})
         if self.direct(event):self.latest_direct[scope]=self.revisions[scope]
@@ -111,6 +116,12 @@ class IntentRuntime:
             self.last_decisions[scope].update(factors=previous['factors'],factors_at=previous.get('factors_at'))
 
     async def judge(self,scope,rows):
+        brain=getattr(self.cap,'brain',None)
+        if brain:
+            return await brain.decide('group:'+scope,lambda:self._judge(scope,rows),owner_attention=False,timeout=20)
+        return await self._judge(scope,rows)
+
+    async def _judge(self,scope,rows):
         names=self.cap.config.get('bot_nonexclusive_names',[])
         identity={'primary_name':str(self.cap.config.get('bot_primary_name',''))[:24],
                   'nonexclusive_names':[n[:24] for n in names[:8] if isinstance(n,str)] if isinstance(names,list) else []}
@@ -152,12 +163,26 @@ class IntentRuntime:
             return True
         if event.get_extra('fish_intent_delivery_started'):
             return True
+        brain=getattr(self.cap,'brain',None)
+        if brain and not self.direct(event) and not brain.group_available():
+            self.diagnostic(event.unified_msg_origin,'delivery_shared_owner_attention');return False
         scope=event.unified_msg_origin
         revision=event.get_extra('fish_intent_generation_revision')
         if revision is None:
             return True
         if self.latest_direct.get(scope,0)>revision:
             self.diagnostic(scope,'unsent_draft_replaced_by_direct');return False
+        if self.direct(event):
+            # Other members chatting while a directed image/tool request runs
+            # do not revoke the request. Same-sender follow-ups still recheck.
+            sender=str(event.get_sender_id())
+            latest=self.sender_revisions[scope].get(sender)
+            if latest==revision:
+                event.set_extra('fish_intent_delivery_started',True)
+                self.diagnostic(scope,'direct_preserved_through_other_speakers');return True
+            if latest is None or not any(row.get('role')=='user' and row.get('sender_id')==sender and
+                                         row.get('revision',0)>revision for row in self.records[scope]):
+                self.diagnostic(scope,'direct_followup_context_expired');return False
         if self.revisions[scope]>revision:
             check_revision=self.revisions[scope]
             self.bot_id=str(event.get_self_id())
@@ -202,6 +227,9 @@ class IntentRuntime:
                 if direct and self.latest_direct.get(scope)!=revision:
                     self.diagnostic(scope,'merged_direct');return
                 if not direct:
+                    brain=getattr(self.cap,'brain',None)
+                    if brain and not brain.group_available():
+                        self.diagnostic(scope,'shared_owner_attention');return
                     if not self.eligible(scope,self.clock()):
                         self.diagnostic(scope,'cooldown_or_budget');return
                     begin=self.clock(); quiet=float(self.cap.config.get('intent_quiet_seconds',20))

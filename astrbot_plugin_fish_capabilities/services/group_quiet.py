@@ -35,7 +35,7 @@ class GroupQuiet:
         return self.muted(scope) or (epoch is not None and epoch!=self.state.get(scope,{}).get('epoch',0))
 
 
-def install_send_guard(event_class, quiet, before_send=None):
+def install_send_guard(event_class, quiet, before_send=None, after_send=None):
     original=event_class.send
     if getattr(original,'_fish_quiet_guard',False):raise RuntimeError('Quiet send guard already installed')
     @functools.wraps(original)
@@ -44,7 +44,15 @@ def install_send_guard(event_class, quiet, before_send=None):
             event.clear_result()
             event.stop_event()
             return
-        return await original(event,*args,**kwargs)
+        result=await original(event,*args,**kwargs)
+        if after_send is not None:
+            try:after_send(event,*args,**kwargs)
+            except Exception:
+                # A local receipt observer must never turn an accepted send
+                # into a retryable transport failure.
+                import logging
+                logging.getLogger(__name__).warning('Local delivery observer failed; transport will not be retried')
+        return result
     send._fish_quiet_guard=True
     event_class.send=send
     def uninstall():

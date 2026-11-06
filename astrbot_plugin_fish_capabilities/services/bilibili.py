@@ -246,7 +246,8 @@ class BiliReader:
             with self.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 recent=db.execute('SELECT packet FROM readings WHERE bvid=? AND stamp>? ORDER BY stamp DESC,rowid DESC LIMIT 1',(video_id,time.time()-3600)).fetchone()
-                if recent and json.loads(recent[0]).get('source_schema_version',0)>=2 and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or (json.loads(recent[0]).get('preview_layout_version',0)>=self.visual_cache_version and 'visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
+                character_revision=getattr(self,'character_revision',lambda:'')()
+                if recent and json.loads(recent[0]).get('character_revision','')==character_revision and json.loads(recent[0]).get('source_schema_version',0)>=2 and 0<json.loads(recent[0]).get('duration',0)<=600 and (not self.visual_reader or (json.loads(recent[0]).get('preview_layout_version',0)>=self.visual_cache_version and 'visual_status' in json.loads(recent[0]) and json.loads(recent[0]).get('preview_requested',9)>=frame_count)):
                     packet=dict(json.loads(recent[0]),cached=True)
                     self.memory.remember(packet)
                     return packet
@@ -287,6 +288,7 @@ class BiliReader:
             if self.visual_reader:
                 try:packet.update(await asyncio.wait_for(self.visual_reader(packet,info),self.visual_timeout if self.visual_cache_version>=3 else 50))
                 except Exception as exc:packet.update(visual_status='unavailable',visual_content_seen=False,visual_failure_stage='visual_processing',visual_failure_kind='timeout' if isinstance(exc,TimeoutError) else 'processing_error')
+            packet['character_revision']=character_revision
             attach_sources(packet)
             reading_id=hashlib.sha256(json.dumps(packet,ensure_ascii=False,sort_keys=True).encode()).hexdigest()[:24]
             packet['reading_id']=reading_id

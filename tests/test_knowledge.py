@@ -28,3 +28,9 @@ async def test_catalog_does_not_require_embedding(kb):
     result=await kb.search('全部国服特工名称')
     assert len(result['catalog'])==1 and result['catalog'][0]['title']=='零 / Cypher'
     kb.context.kb_manager.retrieve.assert_not_awaited()
+
+async def test_official_update_wins_over_stale_vector_announcement(kb):
+    kb.entries.append({'id':'agent-30','kind':'official_update','aliases':['遐思','Hush'],'title':'遐思 / Hush','text':'官方名称和定位','source':'https://api.val.qq.com/','checked_at':'2026-11-03'})
+    result=await kb.search('Hush现在叫什么？')
+    assert result['results'][0]['checked_at']=='2026-11-03'
+    kb.context.kb_manager.retrieve.assert_not_awaited()

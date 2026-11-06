@@ -69,3 +69,11 @@ The owner-role timing fix was additionally checked on the device with real frame
 The entire test suite was rerun in the sharing directory; see the [autonomous activity guide](autonomy-20261102.en.md) for the result. Coverage includes completion-relative cooldown, rest hours, bounded action chains, concurrency and cancellation, daily query allowances, source-grounded notes/revisions/private access, meme lookup, match baseline deduplication, and migration of an existing timetable. Vision schedule regressions are also published; see [vision routing](vision-peak-routing.en.md).
 
 The tablet probe checked actual modules, TextPart, the 6,668-entry corpus, three results from a real public search, actual private activity context, and a notification-free match baseline, with QQ online. Publication testing did not send QQ/Bilibili messages or deliberately disconnect QQ. Natural autonomous conversation and operation across calendar days still require observation. Only reusable code is published; letters, subjective profiles, the raw corpus, and configuration are excluded.
+
+
+## November 6, 2026: shared core and context fixes
+
+See the [complete core guide](brain-core.en.md). The maintenance checkout passed 788 tests; the publication checkout is tested again after synchronization and its result recorded in this release commit. Earlier tablet probes passed shared decisions, leases, permissions, topics, provenance and summaries, with QQ online then. The device is disconnected for this publication; no new device test is claimed. No actual test messages or additional paid batch evaluations are performed.
+
+
+Independent publication-checkout regression: 789 tests passed, with one existing audioop deprecation warning. This is not added to the maintenance-checkout count; the tablet was not connected for this publication.

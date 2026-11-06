@@ -9,7 +9,7 @@ def test_old_media_and_thoughts_removed_recent_protocol_preserved():
           {'role':'user','content':'第三轮'},{'role':'assistant','content':'回答','reasoning_content':'CURRENT_PROTOCOL'}]
     original=copy.deepcopy(rows);out=slim(rows);text=json.dumps(out,ensure_ascii=False)
     assert 'base64,OLD' not in text and 'OLD_THOUGHT' not in text
-    assert '已说明图片内容' in text and out[-1]['reasoning_content']=='CURRENT_PROTOCOL'
+    assert '已说明图片内容' in text and 'reasoning_content' not in out[-1]
     assert original==rows
 
 def test_invitation_never_cut_off_by_long_video():

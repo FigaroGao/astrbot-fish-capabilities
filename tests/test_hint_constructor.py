@@ -25,9 +25,9 @@ async def test_unified_hint_uses_real_pydantic_constructor_contract(plugin,text_
     plugin.config.update(timetable_enabled=True,timeline_enabled=True,memory_edit_enabled=True)
     req=types.SimpleNamespace(extra_user_content_parts=[])
     await plugin.unified_capability_hints(Event(),req)
-    assert len(req.extra_user_content_parts)==1
-    part=req.extra_user_content_parts[0]
-    assert isinstance(part,text_parts) and part._no_save
+    assert len(req.extra_user_content_parts)==2
+    assert all(isinstance(p,text_parts) and p._no_save for p in req.extra_user_content_parts)
+    part=next(p for p in req.extra_user_content_parts if 'fish_tasks' in p.text)
     assert 'fish_tasks' in part.text and 'fish_memory_edit' in part.text
 
 

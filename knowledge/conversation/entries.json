@@ -1,0 +1,20 @@
+[
+  {
+    "id": "meme-fish-stock-phrases",
+    "title": "鱼八股（AI聊天社群用语）",
+    "aliases": ["鱼八股", "鱼味"],
+    "text": "在fishtalk等AI聊天项目的语境里，鱼八股指反复套用的固定话术和表达框架，例如空泛认可、强行总结、打卡式回执。这是社群表达，不是判断一段话是否由AI生成的可靠标准。相同句式在真实纠错、确认和技术说明中可能合理，应看具体语境与重复情况；不把称呼主人、正常认可或准确引用一概当成问题。",
+    "source": "https://github.com/Nozzi2455/fishtalk",
+    "checked_at": "2026-11-06",
+    "kind": "curated_update"
+  },
+  {
+    "id": "common-fishtalk-style-pack",
+    "title": "fishtalk的文风包",
+    "aliases": ["文风包", "fishtalk"],
+    "text": "fishtalk的文风包是从收集并筛选的语言材料中整理出的表达参考，项目中的基础distill实现使用本地规则统计，不是给模型重新训练权重。它区分场合并检查重复和照抄风险；参考别人怎么接话不等于把语料里的经历当成自己的经历，也不代表应该复制口头禅。此处描述核对版本bb621c3的实现，不能推定未来版本完全相同。",
+    "source": "https://github.com/Nozzi2455/fishtalk/blob/bb621c3da31052e7e52b6307db3e27c508e4d502/lib/distill.js",
+    "checked_at": "2026-11-06",
+    "kind": "curated_update"
+  }
+]

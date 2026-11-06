@@ -53,6 +53,7 @@ class CompanionLearning:
         now=self.clock();state='approved' if approved else 'pending'
         expiry=now+7*86400 if kind=='observation' else None
         with self.db() as db:
+            db.execute('BEGIN IMMEDIATE')
             if note_id:
                 old=db.execute('SELECT * FROM notes WHERE id=? AND scope=?',(note_id,scope)).fetchone()
                 if old is None or old['revision']!=revision:raise CapabilityError('记录不存在或版本变化，请重新读取。')
@@ -60,9 +61,15 @@ class CompanionLearning:
                 db.execute('UPDATE notes SET kind=?,topic=?,text=?,source=?,state=?,stamp=?,expires=?,revision=revision+1 WHERE id=?',
                     (kind,topic,scrub(text.strip()),json.dumps(scrub(source),ensure_ascii=False),state,now,expiry,note_id))
                 return {'id':note_id,'revision':revision+1,'state':state}
-            duplicate=db.execute('SELECT id,revision,state FROM notes WHERE scope=? AND kind=? AND text=? AND state!=?',
+            duplicate=db.execute('SELECT id,revision,state,expires FROM notes WHERE scope=? AND kind=? AND text=? AND state!=?',
                 (scope,kind,scrub(text.strip()),'rejected')).fetchone()
-            if duplicate:return dict(duplicate)|{'duplicate':True}
+            if duplicate:
+                expired=duplicate['expires'] is not None and duplicate['expires']<=now
+                result=dict(duplicate)|{'duplicate':True,'expired':expired,
+                    'effective':duplicate['state']=='approved' and not expired}
+                if expired or duplicate['state']=='archived':
+                    result.update(requires_revision_update=True,instruction='同内容的旧记录已过期或归档，本次没有重新启用或刷新日期；如有新的明确依据，先读取旧记录并按版本显式修改。')
+                return result
             if db.execute('SELECT COUNT(*) FROM notes WHERE scope=?',(scope,)).fetchone()[0]>=500:
                 raise CapabilityError('本范围记录已达500条，请先整理。')
             cur=db.execute('INSERT INTO notes(scope,kind,topic,text,source,state,stamp,expires) VALUES(?,?,?,?,?,?,?,?)',
@@ -72,6 +79,7 @@ class CompanionLearning:
     def review(self,scope,ident,state,revision):
         if state not in ('approved','rejected','archived'):raise CapabilityError('审核状态无效。')
         with self.db() as db:
+            db.execute('BEGIN IMMEDIATE')
             old=db.execute('SELECT * FROM notes WHERE id=? AND scope=?',(ident,scope)).fetchone()
             if old is None or old['revision']!=revision:raise CapabilityError('记录不存在或版本变化。')
             db.execute('INSERT INTO revisions VALUES(?,?,?,?)',(ident,revision,json.dumps(dict(old),ensure_ascii=False),self.clock()))
@@ -81,8 +89,8 @@ class CompanionLearning:
     def list(self,scope,kind='',*,include_pending=True,limit=30):
         if type(limit)is not int or not 1<=limit<=100:raise CapabilityError('条数限1至100。')
         with self.db() as db:
-            rows=db.execute('SELECT * FROM notes WHERE scope=? AND (?=? OR kind=?) ORDER BY stamp DESC,id DESC LIMIT ?',
-                (scope,kind,'',kind,limit)).fetchall()
+            rows=db.execute('SELECT * FROM notes WHERE scope=? AND (?=? OR kind=?) AND (? OR (state="approved" AND (expires IS NULL OR expires>?))) ORDER BY stamp DESC,id DESC LIMIT ?',
+                (scope,kind,'',kind,int(include_pending),self.clock(),limit)).fetchall()
         output=[]
         for row in rows:
             item=dict(row);item['source']=json.loads(item['source'])
@@ -91,7 +99,13 @@ class CompanionLearning:
         return output
 
     def recall(self,scope,query,*,kinds=None,limit=4):
-        wanted=terms(query);items=self.list(scope,include_pending=False,limit=100)
+        wanted=terms(query)
+        # A scope is capped at 500 notes. Filter approval/expiry before ranking
+        # across that set, so new pending notes or unrelated preferences do
+        # not hide an older approved expression reference.
+        with self.db() as db:
+            rows=db.execute('SELECT * FROM notes WHERE scope=? AND state="approved" AND (expires IS NULL OR expires>?) ORDER BY stamp DESC,id DESC LIMIT 500',(scope,self.clock())).fetchall()
+        items=[dict(row,source=json.loads(row['source']),expired=False) for row in rows]
         scored=[]
         for item in items:
             if kinds and item['kind'] not in kinds:continue
