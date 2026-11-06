@@ -23,6 +23,7 @@ OPTIONS = {
 }
 SCENES={'chat','empathy','explain','steps','compare','data'}
 EXPLICIT={
+ ('length','expanded'):r'(?:回复|回答|讲|说|解释)(?:可以|请|尽量|稍微|再)?(?:详细|具体)(?:一点|一些|点|些)',
  ('length','brief'):r'(?:回复|回答|说话).{0,6}(?:短一点|简短点|简短些)|(?:别|不要).{0,4}(?:长篇|一大段)',
  ('opening','direct'):r'(?:别|不要|不用).{0,8}(?:套话|总结|复述|先认可)',
  ('advice','on_request'):r'(?:别|不要|不用).{0,5}(?:给我建议|教我|安排我|讲道理)',
@@ -125,6 +126,10 @@ class StyleLearner:
    if c['kind']=='explicit_feedback':
     pattern=EXPLICIT.get((c['dimension'],c['value']))
     ev=[e for e in ev if pattern and re.search(pattern,e['text']) and re.search(r'每次|总是|以后|平时|说话|回复|回答|别再|不要再',e['text']) and not re.search(r'这次|这个问题|这一条|这条回答|今天先',e['text']) and not re.search(r'不是.{0,6}(?:别|不要)|没有.{0,6}(?:要求|让你)|引用|别人说|他.{0,3}说|她.{0,3}说|开玩笑|假如|如果',e['text'])]
+    if c['dimension']=='length':
+     direction='短|简短' if c['value']=='brief' else '详细|具体'
+     negated=rf'(?:不要|不用|不必|别|不想|不是).{{0,8}}(?:{direction})'
+     ev=[e for e in ev if not re.search(negated,e['text'])]
    if c['kind']=='user_habit' and c['dimension']=='length':
     if c['value']=='brief':ev=[e for e in ev if len(e['text'])<=60]
     elif c['value']=='expanded':ev=[e for e in ev if len(e['text'])>=80]
