@@ -45,6 +45,10 @@ TOOL_FEATURES['fish_tone_diagnose']='tone_diagnostics'
 TOOL_FEATURES['fish_codex_resets']='codex_resets'
 TOOL_FEATURES['fish_owner_notebook']='owner_notes'
 TOOL_FEATURES['fish_attention']='companionship'
+TOOL_FEATURES['fish_bili_explore']='bili_explore'
+TOOL_FEATURES['fish_bili_follow']='bili'
+TOOL_FEATURES['fish_valorant_insights']='valorant'
+TOOL_FEATURES['fish_valorant_shop_notes']='valorant_shop'
 TOOL_FEATURES['fish_meme_wiki']='knowledge'
 GROUP_FEATURES.add('group_learning')
 FEATURE_ACCESS = {feature:('authorized_group_or_owner_private' if feature in GROUP_FEATURES else 'owner_private')
@@ -70,5 +74,5 @@ def authorize(config,actor,feature,*,owner=False,cold_private=False):
 
 def catalog(config):
     return [{'tool':name,'feature':feature,'enabled':bool(config.get('enabled') and config.get(feature+'_enabled')),
-             'access':FEATURE_ACCESS[feature],'public_write':name in {'fish_bili_comment','fish_bili_replies','fish_bili_activity'}}
+             'access':FEATURE_ACCESS[feature],'public_write':name in {'fish_bili_comment','fish_bili_replies','fish_bili_activity','fish_bili_interact','fish_bili_follow'}}
             for name,feature in TOOL_FEATURES.items()]

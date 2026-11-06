@@ -173,7 +173,7 @@ class ValorantRecords:
             now=time.time()
             if self.shop_cache and self.shop_cache[0]==fingerprint and now<self.shop_cache[1]:
                 return dict(self.shop_cache[2],cached=True)
-            await self.role(credentials)
+            role=await self.role(credentials)
             value=await self.http.post('/go/mlol_store/agame/user_store',{'_t':int(now)},credentials)
             if value.get('result')!=0:raise CapabilityError('每日商店读取失败，可能需要重新登录掌瓦；未购买或重试。')
             data=value.get('data')
@@ -189,6 +189,9 @@ class ValorantRecords:
             expires=number(data.get('end_ts'))
             result={'items':items,'fetched_at':now,'expires_at':expires,'cached':False,
                     'instruction':'这是绑定微信角色的官方每日商店，只读，不购买、不兑换。price_text保留接口rmb_price显示值，不换算VP或猜折扣；登录失效时需要重新绑定。只在主人私聊展示，不带入公开评论。'}
+            result['account_ref']=self.account(credentials,role)
+            from .valorant_shop_notes import ShopNotes
+            ShopNotes(self.store).capture(result['account_ref'],result)
             ttl=min(now+300,expires) if expires and expires>now else now+60
             self.shop_cache=(fingerprint,ttl,result)
             return result

@@ -51,6 +51,8 @@ Long-term integration, archives, corrections and activity indexes.
 
 Selection, video understanding, topics, comments and dynamics.
 
+0.9.1 adds segmented danmaku, parts/tags/comments, own-account history and folders, watch later, follows, reposts and approved-library image dynamics: [expansion guide](bili-valorant-expansion.en.md).
+
 [Download](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [Main plugin](../astrbot_plugin_fish_capabilities/) → [Setup guide](bili-social.en.md)
 
 [Local utility](../tools/bili_login.py) runs inside the documented environment. Set ASTRBOT_ROOT to your actual installation first. Local shortcuts such as fish-val-login are not automatically installed by cloning this repository.
@@ -60,6 +62,8 @@ Selection, video understanding, topics, comments and dynamics.
 ## fish-val · Mainland VALORANT
 
 WeChat binding, records, incremental sync and daily shop.
+
+0.9.1 adds map/agent/trend/weapon/teammate analytics, local history and shop wishlists: [expansion guide](bili-valorant-expansion.en.md).
 
 [Download](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [Main plugin](../astrbot_plugin_fish_capabilities/) → [Setup guide](new-capabilities.en.md)
 

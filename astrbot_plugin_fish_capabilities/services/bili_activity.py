@@ -20,7 +20,7 @@ class ActivityBackend:
         credential=self.backend.credential()
         class Frozen:
             def credential(self):return credential
-        account=await CommentBackend(Frozen()).identity();self.credential=credential;return account
+        account=await CommentBackend(Frozen()).identity();self.credential=credential;self.bound_account=str(account);return account
     async def feed(self,host=''):
         from bilibili_api import dynamic
         return await dynamic.get_dynamic_page_info(credential=self.credential,host_mid=int(host) if host else None)
@@ -39,11 +39,32 @@ class ActivityBackend:
         return {'uid':account,'name':plain(result.get('name'))[:60],'online':room.get('liveStatus')==1,
                 'title':plain(room.get('title'))[:120],'url':'https://live.bilibili.com/'+room_id}
     async def post(self,text):
+        if getattr(self,'check_write',None):self.check_write('post',self.bound_account)
         from bilibili_api import dynamic
         # Plain-text builder never resolves @, reposts, cards, polls or images.
         result=await dynamic.send_dynamic(dynamic.BuildDynamic.empty().add_plain_text(text),credential=self.credential)
         value=str(result.get('dyn_id_str') or result.get('dyn_id') or result.get('dynamic_id') or '')
         if not value.isdigit() or int(value)<=0:raise CapabilityError('动态发送回执未确认。')
+        return value
+    async def detail(self,target):
+        from bilibili_api import dynamic
+        from .bili_explore import dynamic_packet
+        return dynamic_packet(await dynamic.Dynamic(int(target),credential=self.credential).get_info(),target)
+    async def post_image(self,text,data,format):
+        if getattr(self,'check_write',None):self.check_write('image',self.bound_account)
+        from bilibili_api import dynamic
+        from bilibili_api.utils.picture import Picture
+        builder=dynamic.BuildDynamic.empty().add_plain_text(text).add_image(Picture.from_content(data,format))
+        result=await dynamic.send_dynamic(builder,credential=self.credential)
+        value=str(result.get('dyn_id_str') or result.get('dyn_id') or result.get('dynamic_id') or '')
+        if not value.isdigit() or int(value)<=0:raise CapabilityError('图文动态回执未确认。')
+        return value
+    async def repost(self,target,text):
+        if getattr(self,'check_write',None):self.check_write('repost',self.bound_account)
+        from bilibili_api import dynamic
+        result=await dynamic.Dynamic(int(target),credential=self.credential).repost(text=text)
+        value=str(result.get('dyn_id_str') or result.get('dyn_id') or result.get('dynamic_id') or '')
+        if not value.isdigit() or int(value)<=0:raise CapabilityError('转发回执未确认。')
         return value
 
 
@@ -51,6 +72,15 @@ class BiliActivity:
     def __init__(self,reader,config,review,generate,notify,backend=None,clock=time.time):
         self.reader,self.config,self.review,self.generate,self.notify,self.clock=reader,config,review,generate,notify,clock
         self.backend=backend or ActivityBackend(reader.backend);self.lock=asyncio.Lock()
+        if isinstance(self.backend,ActivityBackend):
+            def check_write(kind,account):
+                try:
+                    self.enabled('bili_dynamic_post_enabled')
+                    if self.account()!=account:raise CapabilityError('绑定账号已变化。')
+                    if kind=='image':self.enabled('bili_dynamic_image_enabled')
+                    if kind=='repost':self.enabled('bili_repost_enabled')
+                except CapabilityError:raise AttentionDeferred('public_permission_changed') from None
+            self.backend.check_write=check_write
         with reader.connect() as db:
             db.executescript('''
               CREATE TABLE IF NOT EXISTS bili_live_watch(account TEXT,uid TEXT,name TEXT,PRIMARY KEY(account,uid));
@@ -133,15 +163,46 @@ class BiliActivity:
                     try:await self.notify(value['name']+'开播啦，现在直播间标题是“'+value['title']+'”。\n'+value['url']);sent+=1
                     except Exception:errors+=1
             return {'state':'checked','notified':sent,'errors':errors}
-    async def post(self,text,source='manual'):
+    async def post(self,text,source='manual',repost_id='',meme_id='',image_sha256='',repost_fingerprint=''):
         self.enabled('bili_dynamic_post_enabled')
+        if not isinstance(text,str) or not 1<=len(text.strip())<=180:raise CapabilityError('动态文字为1至180字。')
+        if repost_id:
+            self.enabled('bili_repost_enabled');repost_id=uid(repost_id)
+        if repost_id and meme_id:raise CapabilityError('转发与图库图文动态需分别操作。')
         if source not in ('manual','autonomous'):raise CapabilityError('动态来源不合法。')
         if '@' in text or '＠' in text:raise CapabilityError('碎碎念动态不附带@或广告提及。')
         async with self.lock:
+            review_account=self.account()
             await self.identity()
-            await self.review.gate('dynamic',{'source':source},text,{'purpose':'小鲸自己的普通碎碎念；不是向公众披露主人私事'})
+            image=None;image_data=None
+            if meme_id:
+                self.enabled('bili_dynamic_image_enabled')
+                if not getattr(self,'media',None):raise CapabilityError('公开图库尚未配置。')
+                image=self.media.image(meme_id);image_data=self.media.library.bytes_for(image)
+                if image_sha256 and image_sha256!=image.sha256:raise CapabilityError('批准后的图库图片已变化，请重新审核。')
+            original=await asyncio.wait_for(self.backend.detail(repost_id),20) if repost_id else None
+            source_fingerprint=hashlib.sha256(json.dumps(original,ensure_ascii=False,sort_keys=True).encode()).hexdigest() if original else ''
+            if repost_fingerprint and repost_fingerprint!=source_fingerprint:raise CapabilityError('批准后的原动态已变化，请重新审核。')
+            payload={'source':source,**({'repost_id':repost_id,'repost_fingerprint':source_fingerprint} if repost_id else {}),**({'meme_id':meme_id,'image_sha256':image.sha256} if image else {})}
+            await self.review.gate('dynamic',payload,text,{'purpose':'自己的普通动态或转发附言，不披露主人私事','original':original,
+                'image':{'description':image.description,'image_text':image.image_text} if image else None})
+            # Review may yield to a model. Recheck account, switches and source
+            # immediately before reserving a public mutation.
+            self.enabled('bili_dynamic_post_enabled')
+            if self.account()!=review_account:raise CapabilityError('审核期间绑定账号已变化，未发布。')
+            await self.identity()
+            if image:
+                self.enabled('bili_dynamic_image_enabled')
+                fresh_image=self.media.image(meme_id)
+                if fresh_image!=image or self.media.library.bytes_for(fresh_image)!=image_data:raise CapabilityError('图库图片或审核信息发生变化，请重新审核。')
+            if repost_id:
+                self.enabled('bili_repost_enabled')
+                fresh=await asyncio.wait_for(self.backend.detail(repost_id),20)
+                if fresh!=original:raise CapabilityError('原动态内容发生变化，请重新阅读审核。')
+            self.enabled('bili_dynamic_post_enabled')
+            if self.account()!=review_account:raise CapabilityError('预检期间绑定账号已变化，未发布。')
             account,now=self.account(),self.clock();day=datetime.fromtimestamp(now,local_zone(self.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-            key=hashlib.sha256((account+':'+text).encode()).hexdigest()
+            key=hashlib.sha256((account+':repost:'+repost_id if repost_id else account+':'+text+(':'+image.sha256 if image else '')).encode()).hexdigest()
             with self.reader.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 if db.execute("SELECT 1 FROM bili_dynamic_posts WHERE account=? AND state IN ('pending','uncertain')",(account,)).fetchone():raise CapabilityError('已有动态发送结果不确定，暂停，不补发。')
@@ -149,7 +210,8 @@ class BiliActivity:
                 if db.execute('SELECT 1 FROM bili_dynamic_posts WHERE account=? AND stamp>=?',(account,day)).fetchone():raise CapabilityError('配置时区今天已经尝试过一条动态。')
                 db.execute('INSERT INTO bili_dynamic_posts VALUES(?,?,?,?,?,?)',(key,account,now,'pending','',text))
             try:
-                receipt=await asyncio.wait_for(self.backend.post(text),25)
+                sending=self.backend.repost(repost_id,text) if repost_id else self.backend.post_image(text,image_data,image.path.suffix[1:]) if image else self.backend.post(text)
+                receipt=await asyncio.wait_for(sending,25)
                 if not isinstance(receipt,str) or not receipt.isdigit() or int(receipt)<=0:raise CapabilityError('缺少明确动态回执。')
             except AttentionDeferred:
                 with self.reader.connect() as db:db.execute('DELETE FROM bili_dynamic_posts WHERE id=? AND state="pending"',(key,))
@@ -157,7 +219,7 @@ class BiliActivity:
             except (Exception,asyncio.CancelledError) as exc:
                 with self.reader.connect() as db:db.execute("UPDATE bili_dynamic_posts SET state='uncertain' WHERE id=?",(key,))
                 if isinstance(exc,asyncio.CancelledError):raise
-                await self.review.pending('dynamic',{'source':source},'','我刚尝试发动态，但平台没有给我明确回执。我先停住，免得重复发；你有空时帮我确认一下好吗？',{})
+                await self.review.pending('dynamic',payload,'','我刚尝试发动态，但平台没有给我明确回执。我先停住，免得重复发；你有空时帮我确认一下好吗？',{})
                 await self.review.notices()
                 raise CapabilityError('发送结果不确定，已停止，不自动重试。') from None
             with self.reader.connect() as db:db.execute("UPDATE bili_dynamic_posts SET state='submitted',receipt=? WHERE id=?",(receipt,key))

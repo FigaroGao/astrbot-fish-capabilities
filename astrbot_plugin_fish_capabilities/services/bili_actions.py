@@ -6,6 +6,7 @@ import time
 from .bilibili import bvid
 from .bili_comments import CommentBackend
 from .policy import CapabilityError, bounded_int
+from .brain import AttentionDeferred
 
 
 class ActionBackend:
@@ -21,6 +22,7 @@ class ActionBackend:
             def credential(self): return credential
         account = await CommentBackend(Frozen()).identity()
         self.credential = credential
+        self.bound_account=str(account)
         return account
 
     def video(self, video_id):
@@ -28,7 +30,19 @@ class ActionBackend:
         return video.Video(bvid=video_id, credential=self.credential)
 
     async def check(self, kind, video_id, account, folder):
+        if kind=='follow':
+            from bilibili_api import user
+            result=await user.User(int(video_id),credential=self.credential).get_relation()
+            state=result.get('attribute')
+            if type(state)is not int or state not in (0,2,6):raise CapabilityError('关注关系不明确或存在拉黑状态，未操作。')
+            return state in (2,6)
         v = self.video(video_id)
+        if kind == 'later':
+            from bilibili_api import user
+            result=await user.get_toview_list(credential=self.credential)
+            rows=result.get('list')
+            if not isinstance(rows,list):raise CapabilityError('稍后再看列表状态无法确认。')
+            return any(x.get('bvid')==video_id for x in rows)
         if kind == 'like':
             result = await v.has_liked()
             if type(result) not in (bool, int) or result not in (0, 1):
@@ -48,9 +62,15 @@ class ActionBackend:
         return bool(state)
 
     async def send(self, kind, video_id, folder):
+        if getattr(self,'check_write',None):self.check_write(kind,self.bound_account)
+        if kind=='follow':
+            from bilibili_api import user
+            return await user.User(int(video_id),credential=self.credential).modify_relation(user.RelationType.SUBSCRIBE)
         v = self.video(video_id)
         if kind == 'like':
             await v.like(status=True)
+        elif kind == 'later':
+            await v.add_to_toview()
         else:
             # Never remove from other folders, unlike, coin, or triple.
             await v.set_favorite(add_media_ids=[int(folder)], del_media_ids=[])
@@ -61,6 +81,11 @@ class BiliActions:
         self.reader, self.config, self.clock = reader, config, clock
         self.backend = backend or ActionBackend(reader.backend)
         self.lock = asyncio.Lock()
+        if isinstance(self.backend,ActionBackend):
+            def check_write(kind,account):
+                if str(self.config.get('bili_account_id',''))!=account or not all(self.config.get(k,False) for k in ('enabled','bili_enabled','bili_'+kind+'_enabled')):
+                    raise AttentionDeferred('public_permission_changed')
+            self.backend.check_write=check_write
         with reader.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS bili_actions(account TEXT, kind TEXT, video TEXT, folder TEXT, stamp REAL, state TEXT, PRIMARY KEY(account,kind,video,folder))')
 
@@ -70,6 +95,8 @@ class BiliActions:
             rows = db.execute('SELECT kind,COUNT(*) FROM bili_actions WHERE account=? AND stamp>? GROUP BY kind', (account, self.clock()-86400)).fetchall()
         return {'like_enabled': bool(self.config.get('bili_like_enabled', False)),
                 'favorite_enabled': bool(self.config.get('bili_favorite_enabled', False)),
+                'later_enabled': bool(self.config.get('bili_later_enabled',False)),
+                'follow_enabled':bool(self.config.get('bili_follow_enabled',False)),
                 'favorite_folder_configured': bool(self.config.get('bili_favorite_folder_id')),
                 'limit_per_kind_24h': self.limit(), 'attempts_24h': dict(rows)}
 
@@ -77,8 +104,8 @@ class BiliActions:
         return bounded_int(self.config.get('bili_action_daily_limit', 20), 1, 100, '每种互动滚动24小时上限')
 
     async def apply(self, reading_id, kind):
-        if kind not in ('like', 'favorite'):
-            raise CapabilityError('只支持 like 点赞或 favorite 收藏，不提供取消、投币或一键三连。')
+        if kind not in ('like', 'favorite','later'):
+            raise CapabilityError('只支持 like 点赞、favorite 收藏、later 稍后再看；不提供取消、投币或一键三连。')
         if not self.config.get('enabled', False) or not self.config.get('bili_enabled', False) or not self.config.get('bili_'+kind+'_enabled', False):
             raise CapabilityError('这项B站互动尚未启用。')
         account = str(self.config.get('bili_account_id', ''))
@@ -107,6 +134,8 @@ class BiliActions:
                 raise CapabilityError('账号或互动状态检查失败，未提交。') from None
             if type(present) is not bool:
                 raise CapabilityError('互动状态未知，未提交。')
+            if str(self.config.get('bili_account_id',''))!=account or not all(self.config.get(k,False) for k in ('enabled','bili_enabled','bili_'+kind+'_enabled')):
+                raise CapabilityError('检查期间账号或互动权限已变化，未提交。')
             if present:
                 with self.reader.connect() as db:
                     db.execute("UPDATE bili_actions SET state='verified' WHERE account=? AND kind=? AND video=? AND folder=?", key)
@@ -128,6 +157,11 @@ class BiliActions:
                 # Successful POST is not proof that the read state has changed.
                 confirmed = await asyncio.wait_for(self.backend.check(kind, video_id, account, folder), 15) is True
                 state = 'verified' if confirmed else 'submitted_unverified'
+            except AttentionDeferred:
+                # Brain rejected before the transport started, so this is not
+                # an uncertain remote mutation and may be explicitly retried.
+                with self.reader.connect() as db:db.execute("DELETE FROM bili_actions WHERE account=? AND kind=? AND video=? AND folder=? AND state='pending'",key)
+                raise
             except Exception:
                 pass  # No exception text, transport details, or credential logs.
             with self.reader.connect() as db:
@@ -137,4 +171,39 @@ class BiliActions:
     @staticmethod
     def receipt(kind, video_id, state, confirmed, attempted):
         return {'action': kind, 'bvid': video_id, 'state': state, 'confirmed': confirmed,
-                'write_attempted': attempted, 'instruction': '只有confirmed=true才说已经点赞/收藏；其他状态说明尚未确认，不重复提交。只操作小鲸绑定账号，不涉及投币。'}
+                'write_attempted': attempted, 'instruction': '只有confirmed=true才说对应互动已经确认；其他状态说明尚未确认，不重复提交。只操作小鲸绑定账号，不涉及投币。'}
+
+    async def follow(self,target):
+        from .bili_social import uid
+        target=uid(target);account=uid(self.config.get('bili_account_id',''))
+        def enabled():
+            if not all(self.config.get(k,False) for k in ('enabled','bili_enabled','bili_follow_enabled')) or str(self.config.get('bili_account_id',''))!=account:
+                raise CapabilityError('关注能力未开启或账号已变化。')
+        enabled()
+        if target==account:raise CapabilityError('不关注自己。')
+        key=(account,'follow',target,'')
+        def receipt(state,confirmed=False,attempted=False):
+            return {'action':'follow','uid':target,'state':state,'confirmed':confirmed,'write_attempted':attempted,
+                    'instruction':'只添加关注，不取关、不拉黑、不解除拉黑；confirmed才算状态核验，未知结果不重试。'}
+        async with self.lock:
+            if str(await asyncio.wait_for(self.backend.identity(),15))!=account:raise CapabilityError('关注账号不匹配。')
+            present=await asyncio.wait_for(self.backend.check('follow',target,account,''),15)
+            enabled()
+            if type(present)is not bool:raise CapabilityError('关注状态未知。')
+            if present:return receipt('already_done',True)
+            with self.reader.connect() as db:
+                db.execute('BEGIN IMMEDIATE')
+                if db.execute('SELECT 1 FROM bili_actions WHERE account=? AND kind=? AND video=? AND folder=?',key).fetchone():return receipt('not_confirmed_no_retry')
+                if db.execute("SELECT COUNT(*) FROM bili_actions WHERE account=? AND kind='follow' AND stamp>?",(account,self.clock()-86400)).fetchone()[0]>=self.limit():raise CapabilityError('关注操作滚动24小时预算已用完。')
+                db.execute('INSERT INTO bili_actions VALUES(?,?,?,?,?,?)',(*key,self.clock(),'pending'))
+            state='uncertain';confirmed=False
+            try:
+                await asyncio.wait_for(self.backend.send('follow',target,''),15)
+                confirmed=await asyncio.wait_for(self.backend.check('follow',target,account,''),15) is True
+                state='verified' if confirmed else 'submitted_unverified'
+            except AttentionDeferred:
+                with self.reader.connect() as db:db.execute("DELETE FROM bili_actions WHERE account=? AND kind=? AND video=? AND folder=? AND state='pending'",key)
+                raise
+            except Exception:pass
+            with self.reader.connect() as db:db.execute('UPDATE bili_actions SET state=? WHERE account=? AND kind=? AND video=? AND folder=?',(state,*key))
+            return receipt(state,confirmed,True)

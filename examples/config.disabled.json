@@ -119,7 +119,6 @@
   "bili_scroll_session_seconds": 600,
   "bili_dynamic_daytime_enabled": false,
   "bili_dynamic_reply_enabled": false,
-  "canvas_enabled": false,
   "autonomy_enabled": false,
   "owner_notes_enabled": false,
   "bili_owner_shelf_autonomous_enabled": false,
@@ -127,5 +126,11 @@
   "private_recent_conversation_seconds": 900,
   "vision_peak_routing_enabled": false,
   "vision_qwen_key_provider_id": "aliyun_memory_embedding",
-  "local_timezone": "UTC+08:00"
+  "canvas_enabled": false,
+  "local_timezone": "UTC+08:00",
+  "bili_explore_enabled": false,
+  "bili_repost_enabled": false,
+  "bili_later_enabled": false,
+  "bili_dynamic_image_enabled": false,
+  "bili_follow_enabled": false
 }

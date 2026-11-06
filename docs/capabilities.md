@@ -51,6 +51,8 @@ fish-val、fish-bili等是功能导航名，不是独立插件包。多数能力
 
 选片、视频理解、话题、评论与动态。
 
+0.9.1 增加按段弹幕、分P/标签/评论、自己账号的历史和收藏夹、稍后再看、关注、转发和图库图文动态：[扩展指南](bili-valorant-expansion.md)。
+
 [下载来源](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [主插件](../astrbot_plugin_fish_capabilities/) → [配置与使用](bili-social.md)
 
 [本机工具](../tools/bili_login.py)须按指南在对应环境运行，并先设置实际 ASTRBOT_ROOT。fish-val-login等是原设备快捷包装，克隆仓库不会自动创建它们。
@@ -60,6 +62,8 @@ fish-val、fish-bili等是功能导航名，不是独立插件包。多数能力
 ## fish-val · 掌瓦
 
 微信绑定、战绩、增量记录与每日商店。
+
+0.9.1 增加地图/特工/趋势/武器/队友统计、本地历史与商店愿望单：[扩展指南](bili-valorant-expansion.md)。
 
 [下载来源](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [主插件](../astrbot_plugin_fish_capabilities/) → [配置与使用](new-capabilities.md)
 

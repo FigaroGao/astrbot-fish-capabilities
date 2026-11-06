@@ -633,5 +633,30 @@
     "type": "string",
     "description": "统一调度、活动窗口与本地日界；IANA名称或UTC±HH:MM。修改前检查已有任务，避免重复/错时执行。默认UTC+08:00。",
     "default": "UTC+08:00"
+  },
+  "bili_explore_enabled": {
+    "type": "bool",
+    "description": "主人私聊扩展读取：分P、标签、相关推荐、评论、弹幕段、动态详情、公开UP资料，本账号的稍后再看、观看历史、收藏夹和夹内视频",
+    "default": false
+  },
+  "bili_repost_enabled": {
+    "type": "bool",
+    "description": "允许审核后转发动态，须同时启用动态发布；共享每天一次动态预算，不自动重试未知结果",
+    "default": false
+  },
+  "bili_later_enabled": {
+    "type": "bool",
+    "description": "允许将已实际读取视频加入稍后再看，只添加不清空；复用互动日预算与持久去重",
+    "default": false
+  },
+  "bili_dynamic_image_enabled": {
+    "type": "bool",
+    "description": "允许文字动态配一张已批准公开图库PNG/JPEG；还需公开图片图库开关，图文合审，与动态共享日预算",
+    "default": false
+  },
+  "bili_follow_enabled": {
+    "type": "bool",
+    "description": "绑定的小鲸账号添加关注；不取关不拉黑，每种互动滚动24小时预算和持久去重继续生效",
+    "default": false
   }
 }

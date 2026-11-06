@@ -1,3 +1,9 @@
+## 2026-11-06: 0.9.1 Bilibili and VALORANT expansion
+
+- Added 45 mock/local regressions. With the existing FFmpeg executable selected, the full suite reported **858 passed, 0 skipped**, with one existing audioop deprecation warning and a separate test-framework loop-scope configuration notice.
+- Coverage includes Bilibili page/segment bounds, account-partitioned caches, durable concurrent repost deduplication, no retry after timeouts, account/source changes during review, final transport permission checks, joint image/caption review and changed-image rejection, add-only watch-later/follow actions, VALORANT sample/mode/date/missing-value statistics, distinct same-name players, and role-partitioned shop snapshots/wishlists.
+- API wrappers were checked against the pinned SDK release's actual source without copying its implementation. No real-account integration, tablet deployment, paid-model calls, or test messages to QQ/Bilibili occurred. New switches default off. Runtime data, credentials, artwork and personal settings remain excluded. [Capabilities and limits](bili-valorant-expansion.en.md).
+
 ## 2026-11-06: Generic public package
 
 - Personal region/school references have been removed from current main-branch documentation, source, test fixtures and examples. Weather has no built-in personal city or coordinates; Canvas reads its locally bound origin; `local_timezone` configures the timezone. See [generic settings](generic-settings.en.md). Older Git commits were not rewritten.
