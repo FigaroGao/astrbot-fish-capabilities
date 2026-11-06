@@ -73,3 +73,19 @@ async def test_rest_boundary_is_a_small_deduplicated_addendum(plugin):
     await plugin.support_companionship(event,req);await plugin.support_companionship(event,req)
     assert req.system_prompt.startswith('unchanged persona') and req.system_prompt.count(REST_BOUNDARY)==1
     assert '不是替主人结束当前对话的权限' in req.system_prompt
+
+async def test_self_directed_can_decline_with_cross_session_history(tmp_path):
+    reader=BiliReader(tmp_path/'b.db',BiliFake())
+    with reader.memory.connect() as db:
+        db.execute('INSERT INTO videos VALUES(?,?,?,?,?,?)',(BV,1,2,'{}','',''))
+    reader.browse=AsyncMock(return_value={'videos':[{'bvid':BV}]})
+    generate=AsyncMock(return_value='{"bvids":[]}')
+    duty=BiliDuty(reader,None,{'bili_scroll_unlimited_enabled':True},generate,AsyncMock())
+    duty.feedback_source=lambda:[{'bvid':BV,'vote':-1}]
+    result=await duty.once('private-test')
+    assert result['state']=='abstained'
+    prompt=generate.await_args.args[0]
+    assert '"previously_read": true' in prompt and '"owner_vote": -1' in prompt
+    reader.browse.return_value={'videos':[]}
+    assert (await duty.once('empty-test'))['state']=='no_candidates'
+    assert generate.await_count==1
