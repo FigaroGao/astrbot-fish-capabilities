@@ -1,63 +1,78 @@
-# Fish capabilities for AstrBot
+# Xiaojing · AstrBot Fish Capabilities
 
-[中文](README.md) | [English — full translation](README.en.md)
+[中文](README.md) | [English — 完整翻译](README.en.md)
 
-Latest: [Brain Core integration and incremental fixes (November 6, 2026)](docs/brain-core.en.md). Covers cross-channel attention, explicit group requests, video-topic receipts, source and summary attribution, cancellation recovery, and expression-reference recall. Source and tests are synchronized; the tablet is disconnected, so this publication performs no new deployment.
+**0.9.0** · Shared Brain Core for QQ, Bilibili and autonomous companionship. Deploy on a compatible ARM64 Android tablet or computer; model APIs can run in the cloud. Coding assistants are deployment/maintenance aids and do not need to stay connected for normal operation.
 
-Latest: [November 2 autonomous activities, private notebook, public shelf, and offline meme dictionary](docs/autonomy-20261102.en.md), plus [peak-hour vision routing](docs/vision-peak-routing.en.md). Autonomous activities use a ten-minute cooldown after completion and an 11:00–04:00 Hong Kong activity window; normal chat remains available during rest. New capabilities default to off, and the English documentation is a complete item-by-item translation.
+[Download source](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) · [Start here](docs/getting-started.en.md) · [Choose capabilities](docs/capabilities.en.md) · [Illustrated examples](docs/examples.en.md) · [Core changes](docs/brain-core.en.md)
 
-Latest: [October 30–31 scene-based video detail selection, context costs, slow-task acknowledgements, Lecture timetables and Vocu integration](docs/update-20261031.en.md). Desktop chat, isolated watch memory, action receipts, the new UI and the voice switch live in the separate [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate) repository and are not bundled into this plugin installer.
+All feature switches default to off; configure your own identity and services. This repository is a multi-component source project, not a repository-root plugin installer.
 
-Latest: [October 29 course notebook, Canvas integration, brief match review and other fixes](docs/update-20261029.en.md), including local binding, configuration and actual validation limits.
+## Brain overview
 
-Latest fixes: [2026-10-28 changes, configuration and validation](docs/update-20261028.en.md). Includes video/dynamic repairs, sleep boundaries, six character references and comment-emote style; every item is fully translated from Chinese.
+```mermaid
+flowchart TB
+ subgraph Inputs["感知入口 / Inputs"]
+  QQ["QQ 私聊与群聊 / Private & group chat"]
+  Timer["统一时间表 / Timetable"]
+  Bili["B站通知与阅读 / Bilibili notices & reading"]
+  Screen["Screenmate 桌面观察 / Desktop observation"]
+ end
+ subgraph Brain["Brain Core · 决策与协调 / Decisions & coordination"]
+  Attention["注意力、优先级、占用与去重 / Attention, priority, leases & dedup"]
+  State["短期工作状态 / Working state"]
+  Persona["读取现有人格 + 任务上下文 / Existing persona + task context"]
+ end
+ QQ --> Attention
+ Timer --> Attention
+ Bili --> Attention
+ Screen --> Attention
+ Attention <--> State
+ Persona --> Attention
+ Memory["LivingMemory 长期记忆 / Long-term memory"] <--> Persona
+ Reading["独立阅读记忆与时间线 / Reading memory & timeline"] <--> Persona
+ Attention --> Executors["专业执行器 / Specialist executors"]
+ Executors --> Tools["视频、天气、战绩、课程、ASR/TTS / Video, weather, records, courses, speech"]
+ Executors --> Private["QQ回复与桌宠动作 / QQ responses & pet actions"]
+ Executors --> Review["原有身份权限与公开审核 / Existing identity, permissions & public review"]
+ Review --> Public["B站公开写入 / Bilibili public writes"]
+ Tools --> State
+ Private --> State
+ Public --> State
+ QQ -. "明确私聊与工具请求沿用原生流程 / Explicit chat & tools retain native flow" .-> Native["AstrBot 原生 Agent / Native agent"]
+ Native --> Tools
+```
 
-Adds intent-based conversation, Bilibili reading and interaction, weather, game records, memes, memory integration and a unified timetable to AstrBot + NapCat. Includes ARM64 Android tablet and computer deployment routes. Share release **0.9.0 · 2026-11-06**.
+## Example: a video becomes a conversation
 
+```mermaid
+flowchart LR
+ A["实际阅读 / Actual reading"] --> B["有来源的话题候选 / Grounded topic"]
+ B --> C["结合当前对话 / Current conversation"]
+ C --> D["选择聊或保持安静 / Share or stay quiet"]
+ D --> E["保留真实发送状态 / Keep actual delivery state"]
+```
 
-Version 0.8.0 adds twenty companionship/management improvements, read-only tone diagnostics, batched group conversation, private meme opportunities, selective video/page reading/character references, comment media candidates, and public Codex announcements. See the [complete update and migration guide](docs/release-0.8.0.en.md) and [actual deployment and untested limits](docs/deployment-20261027.en.md). All shared feature switches remain disabled by default.
+[More examples: preemption, mentions, schedules and silence](docs/examples.en.md)
 
-This is a configurable trial release, not a bundle containing an existing account. All capability switches default to off; owner identities and authorized scopes are empty. Repository maintainer credits do not configure the bot's owner. No private conversations, memories, persona prompts or login sessions are distributed.
+## Capability navigation
 
+| Entry | Capability | What it does | Setup | Source |
+|---|---|---|---|---|
+| [fish-brain](docs/capabilities.en.md#fish-brain) | Shared core | Attention, working state, preemption and persona context | [Guide](docs/brain-core.en.md) | [Source](astrbot_plugin_fish_capabilities/services/brain.py) |
+| [fish-chat](docs/capabilities.en.md#fish-chat) | Chat and participation | Group intent, silence, backlog merging and segmentation | [Guide](docs/intent.en.md) | [Source](astrbot_plugin_fish_capabilities/services/intent_runtime.py) |
+| [fish-memory](docs/capabilities.en.md#fish-memory) | Memory and timeline | Long-term integration, archives, corrections and activity indexes | [Guide](docs/memory.en.md) | [Source](astrbot_plugin_fish_capabilities/services/memory_editor.py) |
+| [fish-bili](docs/capabilities.en.md#fish-bili) | Bilibili | Selection, video understanding, topics, comments and dynamics | [Guide](docs/bili-social.en.md) | [Source](astrbot_plugin_fish_capabilities/services/bilibili.py) |
+| [fish-val](docs/capabilities.en.md#fish-val) | Mainland VALORANT | WeChat binding, records, incremental sync and daily shop | [Guide](docs/new-capabilities.en.md) | [Source](astrbot_plugin_fish_capabilities/services/valorant.py) |
+| [fish-canvas](docs/capabilities.en.md#fish-canvas) | Courses and Canvas | CityU courses, assignments, announcements and personal progress | [Guide](docs/update-20261029.en.md) | [Source](astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-tasks](docs/capabilities.en.md#fish-tasks) | Unified schedule | Natural-language reminders, browsing and maintenance schedules | [Guide](docs/release-0.7.0.en.md) | [Source](astrbot_plugin_fish_capabilities/services/timetable.py) |
+| [fish-meme](docs/capabilities.en.md#fish-meme) | Memes and expression | Categorized library, sending opportunities, style references and diagnostics | [Guide](docs/memes.en.md) | [Source](astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
+| [fish-weather](docs/capabilities.en.md#fish-weather) | Weather and daily tools | Hong Kong weather and authorized group-record queries | [Guide](docs/getting-started.en.md) | [Source](astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-speech](docs/capabilities.en.md#fish-speech) | Speech | Speech recognition and optional TTS adapters | [Guide](docs/update-20261031.en.md) | [Source](astrbot_plugin_fish_capabilities/services/asr.py) |
+| [fish-mail](docs/capabilities.en.md#fish-mail) | Mailbox | Local letters, replies, read receipts and connection status | [Guide](docs/cold-memory.en.md) | [Source](astrbot_plugin_fish_capabilities/services/sister_mail.py) |
+| [fish-recovery](docs/capabilities.en.md#fish-recovery) | QQ recovery | Separate recovery manager, bounded relogin and verification stop | [Guide](docs/recovery.en.md) | [Source](recovery/) |
 
-Release 0.7.1 adds [cold-archive recollection, 05:00 nightly review and mailbox connection status](docs/cold-memory.en.md). Only generic implementation is shared, disabled by default, without private archives or device bindings.
-
-## Start here
-
-1. [From-zero deployment: tablet and computer](docs/getting-started.en.md): establish QQ text replies before enabling capabilities individually.
-2. [Deployment with DSH or a similar assistant](docs/assistant-deployment.en.md): copyable deployment prompts and acceptance checks.
-3. [0.7.0 features, configuration and migration](docs/release-0.7.0.en.md): start here for an existing installation.
-4. [Privacy and identity configuration](docs/privacy.en.md), [validation scope](docs/validation.en.md).
-
-## Capabilities and boundaries
-
-| Capability | Behavior and requirements |
-| --- | --- |
-| Private archive and recollection | Append-only local text, bounded cue-based quotations and editable sourced diaries; current explicit corrections take precedence |
-| Mailbox connection | Device heartbeats are separate from actual reading and replies; no automatic Codex wakeup |
-| Unified timetable | The owner can use natural language in private chat through `fish_tasks` to create, update, pause, resume or cancel tasks; reminders, weather, shop, browsing and checks reuse one scheduler |
-| Cross-window timeline | Stores bounded QQ and Bilibili activity summaries for owner-private retrieval; historical events are not current states and are not automatically disclosed to groups |
-| Memory retrieval and correction | `fish_memory_edit` searches old memories in the current scope, independently reviews corrections, checks versions and keeps an audit; requires compatible LivingMemory interfaces |
-| Bilibili reading | Search, the bot account's personalized homepage, candidate selection, subtitles and sampled frames, comments and notes; no deep reading beyond ten minutes, and sampling is not complete viewing |
-| Bilibili interaction | Separate switches and review for comments, thread replies, likes, favorites, native emotes and approved image assets, followed-account activity, selected streamer alerts and at most one daily status post |
-| Owner mentions on Bilibili | Verifies sender, recipient account and video target before reading the video and comments and optionally replying; does not replay old notices or repeat writes with unknown outcomes |
-| Group intent and quiet mode | Identifies conversation targets and combines backlog; owner `/闭嘴` or an intent decision pauses the current group for 120 seconds; GCP integration requires checking the patch baseline |
-| Everyday capabilities | Hong Kong weather, private queries of authorized group records, bounded nested forwards, mainland Valorant WeChat records and daily shop, categorized memes and a public knowledge base |
-| Speech recognition | Reuses an Alibaba provider key with four Paraformer routes, local quota reservations and a short-lived cache; this is not TTS and does not automatically send voice replies |
-| Context and expression | Bounded history, rolling summaries, compact tool output and ordinary text segmentation; appends companionship guidance without replacing the main persona |
-| QQ recovery | Independent Termux recovery manager and watchdog, preferring built-in recovery, bounded quick login and optional password fallback; stops retries for manual verification |
-
-Not every reference-device customization is included: the complete LivingMemory two-layer group-memory changes have not been packaged into a portable patch, and the GCP patch is not a universal installer for any upstream version. See [memory](docs/memory.en.md) and [intent integration](docs/intent.en.md). Arena Breakout PC records, Azure/Vocu voice tuning and local GPU speech are not completed capabilities.
-
-## Layout and installation principles
-
-The main plugin is `astrbot_plugin_fish_capabilities/`; copy it into the actual AstrBot `data/plugins/` directory. This repository also includes tools, a recovery manager and patches: **do not install the repository root as one AstrBot plugin**. Install dependencies into the Python environment that actually runs AstrBot. Reference framework versions are AstrBot 4.29.1 and NapCat 4.18.38; check compatibility for other versions.
-
-`examples/config.disabled.json` is an all-off template, not a working private configuration. Bilibili, Valorant, speech and public writes require separate enablement; the master switch does not grant account permissions.
-
-## Other guides
-
-[QQ recovery](docs/recovery.en.md) · [Group controls](docs/group-controls.en.md) · [Bilibili interaction](docs/bili-social.en.md) · [Existing capability configuration](docs/new-capabilities.en.md) · [Memory freshness](docs/memory-policy.en.md) · [Memes](docs/memes.en.md). For fixed times and old limits in earlier guides, use the 0.7.0 migration guide and actual local configuration instead.
+[Screenmate desktop companion](https://github.com/FigaroGao/Xiaojing-Screenmate)
 
 ## Tests and sources
 

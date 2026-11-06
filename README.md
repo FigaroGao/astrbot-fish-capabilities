@@ -1,53 +1,78 @@
-# 大肥鱼：AstrBot 能力扩展
+# 小鲸 · AstrBot 大肥鱼能力扩展
 
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
-最新：[Brain Core共享主脑与持续排查修补（2026-11-06）](docs/brain-core.md)。包含跨渠道注意力、群聊请求保留、视频话题回执、来源与摘要归属、取消恢复及表达参考召回。源码与测试已同步；本次平板未连接，不重新部署。
+**0.9.0** · 让QQ、B站和自主活动共用一套主脑。可部署在兼容的ARM64安卓平板或电脑上，模型使用云端API；DSH、Codex等辅助部署和维护，日常运行不需要它们持续连接。
 
-最新：[11月2日自主活动、私人小本子、公开书架与离线梗库](docs/autonomy-20261102.md)，以及[识图高峰时段路由](docs/vision-peak-routing.md)。自主活动采用完成后10分钟冷却与11:00至次日04:00窗口；睡眠时仍能正常聊天。新能力默认关闭，英文说明逐项完整翻译。
+[下载源码](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) · [从零部署](docs/getting-started.md) · [按功能安装](docs/capabilities.md) · [示例图](docs/examples.md) · [主脑改动](docs/brain-core.md)
 
-最新：[10月30—31日视频场景选段、上下文费用、慢任务回应、Lecture课表与Vocu适配](docs/update-20261031.md)。桌面陪伴的聊天、独立记忆、动作回执、新界面与语音开关在独立仓库 [Xiaojing-Screenmate](https://github.com/FigaroGao/Xiaojing-Screenmate)，不混入本插件安装包。
+分享版开关默认关闭，需配置自己的身份和服务。本仓库包含多个组件，不能把仓库根目录直接当成单个插件安装。
 
-最新：[10月29日课程小本子、Canvas联查、战绩简版复盘与其他补修](docs/update-20261029.md)。包含本机绑定步骤、配置与实际验证边界。
+## 主脑总图
 
-最新补修：[2026-10-28更新、配置与验证](docs/update-20261028.md)。包含观看与动态修复、睡眠边界、六种角色参考和评论表情语气；英文逐项完整翻译。
+```mermaid
+flowchart TB
+ subgraph Inputs["感知入口 / Inputs"]
+  QQ["QQ 私聊与群聊 / Private & group chat"]
+  Timer["统一时间表 / Timetable"]
+  Bili["B站通知与阅读 / Bilibili notices & reading"]
+  Screen["Screenmate 桌面观察 / Desktop observation"]
+ end
+ subgraph Brain["Brain Core · 决策与协调 / Decisions & coordination"]
+  Attention["注意力、优先级、占用与去重 / Attention, priority, leases & dedup"]
+  State["短期工作状态 / Working state"]
+  Persona["读取现有人格 + 任务上下文 / Existing persona + task context"]
+ end
+ QQ --> Attention
+ Timer --> Attention
+ Bili --> Attention
+ Screen --> Attention
+ Attention <--> State
+ Persona --> Attention
+ Memory["LivingMemory 长期记忆 / Long-term memory"] <--> Persona
+ Reading["独立阅读记忆与时间线 / Reading memory & timeline"] <--> Persona
+ Attention --> Executors["专业执行器 / Specialist executors"]
+ Executors --> Tools["视频、天气、战绩、课程、ASR/TTS / Video, weather, records, courses, speech"]
+ Executors --> Private["QQ回复与桌宠动作 / QQ responses & pet actions"]
+ Executors --> Review["原有身份权限与公开审核 / Existing identity, permissions & public review"]
+ Review --> Public["B站公开写入 / Bilibili public writes"]
+ Tools --> State
+ Private --> State
+ Public --> State
+ QQ -. "明确私聊与工具请求沿用原生流程 / Explicit chat & tools retain native flow" .-> Native["AstrBot 原生 Agent / Native agent"]
+ Native --> Tools
+```
 
-在 AstrBot + NapCat 上增加意图接话、B站浏览与互动、天气、战绩、表情、长期记忆适配和统一时间表。支持以 ARM64 安卓平板作为主机，也提供电脑部署路线。分享版 **0.9.0 · 2026-11-06**。
+## 示例：把视频变成聊天话题
 
+```mermaid
+flowchart LR
+ A["实际阅读 / Actual reading"] --> B["有来源的话题候选 / Grounded topic"]
+ B --> C["结合当前对话 / Current conversation"]
+ C --> D["选择聊或保持安静 / Share or stay quiet"]
+ D --> E["保留真实发送状态 / Keep actual delivery state"]
+```
 
-此前0.8.0新增20项陪伴与管理改进、只读语气诊断、群聊批次接话、私聊表情机会、选择式视频/逐页阅读/角色资料参考、评论媒体候选及Codex公开公告。详见[完整更新与迁移](docs/release-0.8.0.md)和[实际部署/未测边界](docs/deployment-20261027.md)。全部分享开关仍默认关闭。
+[更多示例：让路、@回复、统一日程与群静音](docs/examples.md)
 
-这是需要配置的试用版，不是携带现成账号的整合包。所有能力开关默认关闭，主人身份和授权范围为空。仓库维护者署名不是机器人主人的身份配置，不分发任何人的私人聊天、记忆、提示词或登录态。
+## 功能导航
 
+| 入口 | 分类 | 主要功能 | 配置指南 | 源码 |
+|---|---|---|---|---|
+| [fish-brain](docs/capabilities.md#fish-brain) | 共享主脑 | 注意力、工作状态、抢占、人格上下文 | [指南](docs/brain-core.md) | [源码](astrbot_plugin_fish_capabilities/services/brain.py) |
+| [fish-chat](docs/capabilities.md#fish-chat) | 聊天与接话 | 群聊意图、静音、积压合并与分段 | [指南](docs/intent.md) | [源码](astrbot_plugin_fish_capabilities/services/intent_runtime.py) |
+| [fish-memory](docs/capabilities.md#fish-memory) | 记忆与时间线 | 长期记忆适配、冷档、纠错、活动索引 | [指南](docs/memory.md) | [源码](astrbot_plugin_fish_capabilities/services/memory_editor.py) |
+| [fish-bili](docs/capabilities.md#fish-bili) | B站 | 选片、视频理解、话题、评论与动态 | [指南](docs/bili-social.md) | [源码](astrbot_plugin_fish_capabilities/services/bilibili.py) |
+| [fish-val](docs/capabilities.md#fish-val) | 掌瓦 | 微信绑定、战绩、增量记录与每日商店 | [指南](docs/new-capabilities.md) | [源码](astrbot_plugin_fish_capabilities/services/valorant.py) |
+| [fish-canvas](docs/capabilities.md#fish-canvas) | 课程与Canvas | CityU课程、作业、公告与个人进度 | [指南](docs/update-20261029.md) | [源码](astrbot_plugin_fish_capabilities/services/course_context.py) |
+| [fish-tasks](docs/capabilities.md#fish-tasks) | 统一时间表 | 自然语言提醒、定时刷站与维护任务 | [指南](docs/release-0.7.0.md) | [源码](astrbot_plugin_fish_capabilities/services/timetable.py) |
+| [fish-meme](docs/capabilities.md#fish-meme) | 表情与语气 | 分类图库、发送机会、表达参考与诊断 | [指南](docs/memes.md) | [源码](astrbot_plugin_fish_capabilities/services/tone_diagnostics.py) |
+| [fish-weather](docs/capabilities.md#fish-weather) | 天气等日常工具 | 香港天气、授权群记录等确定性查询 | [指南](docs/getting-started.md) | [源码](astrbot_plugin_fish_capabilities/services/weather.py) |
+| [fish-speech](docs/capabilities.md#fish-speech) | 语音 | 语音识别与可选TTS适配 | [指南](docs/update-20261031.md) | [源码](astrbot_plugin_fish_capabilities/services/asr.py) |
+| [fish-mail](docs/capabilities.md#fish-mail) | 信箱 | 本地留言、回信、已读与连接状态 | [指南](docs/cold-memory.md) | [源码](astrbot_plugin_fish_capabilities/services/sister_mail.py) |
+| [fish-recovery](docs/capabilities.md#fish-recovery) | QQ恢复 | 独立恢复器、有限重登与人工验证停止 | [指南](docs/recovery.md) | [源码](recovery/) |
 
-本次0.7.1新增[冷档回忆、05:00夜间回顾与信箱连接状态](docs/cold-memory.md)：只分享通用实现，默认关闭，不携带私人存档或设备绑定。
-
-## 从这里开始
-
-1. [从零部署：平板与电脑](docs/getting-started.md)，先跑通 QQ 文字回复，再逐项打开能力。
-2. [让 DSH 或类似助手辅助部署](docs/assistant-deployment.md)，包含可复制的部署提示词和交付检查。
-3. [0.7.0 新功能、配置与迁移](docs/release-0.7.0.md)，已有部署从这里看。
-4. [隐私与身份配置](docs/privacy.md)、[验证范围](docs/validation.md)。
-
-## 能力与边界
-
-| 能力 | 行为与条件 |
-| --- | --- |
-| 私聊冷档与回忆 | 只追加本机文字，按线索取少量原话；带出处日记可更正，当前明确更正优先 |
-| 信箱连接状态 | 设备心跳与实际已读、回信分开；不自动唤醒Codex |
-| 统一时间表 | 主人私聊用自然语言调用 `fish_tasks` 创建、修改、暂停、恢复、取消任务；提醒、天气、商店、刷站和检查任务复用同一调度器 |
-| 跨窗口时间线 | QQ 与 B站活动保存有限摘要，主人私聊可检索；历史事件不冒充当前状态，不自动向群公开 |
-| 记忆检索与纠错 | `fish_memory_edit` 检索当前范围旧记忆，独立审查更正、版本校验、保留审计；依赖兼容 LivingMemory 接口 |
-| B站阅读 | 搜索、本人账号首页推荐、候选选片、字幕和抽样画面、评论与札记；超过10分钟不深读，抽样不等于完整观看 |
-| B站互动 | 独立开关与审核的评论、楼中楼、点赞收藏、表情和批准图库图片、关注动态、指定UP开播、每日最多一条碎碎念 |
-| 主人B站@ | 核验发件人、接收账号和视频对象后阅读视频及评论，可决定回复；旧通知不回放，未知写入结果不重复发 |
-| 群聊意图与静音 | 判断接话对象、合并积压，主人 `/闭嘴` 或意图决定停止后静音本群120秒；GCP桥接需核对补丁基线 |
-| 日常能力 | 香港天气、私聊查授权群记录、有限嵌套转发、国服掌瓦微信战绩与每日商店、分类表情和公开知识库 |
-| 语音识别 | 复用阿里云提供商Key，四种 Paraformer 路线、本地额度预留和短期缓存；不是 TTS，不自动发语音 |
-| 上下文与语气 | 有限历史、滚动摘要、工具输出压缩、普通文字分段；追加陪伴表达约束，不覆盖原人格主体 |
-| QQ恢复 | 独立 Termux 恢复器和看守，优先内置恢复、有限快速登录和可选密码回退；人工验证停止重试 |
-
-不是所有参考机器定制都包含在本仓库：LivingMemory 双层群记忆尚未整理成完整可迁移补丁；GCP 补丁也不是任意上游版本的通用安装器。详见[记忆](docs/memory.md)与[意图桥接](docs/intent.md)。暗区突围PC战绩、Azure/Vocu调音和本地GPU语音不属于已完成功能。
+[Screenmate桌面陪伴：独立仓库](https://github.com/FigaroGao/Xiaojing-Screenmate)
 
 ## 目录和安装原则
 
