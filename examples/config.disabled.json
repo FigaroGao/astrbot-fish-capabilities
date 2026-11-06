@@ -132,5 +132,6 @@
   "bili_repost_enabled": false,
   "bili_later_enabled": false,
   "bili_dynamic_image_enabled": false,
-  "bili_follow_enabled": false
+  "bili_follow_enabled": false,
+  "self_regulation_enabled": false
 }

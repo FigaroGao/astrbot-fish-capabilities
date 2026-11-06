@@ -1,3 +1,9 @@
+## 2026-11-06: 0.9.2 Bounded behavior and self-checks
+
+- Added 32 regressions for behavior allowlists, permission rejection, revision conflicts, cooldowns/daily budgets, expiration, persona preservation, audit reasons excluded from system prompts, actual autonomous timing/direct group replies, unopened credentials, mailbox switches and storage-failure fallback. Also includes the six previously local tests for task revocation/revision after an asynchronous gate.
+- Final full suite: **896 passed, 0 skipped**, including local FFmpeg synthesis, with one existing audioop warning and a separate test-framework loop-scope configuration notice. No paid-model calls or test QQ/Bilibili messages occurred.
+- Behavior adjustment defaults off and its runtime database is excluded. The model does not rewrite the persona, configuration, spending/send caps, permissions or review rules. Self-checks read local structured state, do not prove end-to-end connectivity and perform no repairs. No tablet connection, deployment or service restart occurred. [Guide](self-regulation.en.md).
+
 ## 2026-11-06: 0.9.1 Bilibili and VALORANT expansion
 
 - Added 45 mock/local regressions. With the existing FFmpeg executable selected, the full suite reported **858 passed, 0 skipped**, with one existing audioop deprecation warning and a separate test-framework loop-scope configuration notice.

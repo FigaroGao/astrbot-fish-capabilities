@@ -99,6 +99,8 @@ class IntentRuntime:
         if self.direct(event):self.latest_direct[scope]=self.revisions[scope]
 
     def eligible(self,scope,now):
+        regulation=getattr(self.cap,'self_regulation',None)
+        if regulation and not regulation.group_spontaneous_allowed():return False
         day=datetime.fromtimestamp(now,local_zone(self.cap.config)).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
         with self.cap.ledger.connect() as db:
             last=db.execute('SELECT MAX(stamp) FROM intent_turns WHERE scope=?',(scope,)).fetchone()[0]

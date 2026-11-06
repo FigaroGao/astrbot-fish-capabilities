@@ -27,6 +27,8 @@ Names such as fish-val and fish-bili are navigation labels, not separate plugin 
 
 Attention, working state, preemption and persona context.
 
+[0.9.2 behavior adjustment and read-only checks](self-regulation.en.md): fixed allowlist, 24-hour expiry, revisions/audit and issue letters; no source or permission changes.
+
 [Download](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [Main plugin](../astrbot_plugin_fish_capabilities/) → [Setup guide](brain-core.en.md)
 
 <a id="fish-chat"></a>

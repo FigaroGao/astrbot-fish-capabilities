@@ -27,6 +27,8 @@ fish-val、fish-bili等是功能导航名，不是独立插件包。多数能力
 
 注意力、工作状态、抢占、人格上下文。
 
+[0.9.2 行为调节与只读自检](self-regulation.md)：固定白名单、24小时到期、版本与改动审计、问题写信；不自改代码或权限。
+
 [下载来源](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) → [主插件](../astrbot_plugin_fish_capabilities/) → [配置与使用](brain-core.md)
 
 <a id="fish-chat"></a>

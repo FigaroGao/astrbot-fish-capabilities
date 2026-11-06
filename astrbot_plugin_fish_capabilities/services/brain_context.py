@@ -24,6 +24,10 @@ class BrainContext:
         except (AttributeError,KeyError):identity=''
         parts=[identity] if identity else [task]
         if self.cap.config.get('companionship_enabled',False):parts.append(COMPANION_STYLE)
+        regulation=getattr(self.cap,'self_regulation',None)
+        if regulation:
+            guidance=regulation.guidance()
+            if guidance:parts.append(guidance)
         parts.append(self.cap.brain.prompt())
         if kind in ('bili_reply_draft','bili_selection_or_reflection'):parts.append(BILI_COMMENT_STYLE)
         if identity:parts.append('[Task-specific constraints; permissions and public review still apply]\n'+task)

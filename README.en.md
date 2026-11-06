@@ -2,11 +2,13 @@
 
 Configure your own city, school and timezone: see [generic deployment settings](docs/generic-settings.en.md). The public package includes no personal school hostname or default weather city.
 
+**New in 0.9.2:** temporary allowlisted preferences, read-only self-checks and issue letters, without source or permission editing. [Behavior adjustment and self-checks](docs/self-regulation.en.md).
+
 **New in 0.9.1:** expanded Bilibili reads, watch later, follows, reposts and approved-library image dynamics; VALORANT grouped analytics, trends, local history and shop wishlists. [Full capabilities and switches](docs/bili-valorant-expansion.en.md). This batch covers code and mock regressions, without real-account integration or tablet deployment.
 
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
-**0.9.1** · Shared Brain Core for QQ, Bilibili and autonomous companionship. Deploy on a compatible ARM64 Android tablet or computer; model APIs can run in the cloud. Coding assistants are deployment/maintenance aids and do not need to stay connected for normal operation.
+**0.9.2** · Shared Brain Core for QQ, Bilibili and autonomous companionship. Deploy on a compatible ARM64 Android tablet or computer; model APIs can run in the cloud. Coding assistants are deployment/maintenance aids and do not need to stay connected for normal operation.
 
 [Download source](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) · [Start here](docs/getting-started.en.md) · [Choose capabilities](docs/capabilities.en.md) · [Illustrated examples](docs/examples.en.md) · [Core changes](docs/brain-core.en.md)
 

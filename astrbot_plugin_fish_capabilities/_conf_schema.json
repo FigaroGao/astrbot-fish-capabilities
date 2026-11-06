@@ -658,5 +658,10 @@
     "type": "bool",
     "description": "绑定的小鲸账号添加关注；不取关不拉黑，每种互动滚动24小时预算和持久去重继续生效",
     "default": false
+  },
+  "self_regulation_enabled": {
+    "type": "bool",
+    "description": "允许小鲸在固定白名单内临时调节表达、选片与较安静的活动倾向，并只读自检/写信反馈；不允许自改代码、人格、权限、预算或审核。每日最多3次设置，每次24小时有效，可恢复",
+    "default": false
   }
 }

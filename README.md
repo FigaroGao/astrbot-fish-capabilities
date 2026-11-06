@@ -2,11 +2,13 @@
 
 城市、学校与时区均由使用者配置，见[通用部署设置](docs/generic-settings.md)。公开包不含个人学校域名或默认天气城市。
 
+**0.9.2 新增：** 固定白名单内的临时行为调节、只读自检与问题写信；不开放自改代码或权限。[行为调节与自检](docs/self-regulation.md)。
+
 **0.9.1 新增：** B站扩展读取、稍后再看、关注、转发和图库图文动态；掌瓦分组统计、趋势、本地历史与商店愿望单。[完整功能与开关说明](docs/bili-valorant-expansion.md)。本批仅代码与Mock回归，未做真实账号联调或平板部署。
 
 [中文](README.md) | [English — 完整翻译](README.en.md)
 
-**0.9.1** · 让QQ、B站和自主活动共用一套主脑。可部署在兼容的ARM64安卓平板或电脑上，模型使用云端API；DSH、Codex等辅助部署和维护，日常运行不需要它们持续连接。
+**0.9.2** · 让QQ、B站和自主活动共用一套主脑。可部署在兼容的ARM64安卓平板或电脑上，模型使用云端API；DSH、Codex等辅助部署和维护，日常运行不需要它们持续连接。
 
 [下载源码](https://github.com/FigaroGao/astrbot-fish-capabilities/archive/refs/heads/main.zip) · [从零部署](docs/getting-started.md) · [按功能安装](docs/capabilities.md) · [示例图](docs/examples.md) · [主脑改动](docs/brain-core.md)
 

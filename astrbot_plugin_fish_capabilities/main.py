@@ -89,6 +89,8 @@ class FishCapabilities(Star):
         self.homophones=HomophoneHints(Path(__file__).with_name('language_aliases.json'))
         self.valorant_records=ValorantRecords(self.root/'valorant-wechat.credentials.json')
         self.sister_mail=SisterMail(self.root/'sister-mail.sqlite3')
+        from .services.self_regulation import SelfRegulation
+        self.self_regulation=SelfRegulation(self.root/'self-regulation.private.sqlite3',config)
         self.cold_memory=ColdMemory(self.root/'cold-memory',config=config)
         self.context_budget=ContextBudget(self.root/'context-summaries.sqlite3',self.summary_generate,coordination=context)
         self.timeline=ActivityTimeline(self.root/'activity-timeline.sqlite3')
@@ -271,6 +273,7 @@ class FishCapabilities(Star):
             if self.config.get('autonomy_enabled',False):
                 from .services.autonomy import Autonomy
                 self.autonomy=Autonomy(self.root/'autonomy.private.sqlite3',self.config,self.autonomy_generate,self.autonomy_context,self.autonomy_action)
+                self.autonomy.regulation=self.self_regulation
                 self.autonomy.brain=self.brain
             if not self.config.get('timetable_enabled',False):
                 async def private_loop():
@@ -351,7 +354,8 @@ class FishCapabilities(Star):
                 topics=[dict(id=i,text=x[:700]) for i,x in db.execute("SELECT t.id,t.text FROM topics t LEFT JOIN topic_states s ON s.id=t.id WHERE t.stamp>? AND (s.id IS NULL OR s.state IN ('pending','deferred')) ORDER BY t.id DESC LIMIT 3",(now-86400,))]
                 state=dict(db.execute('SELECT k,v FROM state'));busy=state.get('busy_until',0)>now
         last=max((r['at'] for r in history if r['role']=='user'),default=0)
-        return {'now_local_time':__import__('datetime').datetime.fromtimestamp(now,local_zone(self.config)).isoformat(),
+        behavior=self.self_regulation.planning_state()
+        return {'behavior':behavior,'now_local_time':__import__('datetime').datetime.fromtimestamp(now,local_zone(self.config)).isoformat(),
                 'recent_private':history,'recent_user_seconds':now-last,'owner_busy':busy,'pending_topics':topics,
                 'pending_video_topics':self.private_ping.video_candidates(limit=3,pending_only=True) if self.private_ping else [],'notebook':self.owner_notebook.search('',limit=3),'sleep_window':'04:00–11:00，不主动打扰，主人找你仍正常聊天'}
 
@@ -373,6 +377,20 @@ class FishCapabilities(Star):
         return {'state':'new_matches_saved' if initialized and fresh else 'baseline_or_no_new','new_count':len(fresh) if initialized else 0,'notified':False}
 
     async def autonomy_action(self,action,query,context):
+        if action in ('self_check','self_tune'):
+            if not self.self_regulation.enabled():return {'state':'disabled'}
+            if action=='self_check':
+                from .services.self_regulation import self_check
+                return self_check(self,report=True)
+            try:
+                pair,separator,reason=query.partition(';')
+                key,equals,value=pair.partition('=')
+                if not separator or not equals:raise CapabilityError('调节格式为key=value;简短观察原因。')
+                if key=='autonomy_interval_seconds':
+                    try:value=int(value)
+                    except ValueError:raise CapabilityError('活动间隔必须为已登记整数。') from None
+                return self.self_regulation.change(key,value,reason,(context.get('behavior') or {}).get('revision',-1))
+            except CapabilityError as exc:return {'state':'preference_unchanged','reason':str(exc)}
         if action in ('chat','question'):
             if context.get('owner_busy'):return {'state':'owner_busy_no_contact'}
             return {'state':await self.private_ping.tick(intent_hint=query)}
@@ -726,6 +744,9 @@ class FishCapabilities(Star):
         if not self.config.get('enabled',False):return
         authorized=(event.is_private_chat() and str(event.get_sender_id()) in list(map(str,self.config.get('owners',[])))) or (not event.is_private_chat() and getattr(event,'unified_msg_origin',self.actor(event).conversation) in self.config.get('allowed_group_sessions',[]))
         if authorized:
+            guidance=self.self_regulation.guidance()
+            if guidance and '[小鲸可恢复的行为偏好' not in (getattr(req,'system_prompt','') or ''):
+                req.system_prompt=(getattr(req,'system_prompt','') or '')+'\n'+guidance
             from .services.attribution import reference
             from astrbot.core.agent.message import TextPart
             if not hasattr(req,'extra_user_content_parts'):req.extra_user_content_parts=[]
@@ -747,6 +768,7 @@ class FishCapabilities(Star):
         if str(event.get_sender_id()) not in list(map(str,self.config.get('owners',[]))):return
         from astrbot.core.agent.message import TextPart
         hints='时间解释与日界使用 '+zone_name(self.config)+'。这些新增工具仅主人私聊，不用于公开泄露。交互式刷站、读视频和较慢查询会由工具在开始前先发一句简短回应，同一轮只发一次，不另外重复“收到/稍等”；这句不是完成回执。任务完成后按实际结果接着与主人聊，失败就简短说明，不假称已看过，也不只应一句就结束；不承诺离开本轮后仍在后台执行。刷到内容挑有意思的聊，不交长总结。'
+        if self.config.get('self_regulation_enabled',False):hints+='你可以用fish_self_regulate查看并有限调节自己的行为，先status读允许值和revision再set；不为尝试而频繁调整。fish_self_check只读检查程序状态，有问题可报告进现有信箱，不能改代码、模型权重、权限、预算或审核，不运行终端；自检结果不是修复回执。'
         if self.config.get('canvas_enabled',False):hints+='课程简称关联与学校资料+个人进度联查用fish_course_context；先列课程、向主人核实简称对应的准确名称或代码后bind，冲突不自动覆盖。已关联后view可一次取学校作业/公告与少量进度笔记。单独查Canvas课程、作业要求/截止时间/本人提交状态、公告用fish_canvas按需查。先查课程ID，不猜、不每轮读取所有课程；与主人自己说的课程进度笔记区分来源。Token只在本机工具使用，不向主人索要粘贴到聊天，不将Canvas资料发到群或公开评论。'
         if self.config.get('bili_explore_enabled',False):hints+='B站分P/标签/相关推荐、视频评论、按六分钟段读取弹幕、动态详情、公开UP资料、本账号稍后再看用fish_bili_explore；读到资料不等于看过完整视频，不循环抓全量。'
         if self.config.get('bili_repost_enabled',False):hints+='转发动态先读dynamic资料，再用fish_bili_activity(action=repost,dynamic_id=准确ID,text=自己的附言)；与文字动态共享日预算和公开审核，不确定结果不重发。'
@@ -1760,6 +1782,42 @@ class FishCapabilities(Star):
             self.enabled('valorant_shop',event,owner=True)
             from .services.valorant_shop_notes import query
             return await query(self.valorant_records,action,name,event.get_message_str())
+        return await self.run_tool(work)
+
+    @filter.llm_tool(name='fish_self_regulate')
+    async def self_regulate_tool(self,event: AstrMessageEvent,operation: str='status',key: str='',value: str='',reason: str='',revision: int=0):
+        '''主人私聊查看或调节小鲸有限行为偏好。不能改代码、模型权重、人格主体、权限、费用预算或审核。先status，再用其revision设置，避免覆盖其他改动；每小时最多一次、每日三次，设置24小时到期。
+
+        Args:
+            operation(string): status查看允许选项与记录；set调整一项；reset恢复一项或all。
+            key(string): 仅status.allowed中的键；reset全部用all。
+            value(string): 允许的枚举值；活动间隔使用数字字符串，其他不能填任意提示词。
+            reason(string): set/reset时简短观察依据，1至240字，不存原始思考或聊天全文。
+            revision(number): status返回的当前版本。
+        '''
+        async def work():
+            self.enabled('self_regulation',event,owner=True)
+            if operation=='status':return self.self_regulation.status()
+            if operation not in ('set','reset'):raise CapabilityError('只允许status、set或reset。')
+            parsed=value
+            if operation=='set' and key=='autonomy_interval_seconds':
+                try:parsed=int(value)
+                except ValueError:raise CapabilityError('活动间隔应为数字字符串。') from None
+            return self.self_regulation.change(key,parsed,reason,revision,reset=operation=='reset')
+        return await self.run_tool(work)
+
+    @filter.llm_tool(name='fish_self_check')
+    async def self_check_tool(self,event: AstrMessageEvent,report: bool=False):
+        '''主人私聊只读检查小鲸本地运行状态：近期自主活动失败、未确认公开动作、绑定文件是否存在等。无模型/网络调用，不读密钥或日志原文，不运行终端、不重启或修复程序。不代表端到端链路验证。
+
+        Args:
+            report(boolean): 有问题时是否将脱敏状态码写入现有Codex信箱，最多每小时一次；不发QQ/B站，不实时通知Codex。
+        '''
+        async def work():
+            self.enabled('self_regulation',event,owner=True)
+            if type(report)is not bool:raise CapabilityError('report须为布尔值。')
+            from .services.self_regulation import self_check
+            return self_check(self,report)
         return await self.run_tool(work)
 
     @filter.llm_tool(name='fish_valorant_records')
