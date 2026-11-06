@@ -22,3 +22,17 @@ async def test_video_to_search_to_correction(plugin,monkeypatch):
     assert plugin.owner_notebook.related(scope,question)[0]['body']=='修正后的说法'
     with pytest.raises(CapabilityError):plugin.owner_notebook.study_save(scope,question,'过期结果',{},'provisional',note['id'],2)
     assert plugin.owner_notebook.claim_question(scope,note['id']) is None
+
+def test_private_relevance_and_current_correction(tmp_path):
+    from astrbot_plugin_fish_capabilities.services.owner_notebook import OwnerNotebook
+    notes=OwnerNotebook(tmp_path/'notes.db')
+    notes.save('impression','期末考试','提到期末考试时想先安静一会','先安静一会','先安静一会')
+    assert not notes.personal_matches('刚吃完饭','impression')
+    assert notes.personal_matches('你对我的印象呢','impression')
+    old=notes.save('correction','训练安排','周末训练','周末训练','周末训练')
+    notes.save('correction','训练安排','改为周三训练','周三训练','周三训练',old['id'])
+    assert [r['content'] for r in notes.personal_matches('训练安排是什么','correction')]==['改为周三训练']
+    notes.study_save('private','推理性能','显存带宽影响数据搬运',{},'noted')
+    assert notes.related('private','搬数据怎么会卡')
+    assert notes.related('private','VRAM带宽')
+    assert not notes.related('other','显存带宽')

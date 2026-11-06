@@ -56,15 +56,40 @@ class OwnerNotebook:
             rows=db.execute('SELECT id,topic,body,source,state,rev,updated,retry FROM study WHERE scope=? ORDER BY updated DESC LIMIT 300',(scope,)).fetchall()
         return [dict(id=i,topic=t,body=b,source=json.loads(s),state=status,revision=r,updated=u,retry_at=retry,needs_recheck=status=='provisional' and self.clock()-u>=7*86400 and bool(re.search(r'版本|最新|目前|当前|赛季|赛事|价格|今年|本周',t+b))) for i,t,b,s,status,r,u,retry in rows]
 
-    def related(self,scope,message):
+    @staticmethod
+    def relevance(message, topic, body):
         from .companion_learning import terms
+        # Normalize common aliases before matching. Ignore conversational filler.
+        def normalize(value):
+            value=value.casefold()
+            for alias, canonical in (('gpu','图形处理器'),('vram','显存'),('embedding','向量嵌入'),('搬数据','数据搬运')):
+                value=re.sub(r'(?<![a-z0-9])'+alias+r'(?![a-z0-9])',canonical,value) if alias.isascii() else value.replace(alias,canonical)
+            return re.sub(r'为什么|怎么样|我觉得|是不是|今天|刚刚|最近|这个|那个|怎么|你说|我想|一下',' ',value)
+        message,topic,body=map(normalize,(message,topic,body))
         clues=terms(message)
+        title_hits=clues & terms(topic)
+        body_hits=clues & terms(body)
+        exact=bool(len(topic.strip())>=2 and topic.strip() in message)
+        if not exact and len(title_hits | body_hits)<2:return 0
+        return 8*int(exact)+3*len(title_hits)+len(body_hits)
+
+    def related(self,scope,message):
         ranked=[]
         for row in self.study_rows(scope):
-            matched=clues & terms(row['topic'])
-            if len(matched)>=2 or (len(row['topic'])>=2 and row['topic'] in message):
-                ranked.append((len(matched),row))
+            score=self.relevance(message,row['topic'],row['body'])
+            if score:ranked.append((score,row))
         return [row for _,row in sorted(ranked,key=lambda pair:-pair[0])[:2]]
+
+    def personal_matches(self,message,kind):
+        with self.db() as db:
+            rows=db.execute('SELECT topic,content,evidence,stamp FROM notes WHERE active=1 AND kind=? ORDER BY stamp DESC LIMIT 300',(kind,)).fetchall()
+        asking=kind=='impression' and re.search(r'对我.{0,5}印象|觉得我.{0,5}(?:怎样|怎么样|什么样)|怎么看我|眼里.{0,3}我',message)
+        matches=[]
+        for topic,content,evidence,stamp in rows:
+            score=self.relevance(message,topic,content)
+            if score or asking:
+                matches.append((score,dict(topic=topic,content=content,at=stamp,evidence=evidence[:160])))
+        return [row for _,row in sorted(matches,key=lambda pair:-pair[0])[:2]]
 
     def study_save(self,scope,topic,body,source,state,ident=0,revision=0):
         topic=clean(topic,80);body=clean(body,600)
