@@ -55,13 +55,13 @@ def test_casual_pain_is_not_turned_into_emotional_mirror_or_medical_checklist():
     assert scene_hint('手机砸脸，出血不止怎么办')==''
 
 
-async def test_real_request_hook_adds_scene_hint_once_without_rewriting_persona(plugin):
+async def test_casual_accident_uses_compact_style_once(plugin):
     from test_astrbot_binding import Event
     plugin.config.update(companionship_enabled=True,command_platform_ids=['qq_test'])
     event=Event();event.get_message_str=lambda:'行，刚刚手机砸脸了，好疼'
     req=types.SimpleNamespace(system_prompt='original persona')
     await plugin.support_companionship(event,req);await plugin.support_companionship(event,req)
-    assert req.system_prompt.startswith('original persona') and req.system_prompt.count('[本轮场景：')==1
+    assert req.system_prompt.startswith('original persona') and req.system_prompt.count('用自己的口气')==1 and '[本轮场景：' not in req.system_prompt
 
 
 async def test_rest_boundary_is_a_small_deduplicated_addendum(plugin):
@@ -89,3 +89,8 @@ async def test_self_directed_can_decline_with_cross_session_history(tmp_path):
     reader.browse.return_value={'videos':[]}
     assert (await duty.once('empty-test'))['state']=='no_candidates'
     assert generate.await_count==1
+
+@pytest.mark.parametrize('text,wanted',[('最近上课好累',False),('刚刷完牙',False),('最近刷到什么好玩的？',True),('小鲸找个话题吧',True),('别推荐视频了',False),('我发你这个 BV1phxT6xEb7',False)])
+def test_personal_video_topic_invitation(text,wanted):
+    from astrbot_plugin_fish_capabilities.services.companionship import wants_video_topic
+    assert wants_video_topic(text)==wanted

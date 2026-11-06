@@ -50,7 +50,7 @@ from .services.group_quiet import GroupQuiet, install_send_guard
 from .services.timing import activity_timing, poll_delay
 from .services.local_time import local_zone, zone_name
 from .services.bili_dynamic_replies import DynamicReplies
-from .services.companionship import COMPANION_STYLE,scene_hint,REST_BOUNDARY,BILI_COMMENT_STYLE,shared_bili_hint
+from .services.companionship import COMPANION_STYLE,scene_hint,REST_BOUNDARY,BILI_COMMENT_STYLE,shared_bili_hint,CASUAL_STYLE,wants_video_topic
 from .services.timetable import Timetable
 from .services.activity_timeline import ActivityTimeline
 from .services.memory_editor import MemoryEditor
@@ -756,7 +756,7 @@ class FishCapabilities(Star):
             if not hasattr(req,'extra_user_content_parts'):req.extra_user_content_parts=[]
             if event.is_private_chat() and self.private_ping:
                 query=str(getattr(event,'get_message_str',lambda:'')())
-                if re.search(r'B站|视频|刷|无聊|聊点|有意思|干嘛|在干什么|最近',query,re.I):
+                if wants_video_topic(query):
                     topics=self.private_ping.video_candidates(query)
                     if topics:
                         event.set_extra('fish_video_topic_candidates',[t['id'] for t in topics])
@@ -1900,10 +1900,14 @@ class FishCapabilities(Star):
         try:self.enabled('companionship',event)
         except CapabilityError:return
         if str(event.get_platform_id()) not in self.config.get('command_platform_ids',[]):return
-        if COMPANION_STYLE not in (req.system_prompt or ''):
-            req.system_prompt=(req.system_prompt or '')+'\n'+COMPANION_STYLE
-        if REST_BOUNDARY not in req.system_prompt:req.system_prompt+='\n'+REST_BOUNDARY
-        hint=scene_hint(getattr(event,'get_message_str',lambda:'')())
+        text=getattr(event,'get_message_str',lambda:'')() or ''
+        private_text=event.is_private_chat() and bool(text.strip())
+        style=CASUAL_STYLE if private_text else COMPANION_STYLE
+        if style not in (req.system_prompt or ''):
+            req.system_prompt=(req.system_prompt or '')+'\n'+style
+        if (not private_text or re.search(r'睡|晚安|作息|熬夜',text)) and REST_BOUNDARY not in req.system_prompt:
+            req.system_prompt+='\n'+REST_BOUNDARY
+        hint=scene_hint(text) if not private_text else ''
         if hint and hint not in req.system_prompt:req.system_prompt+='\n'+hint
         if self.config.get('tone_diagnostics_enabled',False):
             guidance=self.companion.tone.guidance(self.actor(event).conversation,getattr(event,'get_message_str',lambda:'')())
@@ -1934,6 +1938,10 @@ class FishCapabilities(Star):
     async def support_conversation_depth(self,event: AstrMessageEvent,req):
         try:actor=self.enabled('conversation_depth',event)
         except CapabilityError:return
+        from .services.tone_diagnostics import scene_for
+        message=getattr(event,'get_message_str',lambda:'')() or ''
+        if actor.private and message.strip() and scene_for(message)=='chat' and not re.search(r'怎么办|帮帮我|求助|认真听我说',message):
+            return
         from astrbot.core.agent.message import TextPart
         req.extra_user_content_parts.append(TextPart(text='[本轮交流质量与连续性参考]\n'+depth_reference(actor.private)).mark_as_temp())
 
