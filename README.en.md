@@ -91,3 +91,6 @@ python -m unittest discover -s recovery -p 'test_*.py'
 Isolated tests do not replace real-account end-to-end validation. See the [validation record](docs/validation.en.md) for pass counts, device checks and untested cases. Neither HarmonyOS background survival nor unofficial QQ access can be guaranteed permanently stable.
 
 Code is released under [AGPL-3.0](LICENSE); see [NOTICE](NOTICE.md) for third-party sources and asset boundaries. Initiated, deployed and maintained by FigaroGao, with Codex (OpenAI) assisting design, implementation, tests and documentation. Commits retain Codex coauthor credit; this does not imply official OpenAI endorsement.
+
+
+Continuous expression learning: Xiaojing incrementally learns scoped conversational habits, with scene-specific hints and pause/reject/reset controls. [Guide / 说明](docs/style-learning.md)

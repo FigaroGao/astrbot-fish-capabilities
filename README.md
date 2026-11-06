@@ -101,3 +101,6 @@ python -m unittest discover -s recovery -p 'test_*.py'
 隔离测试不能代替真实账号端到端验证。具体通过数量、设备检查与未实测事项见[验证记录](docs/validation.md)。HarmonyOS 后台存活和非官方QQ接入均不能保证永久稳定。
 
 代码按 [AGPL-3.0](LICENSE) 发布，第三方来源及素材边界见 [NOTICE](NOTICE.md)。由 FigaroGao 发起、部署与维护；Codex（OpenAI）协助设计、实现、测试与文档。提交保留 Codex 共同作者署名，不代表 OpenAI 官方认证。
+
+
+自动表达学习：小鲸按新私聊记录自行增量整理表达习惯，按场景少量应用，可暂停/拒绝/重置。 [Guide / 说明](docs/style-learning.md)

@@ -60,6 +60,7 @@ class CompanionPage:
                 'semantic':self.runtime.semantic.status(),'indexing':bool(self.index_task and not self.index_task.done()),
                 'initiative':self.runtime.initiative_state() if scope==str(self.cap.config.get('bili_private_session','')) else None,
                 'tone':self.runtime.tone.recent(scope),
+                'style_learning':await self.runtime.style_state(scope),
                 'index_result':self.index_result,'intent_decisions':self.cap.intent.last_decisions}}
         except CapabilityError as exc:return {'status':'error','message':str(exc)}
 
@@ -95,6 +96,11 @@ class CompanionPage:
             value=data.get(key,default)
             if type(value)is not int or value<0:raise CapabilityError('记录ID和版本必须是非负整数。')
             return value
+        if operation=='style_control':
+            if data.get('action') not in ('pause','resume','reset','reject'):raise CapabilityError('学习管理操作无效。')
+            if scope!=str(self.cap.config.get('bili_private_session','')):raise CapabilityError('自动表达学习只限主人私聊。')
+            if data.get('action')=='reset' and data.get('confirm') is not True:raise CapabilityError('重置学习需要明确确认，不会删除聊天或长期记忆。')
+            return await self.runtime.style_state(scope,data['action'],data.get('dimension',''),data.get('scene','chat'))
         if operation=='note_save':
             return self.runtime.learning.save(scope,data.get('kind'),data.get('topic',''),data.get('text',''),
                 {'kind':'owner_review','reviewed_in_dashboard':True},approved=True,note_id=integer('id'),revision=integer('revision'))

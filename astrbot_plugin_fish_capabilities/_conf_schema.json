@@ -663,5 +663,20 @@
     "type": "bool",
     "description": "允许小鲸在固定白名单内临时调节表达、选片与较安静的活动倾向，并只读自检/写信反馈；不允许自改代码、人格、权限、预算或审核。每日最多3次设置，每次24小时有效，可恢复",
     "default": false
+  },
+  "style_learning_enabled": {
+    "type": "bool",
+    "default": false,
+    "description": "授权主人私聊自动增量学习表达：每半小时检查，闲置10分钟且至少4条新主人消息才分析；每小时至多一次/默认每日4次，每次40片段。仅固定表达维度可自动生效，明确反馈优先，其他习惯须跨批重复证据；可暂停/拒绝/重置，不改人格或事实，不用于群和公开评论。需learning/cold_archive/timetable开关。"
+  },
+  "style_learning_daily_limit": {
+    "type": "int",
+    "default": 4,
+    "description": "自动表达整理每日模型调用上限（失败/取消也计入），1至8；单次最多1200输出token，既有后台模型计费。"
+  },
+  "style_learning_provider_id": {
+    "type": "string",
+    "default": "",
+    "description": "自动表达整理模型，留空复用bili_provider_id；不训练权重，不使用图像/工具。"
   }
 }

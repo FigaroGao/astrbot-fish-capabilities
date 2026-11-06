@@ -133,5 +133,8 @@
   "bili_later_enabled": false,
   "bili_dynamic_image_enabled": false,
   "bili_follow_enabled": false,
-  "self_regulation_enabled": false
+  "self_regulation_enabled": false,
+  "style_learning_enabled": false,
+  "style_learning_daily_limit": 4,
+  "style_learning_provider_id": ""
 }
