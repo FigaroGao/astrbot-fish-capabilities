@@ -114,3 +114,21 @@ async def test_owner_quiet_changed_during_recheck_still_blocks_transport():
         event=Message();await event.send('synthetic')
         assert event.sent==0
     finally:undo()
+
+async def test_another_members_at_preserves_direct_draft(runtime):
+    event=pending(runtime)
+    other=Event('我也有个问题',direct=True);other.get_sender_id=lambda:'other'
+    runtime.observe(other)
+    assert await runtime.before_delivery(event)
+    runtime.judge.assert_not_awaited()
+
+async def test_different_members_direct_requests_survive_queue(runtime):
+    import asyncio
+    from test_intent_runtime import consume,Gcp
+    group=Gcp();lock=runtime.locks[Event.unified_msg_origin]
+    await lock.acquire()
+    first=Event('请看一下',True);second=Event('我的呢',True);second.get_sender_id=lambda:'other'
+    tasks=[asyncio.create_task(consume(runtime,group,e)) for e in (first,second)]
+    await asyncio.sleep(0);lock.release()
+    assert all(await asyncio.gather(*tasks))
+    assert await runtime.before_delivery(first)

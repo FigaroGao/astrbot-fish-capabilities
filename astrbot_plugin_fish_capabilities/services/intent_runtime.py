@@ -89,14 +89,18 @@ class IntentRuntime:
         self.revisions[scope]+=1; self.last_input[scope]=self.clock()
         senders=self.sender_revisions[scope];sender=str(event.get_sender_id())
         senders.pop(sender,None);senders[sender]=self.revisions[scope]
-        if len(senders)>256:senders.pop(next(iter(senders)))
+        if len(senders)>256:
+            oldest=next(iter(senders));senders.pop(oldest)
+            self.latest_direct.pop((scope,oldest),None)
         event.set_extra('fish_intent_observed',self.revisions[scope])
         _,_,targets=self.targets(event)
         self.records[scope].append({'role':'user','sender_id':str(event.get_sender_id()),
             'revision':self.revisions[scope],
             'text':event.get_message_str()[:600], 'targets':targets,
             'has_image':any(p.__class__.__name__=='Image' for p in event.get_messages())})
-        if self.direct(event):self.latest_direct[scope]=self.revisions[scope]
+        if self.direct(event):
+            self.latest_direct[scope]=self.revisions[scope]
+            self.latest_direct[scope,sender]=self.revisions[scope]
 
     def eligible(self,scope,now):
         regulation=getattr(self.cap,'self_regulation',None)
@@ -173,7 +177,10 @@ class IntentRuntime:
         revision=event.get_extra('fish_intent_generation_revision')
         if revision is None:
             return True
-        if self.latest_direct.get(scope,0)>revision:
+        direct=self.direct(event)
+        sender=str(event.get_sender_id())
+        key=(scope,sender) if direct else scope
+        if self.latest_direct.get(key,0)>revision:
             self.diagnostic(scope,'unsent_draft_replaced_by_direct');return False
         if self.direct(event):
             # Other members chatting while a directed image/tool request runs
@@ -187,13 +194,14 @@ class IntentRuntime:
                                          row.get('revision',0)>revision for row in self.records[scope]):
                 self.diagnostic(scope,'direct_followup_context_expired');return False
         if self.revisions[scope]>revision:
-            check_revision=self.revisions[scope]
+            check_revision=self.sender_revisions[scope].get(sender) if direct else self.revisions[scope]
             self.bot_id=str(event.get_self_id())
             try:verdict=await self.judge(scope,list(self.records[scope]))
             except asyncio.CancelledError:raise
             except Exception:
                 self.diagnostic(scope,'delivery_recheck_failed_silent');return False
-            if not verdict or self.revisions[scope]!=check_revision:
+            current_revision=self.sender_revisions[scope].get(sender) if direct else self.revisions[scope]
+            if not verdict or current_revision!=check_revision:
                 self.diagnostic(scope,'delivery_no_or_stale');return False
             if verdict=='stop_conversation':
                 silencer=getattr(self.cap,'group_quiet',None)
@@ -219,7 +227,7 @@ class IntentRuntime:
         event.call_llm=True
         if lock.locked() and not direct:
             self.diagnostic(scope,'merged_while_busy'); return
-        # Only the latest directly addressed event survives a backlog. Earlier
+        # Keep the latest directly addressed event per sender in a backlog. Earlier
         # messages remain in the bounded group snapshot; they are not answered one by one.
         task=asyncio.current_task();self.active_tasks.add(task)
         started=False
@@ -227,7 +235,7 @@ class IntentRuntime:
             async with lock:
                 if self.closed:return
                 if silencer and silencer.suppress(event):return
-                if direct and self.latest_direct.get(scope)!=revision:
+                if direct and self.latest_direct.get((scope,str(event.get_sender_id())))!=revision:
                     self.diagnostic(scope,'merged_direct');return
                 if not direct:
                     brain=getattr(self.cap,'brain',None)
@@ -291,7 +299,7 @@ class IntentRuntime:
                 else:
                     rows=list(self.records[scope])
                 event.set_extra('fish_intent_approved',True)
-                event.set_extra('fish_intent_generation_revision',self.revisions[scope])
+                event.set_extra('fish_intent_generation_revision',revision if direct else self.revisions[scope])
                 event.set_extra('fish_intent_group_snapshot',rows)
                 self.diagnostic(scope,'direct' if direct else 'intent_yes')
                 async for result in gcp._process_message(event):
