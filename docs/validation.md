@@ -137,3 +137,18 @@ English: Reproduced cross-instance cooldown bypass, an early record failure hidi
 - 公开模板默认关闭，双语说明和来源见[自动表达学习](style-learning.md)。源码与数据回滚需先暂停新任务/关闭style_learning_enabled，再按部署备份恢复源/配置；如回到不认识此action的旧版本，同时恢复备份中的timetable.sqlite3，避免留下未知任务。别覆盖部署后新产生的其他数据。
 
 English: StyleLearner reuses the existing expression-library database, cold archive, Brain coordination, bounded generation, and unified timetable. Private replies retrieve at most two persona- and scene-specific policies. The full suite passed 957 tests with no skips, including the then-current 32 new cases; subsequent test-only additions brought the targeted suite to 37 passing cases, not a newly run 962-test full suite. JavaScript syntax checks passed. Seven source/UI/schema files were deployed with baseline checks and backups, adding only three learning configuration keys and one scheduled task while retaining the original 14 tasks. Synthetic runtime tests verified extraction/application, pause/reset and persona isolation. An initial probe-only method-name error was corrected and the probe was rerun and removed. One authorized production increment completed with zero validated candidates and no new applied policy. This verifies wiring and provider use, not proven improvement in naturalness. No QQ/Bilibili test sends or bulk paid evaluations occurred; real increments use the existing metered provider. QQ/OneBot remained online, and the new tool is allowed by the actual persona. Public templates keep the feature off; see the bilingual guide for design, limits and sources. Before rollback, pause the new task and disable the feature; an older version without the action also needs the timetable backup restored, taking care not to overwrite unrelated new data.
+
+
+## 2026-11-08 引用回复与动态语境
+
+- 平台已解析的 Reply 原文随本轮临时归属资料传入模型，最多4000字，保留消息ID与作者；缺失时明确不可核验，不从上一轮回答猜测。不能保证平台取回已撤回/过期消息。
+- B站候选搜索同轮最多3次，继续保留每小时12次；媒体发送仍保持原单轮限制。搜索不会再误报媒体配额。
+- 动态可利用近6小时实际 bili_read 时间线作为新语境，不篡改私聊时间戳、不解除冷档隔离；原权限、审核、每日上限保留。
+- 71项相关本地测试通过，外发使用Mock；未发送QQ或B站测试消息，未付费调用模型。实际自然回复效果需后续观察。
+
+### Quoted replies and dynamic-post context
+
+- Adapter-resolved Reply text is included in temporary speaker attribution, capped at 4,000 characters with message ID and author. Missing text is explicitly unavailable, never inferred from the last answer. Deleted or expired messages may remain unavailable.
+- Bilibili candidate browsing permits up to three attempts per turn while retaining twelve attempts per hour. Media keeps its existing per-turn limit; search no longer reports a media-quota error.
+- A recorded bili_read event within six hours may supply fresh context for a dynamic post without changing private-chat timestamps or bypassing archive isolation. Permissions, review and daily limits remain intact.
+- 71 related local tests passed with mocked publishing. No test QQ/Bilibili messages or paid model calls were made. Natural conversation quality still requires observation.

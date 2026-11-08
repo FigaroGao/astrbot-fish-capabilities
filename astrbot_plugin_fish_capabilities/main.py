@@ -2040,7 +2040,7 @@ class FishCapabilities(Star):
         async def work():
             actor = self.enabled('bili', event, owner=True)
             if event.get_extra('fish_public_shelf_read') and not self.config.get('bili_owner_shelf_autonomous_enabled',False):raise CapabilityError('本轮已查看主人公开清单，不用它生成小鲸的推荐；请另开一轮按自己的兴趣逛站。')
-            self.ledger.reserve(actor.conversation + ':bili', 'browse', self.turn(event) + ':browse', cooldown=15, hourly=12)
+            self.ledger.reserve(actor.conversation + ':bili', 'browse', self.turn(event) + ':browse', cooldown=0, hourly=12, per_turn_limit=3)
             await self.acknowledge_work(event,'好呀，我去逛逛，看看有什么有意思的')
             return await self.bili.browse(keyword,limit,source=source)
         return await self.run_tool(work)

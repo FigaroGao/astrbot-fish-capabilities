@@ -83,15 +83,17 @@ class Ledger:
 
     def reserve(self, scope: str, kind: str, turn: str, *, cooldown: float, hourly: int,
                 units: int = 1, asset: str = '', asset_cooldown: float = 3600,
-                now: float | None = None, min_reply_gap: int = 0, requested: bool = False) -> int:
+                now: float | None = None, min_reply_gap: int = 0, requested: bool = False, per_turn_limit: int = 1) -> int:
         now = time.time() if now is None else now
+        if type(per_turn_limit) is not int or not 1 <= per_turn_limit <= 3:raise CapabilityError('单轮次数参数无效。')
+        if kind != 'browse' and per_turn_limit != 1:raise CapabilityError('媒体单轮上限不可放宽。')
         if not scope or not turn or units <= 0 or cooldown < 0 or hourly <= 0:
             raise CapabilityError('无效的配额参数。')
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             # Media share the same per-turn and cooldown budget, irrespective of kind.
-            if db.execute('SELECT 1 FROM reservations WHERE scope=? AND turn=?', (scope, turn)).fetchone():
-                raise CapabilityError('本轮已安排表情或语音，不再追加。')
+            if db.execute('SELECT COUNT(*) FROM reservations WHERE scope=? AND turn=?', (scope, turn)).fetchone()[0] >= per_turn_limit:
+                raise CapabilityError('本轮候选搜索次数已达上限。' if kind=='browse' else '本轮已安排表情或语音，不再追加。')
             bypass_soft = kind=='image' and requested is True
             if kind=='image' and min_reply_gap>0 and not bypass_soft:
                 last_image=db.execute("SELECT MAX(stamp) FROM reservations WHERE scope=? AND kind='image'",(scope,)).fetchone()[0]

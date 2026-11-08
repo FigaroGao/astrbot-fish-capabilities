@@ -242,6 +242,13 @@ class BiliActivity:
             opening=local.replace(hour=10,minute=0,second=0,microsecond=0).timestamp()+(int.from_bytes(seed[:2],'big')%22)*1800
             if now<opening:return {'state':'waiting_daily_opportunity'}
         context=self.review.context();activity=float(context.get('at',0))
+        # A fresh, recorded video read can inspire a post without exporting a
+        # quarantined private conversation or pretending its timestamp is fresh.
+        for item in context.get('private_activity_timeline',[]):
+            if item.get('kind')=='bili_read' and not item.get('details',{}).get('cold_derived'):
+                stamp=item.get('at',0)
+                if isinstance(stamp,(int,float)) and now-6*3600<=stamp<=now:
+                    activity=max(activity,stamp)
         if self.config.get('bili_dynamic_daytime_enabled',False) and (not activity or now-activity>6*3600):return {'state':'context_stale'}
         with self.reader.connect() as db:
             db.execute('BEGIN IMMEDIATE')
