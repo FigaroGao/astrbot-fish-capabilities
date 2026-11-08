@@ -790,6 +790,9 @@ class FishCapabilities(Star):
             if not hasattr(req,'extra_user_content_parts'):req.extra_user_content_parts=[]
             if event.is_private_chat() and self.private_ping:
                 query=str(getattr(event,'get_message_str',lambda:'')())
+                if re.search(r'(?i)BV|链接|地址|哪个视频|哪条视频|刚才.*视频|@我|艾特我',query):
+                    shared=self.private_ping.shared_videos()
+                    req.extra_user_content_parts.append(TextPart(text='[私人学习笔记]已确认发给主人的视频话题来源，按分享时间排序：'+json.dumps(shared,ensure_ascii=False)+'。主人问刚才那条的BV时，核对标题/引用内容与此记录，不能用最近读到的另一条代替。多条无法确定时简短确认；没有记录不编BV。评论去重不妨碍发送原视频链接，已评论不是B站不支持@；当前工具若拒绝重复评论，就解释为本工具限制并提供已核实的同一BV，不声称已经@成功。').mark_as_temp())
                 if wants_video_topic(query):
                     topics=self.private_ping.video_candidates(query)
                     if topics:

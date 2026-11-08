@@ -73,6 +73,18 @@ class Initiative:
         terms=set(re.findall(r'[\u4e00-\u9fff]{2}|[a-zA-Z]{3,}',query.lower()))
         ranked=sorted(rows,key=lambda row:sum(term in row[1].lower() for term in terms),reverse=True)
         return [{'id':i,'text':text,'state':state} for i,text,state in ranked[:limit]]
+    def shared_videos(self):
+        """Confirmed QQ topic deliveries, ordered by sharing rather than reading."""
+        with self.db() as db:
+            rows=db.execute("SELECT v.bvid,v.reading_id,t.text,s.stamp FROM video_topics v JOIN topics t ON t.id=v.topic JOIN topic_states s ON s.id=t.id WHERE s.state IN ('sent','discussed') AND s.stamp>? ORDER BY s.stamp DESC,t.id DESC LIMIT 3",(self.clock()-7*86400,)).fetchall()
+        result=[]
+        for bv,reading,text,stamp in rows:
+            if not re.fullmatch(r'BV[0-9A-Za-z]{10}',bv):continue
+            try:title=json.loads(text).get('title','')
+            except (ValueError,TypeError):title=''
+            result.append({'bvid':bv,'url':'https://www.bilibili.com/video/'+bv,'reading_id':reading,'title':str(title)[:150],'shared_at':stamp})
+        return result
+
     def chat_topic(self,ident):
         if type(ident)is not int or ident<1:return None
         with self.db() as db:
