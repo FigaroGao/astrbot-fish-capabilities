@@ -129,6 +129,9 @@ class FishCapabilities(Star):
                                daily_reads=int(config.get('bili_daily_reads', 10)),
                                daily_notes=int(config.get('bili_daily_notes', 8)),
                                recommendation_enabled=bool(config.get('bili_recommendation_enabled',False)))
+        if config.get('bili_audio_enabled',False):
+            from .services.bili_audio import AudioReader
+            self.bili.audio_reader=AudioReader(self.root/'bili-audio-tmp',self.bili.backend.audio_stream,self.context.get_config,config.get('vision_qwen_key_provider_id','aliyun_memory_embedding'),self.context_metric)
         self.bili.timeline=self.timeline if config.get('timeline_enabled',False) else None
         self.bili.visual_cache_version=STORYBOARD_VERSION if config.get('bili_storyboard_enabled',True) else 2
         self.bili.visual_timeout=420 if config.get('bili_gallery_scan_enabled',True) else 280

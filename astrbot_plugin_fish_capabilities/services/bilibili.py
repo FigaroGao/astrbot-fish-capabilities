@@ -72,6 +72,16 @@ class BiliBackend:
                                          page=1,order_type=search.OrderVideo.TOTALRANK)
         return data.get('result',[])[:limit]
 
+    async def audio_stream(self,video_id,info):
+        from bilibili_api import video
+        from .bili_gallery import stream_url
+        result=await video.Video(bvid=bvid(video_id),credential=self.credential()).get_download_url(cid=int(info['cid']))
+        rows=(result.get('dash') or {}).get('audio',[])
+        for row in sorted(rows,key=lambda r:int(r.get('bandwidth',0))):
+            try:return stream_url(row.get('baseUrl') or row.get('base_url'))
+            except (CapabilityError,ValueError):continue
+        raise CapabilityError('未取得可用音轨')
+
     async def gallery_stream(self,video_id,info):
         """Normal authenticated playback permission, no write or bypass."""
         from bilibili_api import video
@@ -288,6 +298,9 @@ class BiliReader:
             if self.visual_reader:
                 try:packet.update(await asyncio.wait_for(self.visual_reader(packet,info),self.visual_timeout if self.visual_cache_version>=3 else 50))
                 except Exception as exc:packet.update(visual_status='unavailable',visual_content_seen=False,visual_failure_stage='visual_processing',visual_failure_kind='timeout' if isinstance(exc,TimeoutError) else 'processing_error')
+            if getattr(self,'audio_reader',None):
+                try:packet.update(await self.audio_reader(packet,info))
+                except Exception:packet.update(audio_heard=False,audio_status='unavailable')
             packet['character_revision']=character_revision
             attach_sources(packet)
             reading_id=hashlib.sha256(json.dumps(packet,ensure_ascii=False,sort_keys=True).encode()).hexdigest()[:24]

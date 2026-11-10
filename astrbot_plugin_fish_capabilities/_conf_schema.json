@@ -683,5 +683,10 @@
     "type": "int",
     "default": 0,
     "description": "主人私聊单发普通图片时等后续文字的秒数，0关闭，最多20秒；QQ标记的表情照常处理。"
+  },
+  "bili_audio_enabled": {
+    "description": "读取视频开头最多45秒音频（千问音频理解）",
+    "type": "bool",
+    "default": false
   }
 }

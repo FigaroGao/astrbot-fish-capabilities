@@ -81,7 +81,7 @@ class BiliMemory:
                 'annotation_sources':sources,
                 'summary':summary,'reflection':reflection,'description':p.get('description','')[:500],
                 'subtitle_status':p.get('subtitle_status'),'subtitle_coverage':p.get('subtitle_coverage'),
-                'evidence':p.get('evidence',[])[:8],'visual_content_seen':p.get('visual_content_seen',False),'audio_heard':False,
+                'evidence':p.get('evidence',[])[:8],'visual_content_seen':p.get('visual_content_seen',False),'audio_heard':p.get('audio_heard',False),'audio_segments':p.get('audio_segments',[]),'audio_summary':p.get('audio_summary',''),
                 'visual_summary':p.get('visual_summary',''),'preview_timestamps':p.get('preview_timestamps',[]),
                 'gallery_pages':p.get('gallery_pages',[])[:48],'gallery_scan':p.get('gallery_scan'),
                 'character_matches':p.get('character_matches',[]),
