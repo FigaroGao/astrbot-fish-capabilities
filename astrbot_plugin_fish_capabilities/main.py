@@ -2161,11 +2161,12 @@ class FishCapabilities(Star):
         return await self.run_tool(work)
 
     @filter.llm_tool(name='fish_bili_read')
-    async def bili_read(self, event: AstrMessageEvent, video_id: str, frame_count: int = 9):
+    async def bili_read(self, event: AstrMessageEvent, video_id: str, frame_count: int = 9, listen: bool = False):
         '''主人私聊读取视频：先看编号概览，由视觉规划选择具体帧、细看局部/时间窗或调整密度；图片/聊天型尝试原视频逐页读取。依据返回的实际路径、画面清单和未读页回答，不能沿用“固定9张”的旧说明。HTTP412时停止，不要换画面数连续重试。
 
         Args:
             video_id(string): BV 号或正式视频链接。
+            listen(boolean): 默认false仅取播放器音乐标注，不调用音频模型。你想听音乐、演奏、音效或主人要求听时设true，分析开头最多45秒；不能把平台曲名当实际听感。
             frame_count(number): 第一轮概览数量建议1至27，默认9；最终画面可由内部视觉规划调整，图片型逐页数量不受此建议限制。
         '''
         async def work():
@@ -2174,7 +2175,7 @@ class FishCapabilities(Star):
             if previous and previous!=video_id and not self.config.get('bili_scroll_unlimited_enabled',False):raise CapabilityError('本轮已选读一条视频，先聊完再看下一条。')
             event.set_extra('fish_bili_private_read_video',video_id)
             await self.acknowledge_work(event,'好，我先看看这条，等会儿跟你聊')
-            packet=await self.bili.read(video_id,frame_count=frame_count)
+            packet=await self.bili.read(video_id,frame_count=frame_count,listen=listen)
             self.record_video_activity(packet)
             return packet
         return await self.run_tool(work)
